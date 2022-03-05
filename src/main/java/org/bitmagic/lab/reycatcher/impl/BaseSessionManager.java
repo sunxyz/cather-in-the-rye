@@ -26,15 +26,14 @@ public class BaseSessionManager extends AbstractSessionManager {
     @Override
     public Optional<Session> getCurrentSession(String tokenName) {
         return findSessionTokenFromClient(tokenName).map(sessionToken -> {
-            switch (sessionToken.getType()){
-                case SessionToken.TokenTypeCons.COOKIE:
-                    return findByToken(sessionToken).orElse(null);
-                case SessionToken.TokenTypeCons.JWT_TOKEN:
-                    LoginInfo loginInfo = null;// jwt->login-info
-                    Object meta = null; //jwt->login-info
-                    return  Session.of(sessionToken, loginInfo, meta);
-                default:
-                    return null;
+            if(Config.isNeedSave(sessionToken.getType())){
+                return findByToken(sessionToken).orElse(null);
+            }else if(SessionToken.TokenTypeCons.JWT_TOKEN.equals(sessionToken.getType())){
+                LoginInfo loginInfo = null;// jwt->login-info
+                Object meta = null; //jwt->login-info
+                return  Session.of(sessionToken, loginInfo, meta);
+            }else {
+                return null;
             }
         });
     }
