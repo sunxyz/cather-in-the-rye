@@ -18,6 +18,18 @@ public interface Session {
 
     Object getMeta();
 
+    default Integer getTimeOutMillisecond(){
+        return Config.getSessionTimeOutMillisecond();
+    }
+
+    default boolean isNeedSave(){
+        return Config.isNeedSave(getSessionToken().getType());
+    }
+
+    default boolean isNeedOutClient(){
+        return Config.isNeedOutClient(getSessionToken().getType());
+    }
+
     @Value(staticConstructor = "of")
     class UserSession implements Session{
 

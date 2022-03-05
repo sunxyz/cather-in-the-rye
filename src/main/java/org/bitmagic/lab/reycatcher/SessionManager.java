@@ -10,6 +10,8 @@ public interface SessionManager extends SessionRepository {
 
     Session genSession(Object id, String deviceType, String sessionTokenType, Object meta, Object clientExtMeta);
 
+    Optional<Session> getCurrentSession(String tokenName);
+
     Optional<SessionToken> findSessionTokenFromClient(String tokenName);
 
     void outSession2Client(String tokenName, Session session);

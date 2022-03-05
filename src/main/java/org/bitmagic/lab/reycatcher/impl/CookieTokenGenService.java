@@ -11,6 +11,6 @@ import java.util.Random;
 public class CookieTokenGenService extends AbstractTokenGenService {
     @Override
     public SessionToken genToken(Object id, String deviceType, Object clientExtMeta) {
-        return SessionToken.of("cookie", new Random().toString().replace("-","").toLowerCase());
+        return SessionToken.of(SessionToken.TokenTypeCons.COOKIE, new Random().toString().replace("-","").toLowerCase());
     }
 }

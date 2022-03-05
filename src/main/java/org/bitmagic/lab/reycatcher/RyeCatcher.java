@@ -4,7 +4,10 @@ import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -15,34 +18,21 @@ public class RyeCatcher {
 
     private static final String DEFAULT_DEVICE_TYPE = "DEFAULT_DEVICE";
 
-
     private static final SessionManager SESSION_MANAGER = SpringContextHolder.getBean(SessionManager.class);
 
     private static final LoadMatchInfoService loadMatchInfoService = SpringContextHolder.getBean(LoadMatchInfoService.class);
-
-    private static void initSession() {
-        SessionToken sessionToken = SESSION_MANAGER.findSessionTokenFromClient("Authorization").orElseThrow(NotFoundSessionException::new);
-        Session session = null;
-        String tokenType = sessionToken.getType();
-        if (tokenType.equals("cookie")) {
-            session = SESSION_MANAGER.findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
-        } else if (tokenType.equals("jwt-token")) {
-            LoginInfo loginInfo = null;// jwt->login-info
-            Object meta = null; //jwt->login-info
-            session = Session.of(sessionToken, loginInfo, meta);
-        }
-        SessionContextHolder.setContext(SessionContext.of(session));
-    }
 
     public static SessionToken login(Object id) {
        return login(id, DEFAULT_DEVICE_TYPE);
     }
 
     public static SessionToken login(Object id, String deviceType) {
-        Session session = SESSION_MANAGER.genSession(id, deviceType, "cookie", new HashMap<>(), null);
-        if (session.getSessionToken().getType().equals("cookie")) {
+        Session session = SESSION_MANAGER.genSession(id, deviceType, Config.getGenTokenType(), new HashMap<>(), null);
+        if (session.isNeedSave()) {
             SESSION_MANAGER.save(session);
-            SESSION_MANAGER.outSession2Client("Authorization", session);
+        }
+        if(session.isNeedOutClient()){
+            SESSION_MANAGER.outSession2Client(Config.getTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
         return session.getSessionToken();
@@ -62,16 +52,14 @@ public class RyeCatcher {
     }
 
     public static Session getSession() {
-        // cache
-        initSession();
         return SessionContextHolder.getContext().getSession();
     }
 
-    public static Session getSessionByLogin(Object id) {
-        return getSessionByLogin(id, DEFAULT_DEVICE_TYPE);
+    public static Session getSavedSessionByLogin(Object id) {
+        return getSavedSessionByLogin(id, DEFAULT_DEVICE_TYPE);
     }
 
-    public static Session getSessionByLogin(Object id, String deviceType) {
+    public static Session getSavedSessionByLogin(Object id, String deviceType) {
         return SESSION_MANAGER.findOne(id, deviceType).orElseThrow(NotFoundSessionException::new);
     }
 
@@ -107,11 +95,12 @@ public class RyeCatcher {
     }
 
     public static void switchTo(Object id, String deviceType) {
-        Session session = SESSION_MANAGER.findOne(id, deviceType).orElseThrow(NotFoundSessionException::new);
+        Session session = getSavedSessionByLogin(id, deviceType);
         SessionContextHolder.setContext(SessionContext.of(session));
     }
 
     public static void logout() {
+        //TODO
         SESSION_MANAGER.remove(getSession());
     }
 
@@ -120,7 +109,8 @@ public class RyeCatcher {
     }
 
     public static void kickOut(Object id, String deviceType) {
-        SESSION_MANAGER.remove(getSessionByLogin(id, deviceType));
+        //TODO
+        SESSION_MANAGER.remove(getSavedSessionByLogin(id, deviceType));
     }
 
     private static Collection<String> listAuthorities(String type) {

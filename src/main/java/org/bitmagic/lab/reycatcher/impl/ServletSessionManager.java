@@ -4,6 +4,7 @@ import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.TokenGenService;
+import org.bitmagic.lab.reycatcher.utils.StringUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,14 +32,15 @@ public class ServletSessionManager extends BaseSessionManager{
             String v = request.getHeader(tokenName);
             return Objects.isNull(v)?request.getParameter(tokenName):v;
         });
-        //TODO
-        return token!=null&&token.trim().length()>0?Optional.of(SessionToken.of(token.contains(".")?"jwt-token":"cookie",token)):Optional.empty();
+        return StringUtils.isEmpty(token)?Optional.of(SessionToken.of(token.contains(".")?SessionToken.TokenTypeCons.JWT_TOKEN:SessionToken.TokenTypeCons.COOKIE,token)):Optional.empty();
     }
 
     @Override
     public void outSession2Client(String tokenName, Session session) {
         HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
         ValidateUtils.notNull(response,"response not null");
-        response.addCookie(new Cookie(tokenName, session.getSessionToken().getToken()));
+        Cookie cookie = new Cookie(tokenName, session.getSessionToken().getToken());
+        cookie.setMaxAge(session.getTimeOutMillisecond()/1000);
+        response.addCookie(cookie);
     }
 }

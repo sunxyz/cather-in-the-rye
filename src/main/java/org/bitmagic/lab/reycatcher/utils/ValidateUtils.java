@@ -16,8 +16,8 @@ public final class ValidateUtils {
         }
     }
 
-    public static void checkAuthority(boolean flag , String error){
-        if (!flag){
+    public static void checkAuthority(boolean pass , String error){
+        if (!pass){
             throw new AuthorityException(error);
         }
     }

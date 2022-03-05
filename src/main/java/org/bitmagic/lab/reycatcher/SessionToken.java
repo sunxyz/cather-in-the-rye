@@ -8,6 +8,11 @@ import lombok.Value;
  */
 public interface SessionToken {
 
+    interface TokenTypeCons{
+         String JWT_TOKEN = "jwt_token";
+         String COOKIE = "cookie";
+    }
+
     static SessionToken of(String type, String token){
         return SimpleSessionToken.of(type,token);
     }

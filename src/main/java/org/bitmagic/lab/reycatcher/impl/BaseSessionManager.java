@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher.impl;
 
 import org.bitmagic.lab.reycatcher.*;
+import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 
 import java.util.Optional;
 
@@ -20,6 +21,22 @@ public class BaseSessionManager extends AbstractSessionManager {
     @Override
     public Session genSession(Object id, String deviceType, String sessionTokenType, Object meta, Object clientExtMeta) {
         return Session.of(tokenGenService.genToken(id, deviceType, sessionTokenType, clientExtMeta), LoginInfo.of(id, deviceType), meta);
+    }
+
+    @Override
+    public Optional<Session> getCurrentSession(String tokenName) {
+        return findSessionTokenFromClient(tokenName).map(sessionToken -> {
+            switch (sessionToken.getType()){
+                case SessionToken.TokenTypeCons.COOKIE:
+                    return findByToken(sessionToken).orElse(null);
+                case SessionToken.TokenTypeCons.JWT_TOKEN:
+                    LoginInfo loginInfo = null;// jwt->login-info
+                    Object meta = null; //jwt->login-info
+                    return  Session.of(sessionToken, loginInfo, meta);
+                default:
+                    return null;
+            }
+        });
     }
 
     @Override

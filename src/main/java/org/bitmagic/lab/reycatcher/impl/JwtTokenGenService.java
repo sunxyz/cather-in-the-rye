@@ -9,6 +9,6 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 public class JwtTokenGenService extends AbstractTokenGenService {
     @Override
     public SessionToken genToken(Object id, String deviceType,  Object clientExtMeta) {
-      return SessionToken.of("jwt-token", "todo.todo.todo");
+      return SessionToken.of(SessionToken.TokenTypeCons.JWT_TOKEN, "todo.todo.todo");
     }
 }
