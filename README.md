@@ -4,21 +4,21 @@
 
 ## 用户接口
 **方法**
-- [ ] ryeCatcher.login(id, deviceType)
+- [ ] RyeCatcher.login(id, deviceType)
 
-- [ ] ryeCatcher.isLogin()
-- [ ] ryeCatcher.getLogin()
-- [ ] ryeCatcher.getSession()
-- [ ] ryeCatcher.getSessionByLogin(id, deviceType)
+- [ ] RyeCatcher.isLogin()
+- [ ] RyeCatcher.getLogin()
+- [ ] RyeCatcher.getSession()
+- [ ] RyeCatcher.getSessionByLogin(id, deviceType)
 
-- [ ] ryeCatcher.anyMatch(type,...s)
-- [ ] ryeCatcher.allMatch(type,...s)
-- [ ] ryeCatcher.noMatch(type,...s)
-- [ ] ryeCatcher.check(type,matchRelation,...s)
-- [ ] ryeCatcher.switchTo(id, deviceType);
+- [ ] RyeCatcher.anyMatch(type,...s)
+- [ ] RyeCatcher.allMatch(type,...s)
+- [ ] RyeCatcher.noMatch(type,...s)
+- [ ] RyeCatcher.check(type,matchRelation,...s)
+- [ ] RyeCatcher.switchTo(id, deviceType);
 
-- [ ] ryeCatcher.logout()
-- [ ] ryeCatcher.kickOut(id, deviceType)
+- [ ] RyeCatcher.logout()
+- [ ] RyeCatcher.kickOut(id, deviceType)
 
  **注解**
 
