@@ -17,7 +17,7 @@ public interface Session {
         return DefaultSession.of(sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeOutMillisecond());
     }
 
-    static <T extends Session> T from(Session session){
+    static <T extends Session> T from(Session session) {
         return (T) session;
     }
 
@@ -31,9 +31,9 @@ public interface Session {
 
     long getLastAccessedTime();
 
-    void setMaxInactiveInterval(int var1);
-
     int getMaxInactiveInterval();
+
+    void setMaxInactiveInterval(int var1);
 
     void setAttribute(String var1, Object var2);
 
@@ -69,22 +69,22 @@ public interface Session {
 
         @Override
         public void setAttribute(String key, Object val) {
-            if(meta instanceof Map){
-                ((Map<String, Object>) meta).put(key,val);
+            if (meta instanceof Map) {
+                ((Map<String, Object>) meta).put(key, val);
             }
         }
 
         @Override
         public Object getAttribute(String key) {
-            if(meta instanceof Map){
-               return  ((Map<String, Object>) meta).get(key);
+            if (meta instanceof Map) {
+                return ((Map<String, Object>) meta).get(key);
             }
             return null;
         }
 
         @Override
         public void removeAttribute(String key) {
-            if(meta instanceof Map){
+            if (meta instanceof Map) {
                 ((Map<String, Object>) meta).remove(key);
             }
         }

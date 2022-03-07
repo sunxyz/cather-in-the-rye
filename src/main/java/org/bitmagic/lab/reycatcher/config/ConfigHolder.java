@@ -1,17 +1,19 @@
 package org.bitmagic.lab.reycatcher.config;
 
 import org.bitmagic.lab.reycatcher.SessionContextHolder;
-import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class ConfigHolder {
 
-   public static Function<String, RyeCatcherProperties.ConfigInfo> delegate;
+    public static Function<String, RyeCatcherProperties.ConfigInfo> delegate;
+
+    public static Supplier<String> getGenTokenTypeDelegate;
 
     public static String getGenTokenType(){
-        return SessionToken.TokenTypeCons.COOKIE;
+        return getGenTokenTypeDelegate.get();
     }
 
     public static String getTokenName(){return getConfigInfo().getTokenName();}

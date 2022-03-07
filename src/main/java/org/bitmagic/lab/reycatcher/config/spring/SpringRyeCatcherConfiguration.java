@@ -14,10 +14,15 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author yangrd
@@ -28,7 +33,13 @@ public class SpringRyeCatcherConfiguration {
 
     @PostConstruct
     public void init(RyeCatcherProperties properties){
-        ConfigHolder.delegate = properties.getGenTokenTypeInfo()::get;
+        ConfigHolder.delegate = properties.getTokenType2Config()::get;
+        ConfigHolder.getGenTokenTypeDelegate = ()->{
+            //優先匹配最長路徑
+            HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+            List<String> mathPaths = properties.getPathPrefix2TokenType().values().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
+            return mathPaths.stream().max(Comparator.comparingInt(String::length)).map(properties.getPathPrefix2TokenType()::get).orElseThrow(RuntimeException::new);
+        };
         InstanceHolder.delegate = SpringContextHolder::getBean;
     }
 

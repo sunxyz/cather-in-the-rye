@@ -24,7 +24,7 @@ public class RyeCatcher {
     private static final LoadMatchInfoService loadMatchInfoService = InstanceHolder.getInstance(LoadMatchInfoService.class);
 
     public static SessionToken login(Object id) {
-       return login(id, DEFAULT_DEVICE_TYPE);
+        return login(id, DEFAULT_DEVICE_TYPE);
     }
 
     public static SessionToken login(Object id, String deviceType) {
@@ -32,7 +32,7 @@ public class RyeCatcher {
         if (session.isNeedSave()) {
             SESSION_MANAGER.save(session);
         }
-        if(session.isNeedOutClient()){
+        if (session.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
@@ -42,7 +42,7 @@ public class RyeCatcher {
     public static boolean isLogin() {
         try {
             getSession();
-        }catch (NotFoundSessionException e){
+        } catch (NotFoundSessionException e) {
             return false;
         }
         return true;
@@ -101,8 +101,14 @@ public class RyeCatcher {
     }
 
     public static void logout() {
-        //TODO
-        SESSION_MANAGER.remove(getSession());
+        Session session = getSession();
+        if (session.isNeedSave()) {
+            SESSION_MANAGER.remove(session);
+        }
+        if(session.isNeedOutClient()){
+            session.setMaxInactiveInterval(0);
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+        }
     }
 
     public static void kickOut(Object id) {
@@ -110,8 +116,11 @@ public class RyeCatcher {
     }
 
     public static void kickOut(Object id, String deviceType) {
-        //TODO
-        SESSION_MANAGER.remove(getSavedSessionByLogin(id, deviceType));
+        Session session = getSavedSessionByLogin(id, deviceType);
+        if(session.isNeedOutClient()){
+            session.setMaxInactiveInterval(0);
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+        }
     }
 
     private static Collection<String> listAuthorities(String type) {

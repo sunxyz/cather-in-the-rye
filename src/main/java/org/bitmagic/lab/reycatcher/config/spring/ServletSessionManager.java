@@ -40,13 +40,14 @@ public class ServletSessionManager extends BaseSessionManager {
 
     @Override
     public void outSession2Client(String tokenName, Session session) {
-        if(session.getMeta() instanceof Map){
-            ((Map) session.getMeta()).put("tokenName", tokenName);
-        }
         HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
         ValidateUtils.notNull(response,"response not null");
         Cookie cookie = new Cookie(tokenName, session.getSessionToken().getToken());
-        cookie.setMaxAge(0);
+        if(session.getMaxInactiveInterval()==0){
+            cookie.setMaxAge(session.getMaxInactiveInterval());
+        }else {
+            cookie.setMaxAge(-1);
+        }
         response.addCookie(cookie);
     }
 
