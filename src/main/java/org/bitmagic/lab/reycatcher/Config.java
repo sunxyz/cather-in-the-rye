@@ -8,7 +8,7 @@ public interface Config {
 
     static String getTokenName(){return "Authorization";}
 
-    static Integer getSessionTimeOutMillisecond(){return 30*60*1000;}
+    static long getSessionTimeOutMillisecond(){return 30*60*1000;}
 
     static boolean isNeedSave(String tokenType){
         return SessionToken.TokenTypeCons.COOKIE.equals(tokenType);

@@ -7,6 +7,9 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yangrd
@@ -14,13 +17,23 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MemorySessionRepository implements SessionRepository {
 
-    private  final Map<SessionToken,Session> REPO = new ConcurrentHashMap<>();
-    private final Map<String,SessionToken> USER2TOKEN = new ConcurrentHashMap<>();
+    private final Map<SessionToken, Session> REPO = new ConcurrentHashMap<>();
+    private final Map<String, SessionToken> USER2TOKEN = new ConcurrentHashMap<>();
+
+    {
+        ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
+        timer.scheduleAtFixedRate(()->{
+            long now = System.currentTimeMillis();
+            if(!REPO.isEmpty()){
+                REPO.values().stream().filter(session -> session.getTimeOutMillisecond()<now).forEach(this::remove);
+            }
+        }, 1000, 60000, TimeUnit.MILLISECONDS);
+    }
 
     @Override
     public void save(Session session) {
         REPO.put(session.getSessionToken(), session);
-        USER2TOKEN.put(genKey(session),session.getSessionToken());
+        USER2TOKEN.put(genKey(session), session.getSessionToken());
     }
 
     @Override
@@ -32,7 +45,7 @@ public class MemorySessionRepository implements SessionRepository {
     @Override
     public Optional<Session> findOne(Object id, String deviceType) {
         SessionToken sessionToken = USER2TOKEN.get(genKey(id, deviceType));
-        if (Objects.isNull(sessionToken)){
+        if (Objects.isNull(sessionToken)) {
             return Optional.empty();
         }
         return findByToken(sessionToken);
@@ -46,7 +59,7 @@ public class MemorySessionRepository implements SessionRepository {
     @Override
     public Page<Session> findAll(Object filterInfo, int size, int page) {
         List<Session> sessions = new ArrayList<>(listAll(filterInfo));
-        return Page.of(sessions.subList(page*size, page*size+size),sessions.size());
+        return Page.of(sessions.subList(page * size, page * size + size), sessions.size());
     }
 
     @Override
@@ -54,11 +67,16 @@ public class MemorySessionRepository implements SessionRepository {
         return REPO.values();
     }
 
-    private String genKey(Session session){
+    @Override
+    public void renewal(SessionToken token) {
+        findByToken(token).ifPresent(Session::renewalTimeOutMillisecond);
+    }
+
+    private String genKey(Session session) {
         return genKey(session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType());
     }
 
-    private String genKey(Object id,String deviceType){
-        return String.format("%s@%s",id, deviceType);
+    private String genKey(Object id, String deviceType) {
+        return String.format("%s@%s", id, deviceType);
     }
 }

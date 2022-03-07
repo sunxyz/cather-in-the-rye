@@ -1,7 +1,7 @@
 package org.bitmagic.lab.reycatcher;
 
+import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
-import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
 import java.util.Arrays;
@@ -18,9 +18,9 @@ public class RyeCatcher {
 
     private static final String DEFAULT_DEVICE_TYPE = "DEFAULT_DEVICE";
 
-    private static final SessionManager SESSION_MANAGER = SpringContextHolder.getBean(SessionManager.class);
+    private static final SessionManager SESSION_MANAGER = InstanceHolder.getInstance(SessionManager.class);
 
-    private static final LoadMatchInfoService loadMatchInfoService = SpringContextHolder.getBean(LoadMatchInfoService.class);
+    private static final LoadMatchInfoService loadMatchInfoService = InstanceHolder.getInstance(LoadMatchInfoService.class);
 
     public static SessionToken login(Object id) {
        return login(id, DEFAULT_DEVICE_TYPE);

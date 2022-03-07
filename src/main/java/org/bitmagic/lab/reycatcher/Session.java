@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * @author yangrd
@@ -8,8 +9,8 @@ import lombok.Value;
  */
 public interface Session {
 
-    static Session of(SessionToken sessionToken, LoginInfo loginInfo, Object meta){
-        return UserSession.of(sessionToken, loginInfo, meta);
+    static Session of(SessionToken sessionToken, LoginInfo loginInfo, Object meta) {
+        return UserSession.of(sessionToken, loginInfo, meta, System.currentTimeMillis() + Config.getSessionTimeOutMillisecond());
     }
 
     SessionToken getSessionToken();
@@ -18,20 +19,21 @@ public interface Session {
 
     Object getMeta();
 
-    default Integer getTimeOutMillisecond(){
-        return Config.getSessionTimeOutMillisecond();
-    }
+    long getTimeOutMillisecond();
 
-    default boolean isNeedSave(){
+    void renewalTimeOutMillisecond();
+
+    default boolean isNeedSave() {
         return Config.isNeedSave(getSessionToken().getType());
     }
 
-    default boolean isNeedOutClient(){
+    default boolean isNeedOutClient() {
         return Config.isNeedOutClient(getSessionToken().getType());
     }
 
-    @Value(staticConstructor = "of")
-    class UserSession implements Session{
+    @AllArgsConstructor(staticName = "of")
+    @Getter
+    class UserSession implements Session {
 
         SessionToken sessionToken;
 
@@ -39,5 +41,13 @@ public interface Session {
 
         Object meta;
 
+        long timeOutMillisecond;
+
+        @Override
+        public void renewalTimeOutMillisecond() {
+            if(isNeedSave()){
+                this.timeOutMillisecond = System.currentTimeMillis() + Config.getSessionTimeOutMillisecond();
+            }
+        }
     }
 }

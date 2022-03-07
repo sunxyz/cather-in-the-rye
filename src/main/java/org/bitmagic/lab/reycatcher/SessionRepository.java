@@ -7,7 +7,7 @@ import java.util.Optional;
  * @author yangrd
  * @date 2022/03/04
  */
-public interface SessionRepository {
+public interface SessionRepository extends SessionRenewalDuration{
 
     void save(Session session);
 

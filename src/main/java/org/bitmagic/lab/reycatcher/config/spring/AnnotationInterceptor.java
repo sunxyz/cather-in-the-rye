@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.inte;
+package org.bitmagic.lab.reycatcher.config.spring;
 
 
 import lombok.RequiredArgsConstructor;

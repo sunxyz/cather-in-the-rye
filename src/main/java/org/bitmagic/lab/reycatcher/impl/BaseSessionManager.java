@@ -26,6 +26,7 @@ public class BaseSessionManager extends AbstractSessionManager {
     @Override
     public Optional<Session> getCurrentSession(String tokenName) {
         return findSessionTokenFromClient(tokenName).map(sessionToken -> {
+            renewal(sessionToken);
             if(Config.isNeedSave(sessionToken.getType())){
                 return findByToken(sessionToken).orElse(null);
             }else if(SessionToken.TokenTypeCons.JWT_TOKEN.equals(sessionToken.getType())){
@@ -47,5 +48,7 @@ public class BaseSessionManager extends AbstractSessionManager {
     public void outSession2Client(String tokenName, Session session) {
         throw new RuntimeException();
     }
+
+
 
 }

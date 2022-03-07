@@ -44,4 +44,9 @@ public abstract class AbstractSessionManager implements SessionManager {
     public Collection<Session> listAll(Object filterInfo) {
         return repository.listAll(filterInfo);
     }
+
+    @Override
+    public void renewal(SessionToken token) {
+        repository.renewal(token);
+    }
 }
