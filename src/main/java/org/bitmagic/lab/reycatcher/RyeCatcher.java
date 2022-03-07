@@ -5,6 +5,7 @@ import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
+import org.springframework.util.AntPathMatcher;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -20,6 +21,8 @@ public class RyeCatcher {
     private static final SessionManager SESSION_MANAGER = InstanceHolder.getInstance(SessionManager.class);
 
     private static final LoadMatchInfoService loadMatchInfoService = InstanceHolder.getInstance(LoadMatchInfoService.class);
+
+    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(":");
 
     public static SessionToken login(Object id) {
         return login(id, DEFAULT_DEVICE_TYPE);
@@ -65,31 +68,31 @@ public class RyeCatcher {
         return SESSION_MANAGER.findOne(id, deviceType).orElseThrow(NotFoundSessionException::new);
     }
 
-    public static boolean anyMatch(String type, String... args) {
+    public static boolean anyMatch(String type, String... authKeys) {
         Collection<String> authorities = listAuthorities(type);
-        return Arrays.stream(args).anyMatch(authKey -> match(authorities, authKey));
+        return Arrays.stream(authKeys).anyMatch(authKey -> match(authorities, authKey));
     }
 
-    public static boolean allMatch(String type, String... args) {
+    public static boolean allMatch(String type, String... authKeys) {
         Collection<String> authorities = listAuthorities(type);
-        return Arrays.stream(args).allMatch(authKey -> match(authorities, authKey));
+        return Arrays.stream(authKeys).allMatch(authKey -> match(authorities, authKey));
     }
 
-    public static boolean noneMatch(String type, String... args) {
+    public static boolean noneMatch(String type, String... authKeys) {
         Collection<String> authorities = listAuthorities(type);
-        return Arrays.stream(args).noneMatch(authKey -> match(authorities, authKey));
+        return Arrays.stream(authKeys).noneMatch(authKey -> match(authorities, authKey));
     }
 
-    public static void check(String type, MatchRelation matchRelation, String... args) {
+    public static void check(String type, MatchRelation matchRelation, String... authKeys) {
         boolean flag = true;
         if (MatchRelation.ALL.equals(matchRelation)) {
-            flag = allMatch(type, args);
+            flag = allMatch(type, authKeys);
         } else if (MatchRelation.ANY.equals(matchRelation)) {
-            flag = anyMatch(type, args);
+            flag = anyMatch(type, authKeys);
         } else if (MatchRelation.NONE.equals(matchRelation)) {
-            flag = noneMatch(type, args);
+            flag = noneMatch(type, authKeys);
         }
-        ValidateUtils.checkAuthority(flag, String.join(",", args));
+        ValidateUtils.checkAuthority(flag, String.join(",", authKeys));
     }
 
     public static void checkLogin(){
@@ -133,10 +136,6 @@ public class RyeCatcher {
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {
-        //TODO ant match
-        return authorities.stream().anyMatch(auth -> {
-            Pattern compile = Pattern.compile(auth);
-            return compile.matcher(authKey).matches();
-        });
+        return authorities.stream().anyMatch(auth -> ANT_PATH_MATCHER.match(authKey, auth));
     }
 }
