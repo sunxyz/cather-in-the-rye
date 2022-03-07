@@ -52,7 +52,204 @@ new UriMatcherInterceptor()
                 .matchHandler("/app", (request, response, uriMatch) ->{ RyeCatcher.check("role", MatchRelation.ANY, "user"); uriMatch.stopNext();})
                 .matchHandler("/app/**", (request, response) -> RyeCatcher.check("perm", MatchRelation.ANY, "user"));
 ```
+## 使用
 
+目前支持在spring-boot中直接使用
+
+**1.起步**
+
+1.1 pom 引入
+```
+<dependency>
+  <groupId>org.bitmagic.lab</groupId>
+  <artifactId>catcher-in-the-rye</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+1.2 实现LoadMatchInfoService
+
+```java
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
+class CustomLoadMatchInfoService implements LoadMatchInfoService {
+    public Map<String, Collection<String>> loadMatchInfo(Object id, String deviceType) {
+        Map<String, Collection<String>> matchInfos = new HashMap<>();
+        matchInfos.put("role", Arrays.asList("user", "admin"));
+        matchInfos.put("perm", Arrays.asList("user:add", "user:view"));
+        return matchInfos;
+    }
+}
+```
+**2.开始**
+
+2.1 登录 退出
+
+```java
+import org.bitmagic.lab.reycatcher.LoginInfo;
+import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/auth")
+class AuthController {
+
+    @PostMapping("/login")
+    public void login(String username, String password) {
+        loginValidate(username, password);
+        RyeCatcher.login(username);
+    }
+
+    @PostMapping("/logout")
+    public void logout() {
+        RyeCatcher.logout();
+    }
+}
+```
+2.2 获取当前用户
+
+```java
+import org.bitmagic.lab.reycatcher.LoginInfo;
+import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RestController
+@RequestMapping("/api")
+class MeController {
+
+    @PostMapping("/me")
+    public LoginInfo logout() {
+        return RyeCatcher.getLogin();
+    }
+}
+```
+2.3 校验
+
+2.3.1 注解校验
+```java
+@Configuration
+public class RyeCatcherMvcConfigurer implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new AnnotationInterceptor()).addPathPatterns("/**");    
+    }
+}
+```
+
+```java
+import org.bitmagic.lab.reycatcher.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RestController
+@RequestMapping("/api/demo")
+class DemoController {
+
+
+    @GetMapping("/hello")
+    @CheckRoles("user")
+    public void hello() {
+    }
+    
+    @GetMapping("/hello0")
+    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.ALL)
+    public void hello0() {
+    }
+
+    @GetMapping("/hello1")
+    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.NONE)
+    public void hello1() {
+    }
+
+    @GetMapping("/hello2")
+    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.ANY)
+    public void hello2() {
+    }
+
+    @GetMapping("/hello3")
+    @CheckPermissions(value = {"user:add", "admin:add"}, matchRelation = MatchRelation.ALL)
+    public void hello3() {
+    }
+
+    @GetMapping("/hello4")
+    @CheckPermissions(value = {"user:*", "admin:*"}, matchRelation = MatchRelation.NONE)
+    public void hello4() {
+    }
+
+    @GetMapping("/hello5")
+    @CheckPermissions(value = {"user:*", "admin:**"}, matchRelation = MatchRelation.ANY)
+    public void hello5() {
+    }
+
+    @GetMapping("/hello6")
+    @RolesAllowed({"user","admin"})
+    public void rolesAllowed() {
+    }
+
+    @GetMapping("/hello7")
+    @PermitAll
+    public void permitAll() {
+    }
+
+    @GetMapping("/hello8")
+    @DenyAll
+    public void denyAll() {
+    }
+}
+```
+2.3.2 路径拦截校验
+
+```java
+import org.bitmagic.lab.reycatcher.RyeCatcher;
+
+@Configuration
+public class RyeCatcherMvcConfigurer implements WebMvcConfigurer {
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(
+                new UriMatcherInterceptor()
+                        .matchHandler("/app", (request, response, uriMatch) -> {
+                            RyeCatcher.check("role", MatchRelation.ANY, "user");
+                            uriMatch.stopNext();
+                        })
+                        .matchHandler("/app/**", (request, response) -> RyeCatcher.check("perm", MatchRelation.ANY, "user"))
+                        .matchHandler("/api/me/**", (request, response) -> RyeCatcher.checkLogin())
+        ).addPathPatterns("/**");
+    }
+}
+```
+2.3.3 方法校验
+
+```java
+import org.bitmagic.lab.reycatcher.MatchRelation;
+import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@RestController
+@RequestMapping("/api/demo")
+class DemoController {
+
+    @GetMapping("/hello")
+    public void hello() {
+        RyeCatcher.check("role", MatchRelation.ANY, "user", "admin");
+        RyeCatcher.check("perm", MatchRelation.ANY, "user:add", "user:view");
+        RyeCatcher.checkLogin();
+    }
+
+    @GetMapping("/hello0")
+    public void hello0() {
+        boolean matchFlag = RyeCatcher.allMatch("role", "user", "admin");
+        System.out.println(matchFlag);
+    }
+}
+```
 ## 自定义扩展
  **鉴权信息**
 ```java
@@ -63,36 +260,47 @@ interface CatcherLoadMatchInfoService {
     Map<String, List<String>> loadMatchInfo(Object id, String deviceType);
 }
 ```
-**会话存储**
+**会话持续时间续订**
 
+```java
+public interface SessionDurationRenewal {
+
+    void renewal(SessionToken token);
+}
+
+```
+**会话存储**
 ```java
 import java.util.Collection;
 import java.util.Optional;
 
-interface SessionRepository {
+interface SessionRepository extends SessionDurationRenewal{
+
     void save(Session session);
 
     void remove(Session session);
 
     Optional<Session> findOne(Object id, String deviceType);
 
-    Optional<Session> findByToken(String token);
+    Optional<Session> findByToken(SessionToken token);
 
     Page<Session> findAll(Object filterInfo, int size, int page);
 
     Collection<Session> listAll(Object filterInfo);
 }
 ```
-**SessionManager**
+**会话管理**
 ```java
 import java.util.Optional;
 
 interface SessionManager extends SessionRepository {
-    
+
     Session genSession(Object id, String deviceType, String sessionTokenType, Object meta, Object clientExtMeta);
 
-    Optional<String> findSessionTokenFromClient(String tokenName);
-    
+    Optional<Session> getCurrentSession(String tokenName);
+
+    Optional<SessionToken> findSessionTokenFromClient(String tokenName);
+
     void outSession2Client(String tokenName, Session session);
 }
 ```

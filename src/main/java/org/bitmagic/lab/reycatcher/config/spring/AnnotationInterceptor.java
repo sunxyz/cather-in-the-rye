@@ -44,7 +44,7 @@ public class AnnotationInterceptor implements HandlerInterceptor {
             }
             PermitAll permitAll = getAnnotation(handler1, PermitAll.class);
             if (Objects.nonNull(permitAll)) {
-                ValidateUtils.checkAuthority(RyeCatcher.isLogin(),"please login!");
+               RyeCatcher.checkLogin();
             }
             ValidateUtils.checkAuthority(Objects.isNull(getAnnotation(handler1, DenyAll.class)),"denyAll!");
             return true;
