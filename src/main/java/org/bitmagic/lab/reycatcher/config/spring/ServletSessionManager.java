@@ -20,6 +20,7 @@ import java.util.Optional;
 
 /**
  * @author yangrd
+ * @date 2022/03/05
  */
 public class ServletSessionManager extends BaseSessionManager {
     public ServletSessionManager(SessionRepository repository, TokenGenService tokenGenService) {
@@ -45,17 +46,12 @@ public class ServletSessionManager extends BaseSessionManager {
         HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
         ValidateUtils.notNull(response,"response not null");
         Cookie cookie = new Cookie(tokenName, session.getSessionToken().getToken());
-        cookie.setMaxAge(Long.valueOf((session.getTimeOutMillisecond()-System.currentTimeMillis())/1000).intValue());
+        cookie.setMaxAge(0);
         response.addCookie(cookie);
     }
 
     @Override
     public void renewal(SessionToken token) {
-        findByToken(token).ifPresent(session -> {
-            if(session.isNeedOutClient()&&session.getMeta() instanceof Map){
-                outSession2Client(((Map)session.getMeta()).get("tokenName").toString(), session);
-            }
-            super.renewal(token);
-        });
+        super.renewal(token);
     }
 }

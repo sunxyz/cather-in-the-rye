@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
+import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
@@ -27,12 +28,12 @@ public class RyeCatcher {
     }
 
     public static SessionToken login(Object id, String deviceType) {
-        Session session = SESSION_MANAGER.genSession(id, deviceType, Config.getGenTokenType(), new HashMap<>(), null);
+        Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(), null);
         if (session.isNeedSave()) {
             SESSION_MANAGER.save(session);
         }
         if(session.isNeedOutClient()){
-            SESSION_MANAGER.outSession2Client(Config.getTokenName(), session);
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
         return session.getSessionToken();

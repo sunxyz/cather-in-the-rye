@@ -1,6 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
-public interface SessionRenewalDuration {
+public interface SessionDurationRenewal {
 
     void renewal(SessionToken token);
 }

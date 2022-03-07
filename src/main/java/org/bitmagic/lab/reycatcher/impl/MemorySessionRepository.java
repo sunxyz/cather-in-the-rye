@@ -25,9 +25,9 @@ public class MemorySessionRepository implements SessionRepository {
         timer.scheduleAtFixedRate(()->{
             long now = System.currentTimeMillis();
             if(!REPO.isEmpty()){
-                REPO.values().stream().filter(session -> session.getTimeOutMillisecond()<now).forEach(this::remove);
+                REPO.values().stream().filter(session -> now-session.getLastAccessedTime()>session.getMaxInactiveInterval()).forEach(this::remove);
             }
-        }, 1000, 60000, TimeUnit.MILLISECONDS);
+        }, 1000, 5*60000, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -69,7 +69,10 @@ public class MemorySessionRepository implements SessionRepository {
 
     @Override
     public void renewal(SessionToken token) {
-        findByToken(token).ifPresent(Session::renewalTimeOutMillisecond);
+        findByToken(token) .ifPresent(o->{
+            Session.DefaultSession session = Session.from(o);
+            session.setLastAccessedTime(System.currentTimeMillis());
+        });
     }
 
     private String genKey(Session session) {
