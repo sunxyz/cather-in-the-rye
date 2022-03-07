@@ -4,6 +4,7 @@ import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.TokenGenService;
+import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
@@ -14,7 +15,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ public class ServletSessionManager extends BaseSessionManager {
             String v = request.getHeader(tokenName);
             return Objects.isNull(v)?request.getParameter(tokenName):v;
         });
-        return StringUtils.isEmpty(token)?Optional.of(SessionToken.of(token.contains(".")?SessionToken.TokenTypeCons.JWT_TOKEN:SessionToken.TokenTypeCons.COOKIE,token)):Optional.empty();
+        return StringUtils.isEmpty(token)?Optional.of(SessionToken.of(ConfigHolder.getGenTokenType(),token)):Optional.empty();
     }
 
     @Override
