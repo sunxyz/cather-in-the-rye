@@ -4,21 +4,31 @@
 
 ## 用户接口
 **方法**
-- [ ] RyeCatcher.login(id, deviceType)
 
-- [ ] RyeCatcher.isLogin()
-- [ ] RyeCatcher.getLogin()
-- [ ] RyeCatcher.getSession()
-- [ ] RyeCatcher.getSessionByLogin(id, deviceType)
+登录相关
+- RyeCatcher.login(id, deviceType)
 
-- [ ] RyeCatcher.anyMatch(type,...s)
-- [ ] RyeCatcher.allMatch(type,...s)
-- [ ] RyeCatcher.noMatch(type,...s)
-- [ ] RyeCatcher.check(type,matchRelation,...s)
-- [ ] RyeCatcher.switchTo(id, deviceType);
+拿到session或登录信息
+- RyeCatcher.isLogin()
+- RyeCatcher.getLogin()
+- RyeCatcher.getLoginId()
+- RyeCatcher.findSession()
+- RyeCatcher.getSession()
+- RyeCatcher.getSavedSessionByLogin(id, deviceType)
 
-- [ ] RyeCatcher.logout()
-- [ ] RyeCatcher.kickOut(id, deviceType)
+匹配、校验
+- RyeCatcher.allMatch(type,...authKeys)
+- RyeCatcher.anyMatch(type,...authKeys)
+- RyeCatcher.noMatch(type,...authKeys)
+- RyeCatcher.check(type,matchRelation,...authKeys)
+- RyeCatcher.checkLogin()
+
+临时切换账号
+- RyeCatcher.switchTo(id, deviceType);
+
+退出、踢出
+- RyeCatcher.logout()
+- RyeCatcher.kickOut(id, deviceType)
 
  **注解**
 
@@ -34,6 +44,14 @@ jsr-250
 **路径**
 - UriMatcher.matchHandler(matchPath, handler)
 - UriMatcher.match(matchPath).handler(handler)
+- UriMatcher.stopNext
+
+示例
+```
+new UriMatcherInterceptor()
+                .matchHandler("/app", (request, response, uriMatch) ->{ RyeCatcher.check("role", MatchRelation.ANY, "user"); uriMatch.stopNext();})
+                .matchHandler("/app/**", (request, response) -> RyeCatcher.check("perm", MatchRelation.ANY, "user"));
+```
 
 ## 自定义扩展
  **鉴权信息**
