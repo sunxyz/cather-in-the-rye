@@ -8,7 +8,6 @@ import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.util.AntPathMatcher;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * @author yangrd
