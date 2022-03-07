@@ -2,6 +2,7 @@ package org.bitmagic.lab.reycatcher.impl;
 
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.TokenGenService;
+import org.bitmagic.lab.reycatcher.utils.StringUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class CompositeTokenGenService implements TokenGenService {
 
     public CompositeTokenGenService(List<TokenGenService> tokenGenServices) {
-        this.tokenGenServiceMap = tokenGenServices.stream().collect(Collectors.toMap(tokenGenService -> tokenGenService.getClass().getSimpleName().replaceAll(TokenGenService.class.getSimpleName(),"").toLowerCase(), Function.identity()));
+        this.tokenGenServiceMap = tokenGenServices.stream().collect(Collectors.toMap(tokenGenService -> StringUtils.toUnderlineCase(tokenGenService.getClass().getSimpleName().replaceAll(TokenGenService.class.getSimpleName(),"")), Function.identity()));
     }
 
     final Map<String,TokenGenService> tokenGenServiceMap;
