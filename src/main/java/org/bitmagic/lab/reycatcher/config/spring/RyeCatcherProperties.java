@@ -9,8 +9,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
+/**
+ * @author yangrd
+ * @date 2022/03/06
+ */
 @EnableConfigurationProperties
 @ConfigurationProperties("rye-catcher")
 @Data
@@ -39,7 +42,7 @@ public class RyeCatcherProperties {
         private boolean needSave;
 
         private boolean needOutClient;
-}
+
     }
 
 }

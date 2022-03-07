@@ -1,16 +1,18 @@
 package org.bitmagic.lab.reycatcher;
 
-import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.function.BiConsumer;
 
 /**
  * @author yangrd
  * @date 2022/03/04
  */
-public interface UriMatcher {
+public interface UriMatcher<T extends UriMatcher> {
 
-    UriMatcher matchHandler(String matchPath, Function<UriMatcher,Object> handler);
+    T matchHandler(String matchPath, BiConsumer<HttpServletRequest, HttpServletResponse> handler);
 
-    UriMatcher match(String matchPath);
+    T match(String matchPath);
 
-    UriMatcher handler(Function<UriMatcher,Object> handler);
+    T handler(BiConsumer<HttpServletRequest,HttpServletResponse> handler);
 }
