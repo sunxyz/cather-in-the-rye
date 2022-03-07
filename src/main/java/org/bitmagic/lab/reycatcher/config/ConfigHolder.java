@@ -1,7 +1,10 @@
 package org.bitmagic.lab.reycatcher.config;
 
+import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.SessionContextHolder;
+import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
+import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,7 +32,7 @@ public class ConfigHolder {
     }
 
     private static RyeCatcherProperties.ConfigInfo getConfigInfo() {
-        return getConfigInfo(SessionContextHolder.getContext().getSession().getSessionToken().getType());
+        return getConfigInfo(SessionContextHolder.getContext().findSession().map(Session::getSessionToken).map(SessionToken::getType).orElseThrow(NotFoundSessionException::new));
     }
 
     private static RyeCatcherProperties.ConfigInfo getConfigInfo(String tokenType) {

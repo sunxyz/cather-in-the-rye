@@ -1,14 +1,16 @@
 package org.bitmagic.lab.reycatcher;
 
+import java.util.Optional;
+
 /**
  * @author yangrd
  * @date 2022/03/04
  */
 public interface SessionContext {
 
-    Session getSession();
+    Optional<Session> findSession();
 
-    static SessionContext of(Session session){
-        return () -> session;
+    static SessionContext ofNullable(Session session){
+        return () -> Optional.ofNullable(session);
     }
 }

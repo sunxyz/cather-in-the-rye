@@ -1,7 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
-import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 
 /**
  * @author yangrd
@@ -11,7 +10,7 @@ public class SessionContextHolder {
 
     static SessionManager sessionManager;
 
-    private static final ThreadLocal<SessionContext> CACHE = ThreadLocal.withInitial(()-> SessionContext.of(sessionManager.getCurrentSession(ConfigHolder.getTokenName()).orElseThrow(NotFoundSessionException::new)));
+    private static final ThreadLocal<SessionContext> CACHE = ThreadLocal.withInitial(()-> SessionContext.ofNullable(sessionManager.getCurrentSession(ConfigHolder.getTokenName()).orElse(null)));
 
     public static void setContext(SessionContext reyCatcherContext){
         CACHE.set(reyCatcherContext);

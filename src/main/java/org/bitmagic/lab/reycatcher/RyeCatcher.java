@@ -2,13 +2,11 @@ package org.bitmagic.lab.reycatcher;
 
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
+import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -35,25 +33,28 @@ public class RyeCatcher {
         if (session.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
         }
-        SessionContextHolder.setContext(SessionContext.of(session));
+        SessionContextHolder.setContext(SessionContext.ofNullable(session));
         return session.getSessionToken();
     }
 
     public static boolean isLogin() {
-        try {
-            getSession();
-        } catch (NotFoundSessionException e) {
-            return false;
-        }
-        return true;
+       return findSession().isPresent();
     }
 
     public static LoginInfo getLogin() {
-        return getSession().getLoginInfo();
+       return findSession().map(Session::getLoginInfo).orElseThrow(NoLoginException::new);
+    }
+
+    public static <T> T getLoginId(){
+        return (T)getLogin().getUserId();
     }
 
     public static Session getSession() {
-        return SessionContextHolder.getContext().getSession();
+        return findSession().orElseThrow(NotFoundSessionException::new);
+    }
+
+    public static Optional<Session> findSession() {
+        return SessionContextHolder.getContext().findSession();
     }
 
     public static Session getSavedSessionByLogin(Object id) {
@@ -91,13 +92,17 @@ public class RyeCatcher {
         ValidateUtils.checkAuthority(flag, String.join(",", args));
     }
 
+    public static void checkLogin(){
+        findSession().orElseThrow(NoLoginException::new);
+    }
+
     public static void switchTo(Object id) {
         switchTo(id, DEFAULT_DEVICE_TYPE);
     }
 
     public static void switchTo(Object id, String deviceType) {
         Session session = getSavedSessionByLogin(id, deviceType);
-        SessionContextHolder.setContext(SessionContext.of(session));
+        SessionContextHolder.setContext(SessionContext.ofNullable(session));
     }
 
     public static void logout() {
