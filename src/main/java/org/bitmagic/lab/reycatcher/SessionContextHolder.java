@@ -21,7 +21,7 @@ public class SessionContextHolder {
     }
 
     /**
-     * 请求结束后一定要清楚
+     * 请求结束后一定要清理
      */
     public static void clear(){
         CACHE.remove();
