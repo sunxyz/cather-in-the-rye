@@ -122,9 +122,8 @@ public class RyeCatcher {
 
     public static void kickOut(Object id, String deviceType) {
         Session session = getSavedSessionByLogin(id, deviceType);
-        if(session.isNeedOutClient()){
-            session.setMaxInactiveInterval(0);
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+        if (session.isNeedSave()) {
+            SESSION_MANAGER.remove(session);
         }
     }
 
