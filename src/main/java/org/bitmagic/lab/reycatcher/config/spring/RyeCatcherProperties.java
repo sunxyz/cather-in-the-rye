@@ -7,7 +7,6 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -36,11 +35,11 @@ public class RyeCatcherProperties {
 
         private int sessionTimeOutMillisecond = 30*60*100;
 
-        private boolean needSave;
+        private boolean sessionNeedSave;
 
-        private boolean needOutClient;
+        private boolean sessionNeedOutClient;
 
-        private boolean multipleUsers;
+        private boolean loginMutex;
     }
 
 

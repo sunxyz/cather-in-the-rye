@@ -25,7 +25,8 @@
 
 临时切换账号
 - RyeCatcher.switchTo(id, deviceType);
-
+- RyeCatcher.stopSwitch();
+- 
 退出、踢出
 - RyeCatcher.logout()
 - RyeCatcher.kickOut(id, deviceType)
@@ -85,6 +86,18 @@ class CustomLoadMatchInfoService implements LoadMatchInfoService {
         return matchInfos;
     }
 }
+```
+1.3 yml 配置
+```yml
+rye-catcher:
+  multi-certification-system-info:
+    /:
+        gen-token-type: cookie/jwt_token
+        token-name: JSESSIONID
+        session-time-out-millisecond: 180000
+        session-need-save: true
+        session-need-out-client: true
+        login-mutex: true
 ```
 **2.开始**
 

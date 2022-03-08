@@ -21,15 +21,15 @@ public class ConfigHolder {
     public static int getSessionTimeOutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
 
     public static boolean isNeedSave(){
-        return getConfigInfo().isNeedSave();
+        return getConfigInfo().isSessionNeedSave();
     }
 
     public static boolean isNeedOutClient(){
-        return getConfigInfo().isNeedOutClient();
+        return getConfigInfo().isSessionNeedOutClient();
     }
 
-    public static boolean isMultipleUsers(){
-        return  getConfigInfo().isMultipleUsers();
+    public static boolean isLoginMutex(){
+        return  getConfigInfo().isLoginMutex();
     }
 
     private static RyeCatcherProperties.CertificationSystemInfo getConfigInfo() {

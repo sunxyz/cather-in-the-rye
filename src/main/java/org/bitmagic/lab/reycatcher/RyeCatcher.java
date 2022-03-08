@@ -35,7 +35,7 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
         }
-        if(!ConfigHolder.isMultipleUsers()){
+        if(!ConfigHolder.isLoginMutex()){
             kickOut(id, deviceType);
         }
         SessionContextHolder.setContext(SessionContext.ofNullable(session));
