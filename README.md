@@ -45,6 +45,7 @@ jsr-250
 **路径**
 - UriMatcher.matchHandler(matchPath, handler)
 - UriMatcher.match(matchPath).handler(handler)
+- UriMatcher.notMatch(matchPath)
 - UriMatcher.stopNext
 
 示例

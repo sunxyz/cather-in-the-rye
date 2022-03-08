@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author yangrd
@@ -14,12 +15,14 @@ import java.util.Map;
 public interface Session {
 
     static Session of(SessionToken sessionToken, LoginInfo loginInfo, Object meta) {
-        return DefaultSession.of(sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeOutMillisecond());
+        return DefaultSession.of(UUID.randomUUID().toString(),sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeOutMillisecond());
     }
 
     static <T extends Session> T from(Session session) {
         return (T) session;
     }
+
+    String getId();
 
     SessionToken getSessionToken();
 
@@ -44,6 +47,8 @@ public interface Session {
     @AllArgsConstructor(staticName = "of")
     @Getter
     class DefaultSession implements Session {
+
+        String id;
 
         SessionToken sessionToken;
 

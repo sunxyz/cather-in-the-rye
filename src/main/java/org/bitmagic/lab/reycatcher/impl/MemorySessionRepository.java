@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -18,8 +17,9 @@ import java.util.stream.Collectors;
  */
 public class MemorySessionRepository implements SessionRepository {
 
-    private final Map<SessionToken, Session> REPO = new ConcurrentHashMap<>();
-    private final Map<String, SessionToken> USER2TOKEN = new ConcurrentHashMap<>();
+    private final Map<String,Session> REPO = new ConcurrentHashMap<>();
+    private final Map<SessionToken, String> TOKEN2ID = new ConcurrentHashMap<>();
+    private final Map<String, String> USER2ID = new ConcurrentHashMap<>();
 
     {
         ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
@@ -33,28 +33,39 @@ public class MemorySessionRepository implements SessionRepository {
 
     @Override
     public void save(Session session) {
-        REPO.put(session.getSessionToken(), session);
-        USER2TOKEN.put(genKey(session), session.getSessionToken());
+        REPO.put(session.getId(), session);
+        TOKEN2ID.put(session.getSessionToken(),  session.getId());
+        USER2ID.put(genKey(session), session.getId());
     }
 
     @Override
     public void remove(Session session) {
-        REPO.remove(session.getSessionToken());
-        USER2TOKEN.remove(genKey(session));
+        REPO.remove(session.getId());
+        TOKEN2ID.remove(session.getSessionToken());
+        USER2ID.remove(genKey(session));
+    }
+
+    @Override
+    public Optional<Session> findBySessionId(String sessionId) {
+        return Optional.ofNullable(REPO.get(sessionId));
     }
 
     @Override
     public Optional<Session> findOne(Object id, String deviceType) {
-        SessionToken sessionToken = USER2TOKEN.get(genKey(id, deviceType));
-        if (Objects.isNull(sessionToken)) {
+        String sessionId = USER2ID.get(genKey(id, deviceType));
+        if (Objects.isNull(sessionId)) {
             return Optional.empty();
         }
-        return findByToken(sessionToken);
+        return findBySessionId(sessionId);
     }
 
     @Override
     public Optional<Session> findByToken(SessionToken token) {
-        return Optional.ofNullable(REPO.get(token));
+        String sessionId = TOKEN2ID.get(token);
+        if (Objects.isNull(sessionId)) {
+            return Optional.empty();
+        }
+        return findBySessionId(sessionId);
     }
 
     @Override

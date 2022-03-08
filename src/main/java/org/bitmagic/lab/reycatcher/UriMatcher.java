@@ -15,7 +15,9 @@ public interface UriMatcher<T extends UriMatcher> {
 
     T matchHandler(String matchPath, BiConsumer<HttpServletRequest, HttpServletResponse> handler);
 
-    T match(String matchPath);
+    T noMatch(String... matchPath);
+
+    T match(String... matchPath);
 
     T handler(ThreeConsumer<HttpServletRequest, HttpServletResponse, T> handler);
 

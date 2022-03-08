@@ -13,6 +13,8 @@ public interface SessionRepository extends SessionDurationRenewal {
 
     void remove(Session session);
 
+    Optional<Session> findBySessionId(String sessionId);
+
     Optional<Session> findOne(Object id, String deviceType);
 
     Optional<Session> findByToken(SessionToken token);
