@@ -16,7 +16,7 @@ public class ConfigHolder {
         return getConfigInfo().getGenTokenType();
     }
 
-    public static String getTokenName(){return getConfigInfo().getTokenName();}
+    public static String getOutClientTokenName(){return getConfigInfo().getOutClientTokenName();}
 
     public static int getSessionTimeOutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
 

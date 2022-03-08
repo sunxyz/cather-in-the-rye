@@ -90,10 +90,15 @@ class CustomLoadMatchInfoService implements LoadMatchInfoService {
 1.3 yml 配置
 ```yml
 rye-catcher:
+  # 认证体系
   multi-certification-system-info:
+    # 根路径下认证信息
     /:
+        # 默认值cookie
         gen-token-type: cookie/jwt_token
-        token-name: JSESSIONID
+        # 默认值JSESSIONID 当有多个路径配置时 不建议使用相同的名称 此值当session-need-out-client: true时会生效
+        out-client-token-name: JSESSIONID
+        # 默认值30分钟
         session-time-out-millisecond: 180000
         session-need-save: true
         session-need-out-client: true

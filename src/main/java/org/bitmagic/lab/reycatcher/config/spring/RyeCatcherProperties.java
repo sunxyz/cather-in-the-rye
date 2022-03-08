@@ -31,7 +31,7 @@ public class RyeCatcherProperties {
         private String genTokenType = SessionToken.TokenTypeCons.COOKIE;
 
         // not repeat
-        private String tokenName = "JSESSIONID";
+        private String outClientTokenName = "JSESSIONID";
 
         private int sessionTimeOutMillisecond = 30*60*100;
 

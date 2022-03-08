@@ -22,7 +22,7 @@ public class SessionFilter extends GenericFilterBean {
         if (servletRequest instanceof HttpServletRequest) {
             //TODO Principal
         }
-        sessionManager.findSessionTokenFromClient(ConfigHolder.getTokenName()).ifPresent(sessionManager::renewal);
+        sessionManager.findSessionTokenFromClient(ConfigHolder.getOutClientTokenName()).ifPresent(sessionManager::renewal);
         filterChain.doFilter(servletRequest, servletResponse);
         SessionContextHolder.clear();
     }

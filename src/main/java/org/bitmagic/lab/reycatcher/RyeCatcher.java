@@ -33,7 +33,7 @@ public class RyeCatcher {
             SESSION_MANAGER.save(session);
         }
         if (ConfigHolder.isNeedOutClient()) {
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
         if(!ConfigHolder.isLoginMutex()){
             kickOut(id, deviceType);
@@ -121,7 +121,7 @@ public class RyeCatcher {
         }
         if(ConfigHolder.isNeedOutClient()){
             session.setMaxInactiveInterval(0);
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
     }
 
