@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher;
 
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 
 /**
  * @author yangrd
@@ -8,7 +9,7 @@ import org.bitmagic.lab.reycatcher.config.ConfigHolder;
  */
 public class SessionContextHolder {
 
-    static SessionManager sessionManager;
+    static SessionManager sessionManager = InstanceHolder.getInstance(SessionManager.class);
 
     private static final ThreadLocal<SessionContext> CACHE = ThreadLocal.withInitial(()-> SessionContext.ofNullable(sessionManager.getCurrentSession(ConfigHolder.getOutClientTokenName()).orElse(null)));
 
