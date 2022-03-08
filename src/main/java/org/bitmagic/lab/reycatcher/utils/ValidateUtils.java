@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher.utils;
 
 import org.bitmagic.lab.reycatcher.ex.AuthorityException;
+import org.bitmagic.lab.reycatcher.ex.BasicException;
 
 import java.util.Objects;
 
@@ -19,6 +20,12 @@ public final class ValidateUtils {
     public static void checkAuthority(boolean pass , String error){
         if (!pass){
             throw new AuthorityException(error);
+        }
+    }
+
+    public static void checkBasic(boolean pass , String error, String realm ){
+        if (!pass){
+            throw new BasicException(error,realm);
         }
     }
 }

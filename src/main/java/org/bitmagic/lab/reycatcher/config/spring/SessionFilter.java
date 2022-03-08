@@ -1,11 +1,16 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
-import org.bitmagic.lab.reycatcher.*;
+import lombok.extern.slf4j.Slf4j;
+import org.bitmagic.lab.reycatcher.SessionContextHolder;
+import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
-import javax.servlet.*;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -13,6 +18,7 @@ import java.io.IOException;
  * @author yangrd
  * @date 2022/03/06
  */
+@Slf4j
 public class SessionFilter extends GenericFilterBean {
 
     private final SessionManager sessionManager = InstanceHolder.getInstance(SessionManager.class);

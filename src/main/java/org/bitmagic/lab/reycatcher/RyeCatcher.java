@@ -21,6 +21,8 @@ public class RyeCatcher {
 
     private static final LoadMatchInfoService loadMatchInfoService = InstanceHolder.getInstance(LoadMatchInfoService.class);
 
+    private static final RyeCatcherListener ryeCatcherListener = InstanceHolder.getInstance(RyeCatcherListener.class);
+
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(":");
 
     public static SessionToken login(Object id) {
@@ -35,23 +37,28 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
-        if(ConfigHolder.isLoginMutex()){
-            kickOut(id, deviceType);
+        if (ConfigHolder.isLoginMutex()) {
+            if (ConfigHolder.isNeedSave()) {
+                Session session1 = getSavedSessionByLogin(id, deviceType);
+                SESSION_MANAGER.remove(session1);
+                ryeCatcherListener.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
+            }
         }
         SessionContextHolder.setContext(SessionContext.ofNullable(session));
+        ryeCatcherListener.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
         return session.getSessionToken();
     }
 
     public static boolean isLogin() {
-       return findSession().isPresent();
+        return findSession().isPresent();
     }
 
     public static LoginInfo getLogin() {
-       return findSession().map(Session::getLoginInfo).orElseThrow(NoLoginException::new);
+        return findSession().map(Session::getLoginInfo).orElseThrow(NoLoginException::new);
     }
 
-    public static <T> T getLoginId(){
-        return (T)getLogin().getUserId();
+    public static <T> T getLoginId() {
+        return (T) getLogin().getUserId();
     }
 
     public static Session getSession() {
@@ -97,7 +104,7 @@ public class RyeCatcher {
         ValidateUtils.checkAuthority(flag, String.join(",", authKeys));
     }
 
-    public static void checkLogin(){
+    public static void checkLogin() {
         findSession().orElseThrow(NoLoginException::new);
     }
 
@@ -111,7 +118,8 @@ public class RyeCatcher {
     }
 
     public static void stopSwitch() {
-        SessionContextHolder.clear();;
+        SessionContextHolder.clear();
+        ;
     }
 
     public static void logout() {
@@ -119,10 +127,11 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        if(ConfigHolder.isNeedOutClient()){
+        if (ConfigHolder.isNeedOutClient()) {
             session.setMaxInactiveInterval(0);
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
+        ryeCatcherListener.doLogout(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     public static void kickOut(Object id) {
@@ -134,6 +143,7 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
+        ryeCatcherListener.doKicked(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     private static Collection<String> listAuthorities(String type) {

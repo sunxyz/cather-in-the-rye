@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher.impl;
 
 import org.bitmagic.lab.reycatcher.*;
+import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 
 import java.util.*;
@@ -92,7 +93,7 @@ public class MemorySessionRepository implements SessionRepository {
     }
 
     private String genKey(Object id, String deviceType) {
-        return String.format("%s@%s", id, deviceType);
+        return String.format("%s@%s@%s", ConfigHolder.getRyeCatcherPath(), id, deviceType);
     }
 
     protected Predicate<Session> filter0(SessionFilterInfo filterInfo){

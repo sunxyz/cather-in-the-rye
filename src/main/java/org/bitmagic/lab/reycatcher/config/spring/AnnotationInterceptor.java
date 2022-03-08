@@ -2,10 +2,8 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 
 import lombok.RequiredArgsConstructor;
-import org.bitmagic.lab.reycatcher.CheckPermissions;
-import org.bitmagic.lab.reycatcher.CheckRoles;
-import org.bitmagic.lab.reycatcher.MatchRelation;
-import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.bitmagic.lab.reycatcher.*;
+import org.bitmagic.lab.reycatcher.helper.RyeCatcherBasicHelper;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -44,9 +42,13 @@ public class AnnotationInterceptor implements HandlerInterceptor {
             }
             PermitAll permitAll = getAnnotation(handler1, PermitAll.class);
             if (Objects.nonNull(permitAll)) {
-               RyeCatcher.checkLogin();
+                RyeCatcher.checkLogin();
             }
-            ValidateUtils.checkAuthority(Objects.isNull(getAnnotation(handler1, DenyAll.class)),"denyAll!");
+            CheckBasic checkBasic = getAnnotation(handler1, CheckBasic.class);
+            if (Objects.nonNull(checkBasic)) {
+                RyeCatcherBasicHelper.check(checkBasic.value(), checkBasic.realm());
+            }
+            ValidateUtils.checkAuthority(Objects.isNull(getAnnotation(handler1, DenyAll.class)), "denyAll!");
             return true;
         } else {
             return true;
@@ -55,6 +57,6 @@ public class AnnotationInterceptor implements HandlerInterceptor {
 
     private <T extends Annotation> T getAnnotation(HandlerMethod handler, Class<T> tClass) {
         T annotation = handler.getMethod().getAnnotation(tClass);
-        return Objects.isNull(annotation)?handler.getBeanType().getAnnotation(tClass):annotation;
+        return Objects.isNull(annotation) ? handler.getBeanType().getAnnotation(tClass) : annotation;
     }
 }

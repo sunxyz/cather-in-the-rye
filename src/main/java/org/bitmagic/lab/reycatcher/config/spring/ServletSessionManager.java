@@ -6,6 +6,7 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.TokenGenFactory;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
+import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -31,21 +32,21 @@ public class ServletSessionManager extends BaseSessionManager {
     public Optional<SessionToken> findSessionTokenFromClient(String tokenName) {
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
         Optional<String> tokenOptional = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst();
-        String token = tokenOptional.orElseGet(()->{
+        String token = tokenOptional.orElseGet(() -> {
             String v = request.getHeader(tokenName);
-            return Objects.isNull(v)?request.getParameter(tokenName):v;
+            return Objects.isNull(v) ? request.getParameter(tokenName) : v;
         });
-        return StringUtils.isEmpty(token)?Optional.of(SessionToken.of(ConfigHolder.getGenTokenType(),token)):Optional.empty();
+        return TokenParseUtils.getSessionToken(token);
     }
 
     @Override
     public void outSession2Client(String tokenName, Session session) {
         HttpServletResponse response = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
-        ValidateUtils.notNull(response,"response not null");
+        ValidateUtils.notNull(response, "response not null");
         Cookie cookie = new Cookie(tokenName, session.getSessionToken().getToken());
-        if(session.getMaxInactiveInterval()==0){
+        if (session.getMaxInactiveInterval() == 0) {
             cookie.setMaxAge(session.getMaxInactiveInterval());
-        }else {
+        } else {
             cookie.setMaxAge(-1);
         }
         response.addCookie(cookie);
