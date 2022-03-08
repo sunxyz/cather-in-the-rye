@@ -8,5 +8,5 @@ import java.util.Map;
  * @date 2022/03/04
  */
 public interface LoadMatchInfoService {
-    Map<String , Collection<String>> loadMatchInfo(Object id, String deviceType);
+    Map<String , Collection<String>> loadMatchInfo(String ryeCatcherPath, Object id, String deviceType);
 }

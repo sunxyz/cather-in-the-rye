@@ -40,6 +40,9 @@ public class RyeCatcherProperties {
         private boolean sessionNeedOutClient;
 
         private boolean loginMutex;
+
+        // not set val
+        private String ryeCatcherPath;
     }
 
 

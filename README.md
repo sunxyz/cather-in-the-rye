@@ -79,7 +79,8 @@ import java.util.Map;
 
 @Component
 class CustomLoadMatchInfoService implements LoadMatchInfoService {
-    public Map<String, Collection<String>> loadMatchInfo(Object id, String deviceType) {
+    //ryeCatcherPath: multi-certification-system-info 中匹配到的路径 优先uri长度长的
+    public Map<String, Collection<String>> loadMatchInfo(String ryeCatcherPath, Object id, String deviceType) {
         Map<String, Collection<String>> matchInfos = new HashMap<>();
         matchInfos.put("role", Arrays.asList("user", "admin"));
         matchInfos.put("perm", Arrays.asList("user:add", "user:view"));
@@ -89,6 +90,7 @@ class CustomLoadMatchInfoService implements LoadMatchInfoService {
 ```
 1.3 yml 配置
 ```yml
+# 默认值是cookie相关 可以不做配置
 rye-catcher:
   # 认证体系
   multi-certification-system-info:
@@ -275,7 +277,7 @@ import java.util.List;
 import java.util.Map;
 
 interface CatcherLoadMatchInfoService {
-    Map<String, List<String>> loadMatchInfo(Object id, String deviceType);
+    Map<String, List<String>> loadMatchInfo(String ryeCatcherPath, Object id, String deviceType);
 }
 ```
 **会话持续时间续订**

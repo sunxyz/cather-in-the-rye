@@ -138,7 +138,7 @@ public class RyeCatcher {
 
     private static Collection<String> listAuthorities(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return loadMatchInfoService.loadMatchInfo(loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return loadMatchInfoService.loadMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {

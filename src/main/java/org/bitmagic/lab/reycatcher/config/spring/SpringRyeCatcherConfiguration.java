@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class SpringRyeCatcherConfiguration {
 
-    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.COOKIE, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.COOKIE, "JSESSIONID", 30 * 60 * 1000, true, true, true,"/");
 
     @PostConstruct
     public void init(RyeCatcherProperties properties) {
@@ -44,7 +44,12 @@ public class SpringRyeCatcherConfiguration {
             //優先匹配最長路徑
             HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
             List<String> mathPaths = properties.getMultiCertificationSystemInfo().keySet().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
-            return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(properties.getMultiCertificationSystemInfo()::get).orElseThrow(RuntimeException::new);
+
+            return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(path->{
+                RyeCatcherProperties.CertificationSystemInfo certificationSystemInfo = properties.getMultiCertificationSystemInfo().get(path);
+                certificationSystemInfo.setRyeCatcherPath(path);
+                return certificationSystemInfo;
+            }).orElseThrow(RuntimeException::new);
         };
         InstanceHolder.delegate = SpringContextHolder::getBean;
     }

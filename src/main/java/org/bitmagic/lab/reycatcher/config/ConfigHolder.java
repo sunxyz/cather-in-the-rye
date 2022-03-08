@@ -12,6 +12,12 @@ public class ConfigHolder {
 
     public static Supplier<RyeCatcherProperties.CertificationSystemInfo> delegate;
 
+    public static Supplier<String> ryeCatcherPathDelegate;
+
+    public static String getRyeCatcherPath(){
+        return ryeCatcherPathDelegate.get();
+    }
+
     public static String getGenTokenType(){
         return getConfigInfo().getGenTokenType();
     }
