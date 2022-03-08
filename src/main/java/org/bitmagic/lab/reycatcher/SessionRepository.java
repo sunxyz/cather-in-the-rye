@@ -17,7 +17,7 @@ public interface SessionRepository extends SessionDurationRenewal {
 
     Optional<Session> findByToken(SessionToken token);
 
-    Page<Session> findAll(Object filterInfo, int size, int page);
+    Page<Session> findAll(SessionFilterInfo filterInfo, int size, int page);
 
-    Collection<Session> listAll(Object filterInfo);
+    Collection<Session> listAll(SessionFilterInfo filterInfo);
 }

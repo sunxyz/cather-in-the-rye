@@ -36,12 +36,12 @@ public abstract class AbstractSessionManager implements SessionManager {
     }
 
     @Override
-    public Page<Session> findAll(Object filterInfo, int size, int page) {
+    public Page<Session> findAll(SessionFilterInfo filterInfo, int size, int page) {
         return repository.findAll(filterInfo,size,page);
     }
 
     @Override
-    public Collection<Session> listAll(Object filterInfo) {
+    public Collection<Session> listAll(SessionFilterInfo filterInfo) {
         return repository.listAll(filterInfo);
     }
 

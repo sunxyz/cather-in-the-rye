@@ -41,14 +41,6 @@ public interface Session {
 
     void removeAttribute(String var1);
 
-    default boolean isNeedSave() {
-        return ConfigHolder.isNeedSave(getSessionToken().getType());
-    }
-
-    default boolean isNeedOutClient() {
-        return ConfigHolder.isNeedOutClient(getSessionToken().getType());
-    }
-
     @AllArgsConstructor(staticName = "of")
     @Getter
     class DefaultSession implements Session {

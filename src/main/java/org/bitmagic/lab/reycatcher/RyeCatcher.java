@@ -29,11 +29,14 @@ public class RyeCatcher {
 
     public static SessionToken login(Object id, String deviceType) {
         Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(), null);
-        if (session.isNeedSave()) {
+        if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.save(session);
         }
-        if (session.isNeedOutClient()) {
+        if (ConfigHolder.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
+        }
+        if(!ConfigHolder.isMultipleUsers()){
+            kickOut(id, deviceType);
         }
         SessionContextHolder.setContext(SessionContext.ofNullable(session));
         return session.getSessionToken();
@@ -107,12 +110,16 @@ public class RyeCatcher {
         SessionContextHolder.setContext(SessionContext.ofNullable(session));
     }
 
+    public static void stopSwitch() {
+        SessionContextHolder.clear();;
+    }
+
     public static void logout() {
         Session session = getSession();
-        if (session.isNeedSave()) {
+        if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        if(session.isNeedOutClient()){
+        if(ConfigHolder.isNeedOutClient()){
             session.setMaxInactiveInterval(0);
             SESSION_MANAGER.outSession2Client(ConfigHolder.getTokenName(), session);
         }
@@ -124,7 +131,7 @@ public class RyeCatcher {
 
     public static void kickOut(Object id, String deviceType) {
         Session session = getSavedSessionByLogin(id, deviceType);
-        if (session.isNeedSave()) {
+        if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
     }

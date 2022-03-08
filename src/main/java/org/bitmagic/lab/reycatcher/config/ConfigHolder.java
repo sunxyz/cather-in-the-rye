@@ -1,41 +1,39 @@
 package org.bitmagic.lab.reycatcher.config;
 
-import org.bitmagic.lab.reycatcher.Session;
-import org.bitmagic.lab.reycatcher.SessionContextHolder;
-import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
-import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 
-import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * @author yangrd
+ * @date 2022/03/06
+ */
 public class ConfigHolder {
 
-    public static Function<String, RyeCatcherProperties.ConfigInfo> delegate;
-
-    public static Supplier<String> getGenTokenTypeDelegate;
+    public static Supplier<RyeCatcherProperties.CertificationSystemInfo> delegate;
 
     public static String getGenTokenType(){
-        return getGenTokenTypeDelegate.get();
+        return getConfigInfo().getGenTokenType();
     }
 
     public static String getTokenName(){return getConfigInfo().getTokenName();}
 
     public static int getSessionTimeOutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
 
-    public static boolean isNeedSave(String tokenType){
-        return getConfigInfo(tokenType).isNeedSave();
+    public static boolean isNeedSave(){
+        return getConfigInfo().isNeedSave();
     }
 
-    public static boolean isNeedOutClient(String tokenType){
-        return getConfigInfo(tokenType).isNeedOutClient();
+    public static boolean isNeedOutClient(){
+        return getConfigInfo().isNeedOutClient();
     }
 
-    private static RyeCatcherProperties.ConfigInfo getConfigInfo() {
-        return getConfigInfo(SessionContextHolder.getContext().findSession().map(Session::getSessionToken).map(SessionToken::getType).orElseThrow(NotFoundSessionException::new));
+    public static boolean isMultipleUsers(){
+        return  getConfigInfo().isMultipleUsers();
     }
 
-    private static RyeCatcherProperties.ConfigInfo getConfigInfo(String tokenType) {
-        return delegate.apply(tokenType);
+    private static RyeCatcherProperties.CertificationSystemInfo getConfigInfo() {
+        return delegate.get();
     }
+
 }

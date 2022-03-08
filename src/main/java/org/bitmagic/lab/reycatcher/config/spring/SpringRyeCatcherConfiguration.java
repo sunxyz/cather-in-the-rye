@@ -2,6 +2,7 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionRepository;
+import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.TokenGenService;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
@@ -22,6 +23,7 @@ import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,46 +33,50 @@ import java.util.stream.Collectors;
 @Configuration
 public class SpringRyeCatcherConfiguration {
 
+    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.COOKIE, "JSESSIONID", 30 * 60 * 1000, true, true, false);
+
     @PostConstruct
-    public void init(RyeCatcherProperties properties){
-        ConfigHolder.delegate = properties.getTokenType2Config()::get;
-        ConfigHolder.getGenTokenTypeDelegate = ()->{
+    public void init(RyeCatcherProperties properties) {
+        ConfigHolder.delegate = () -> {
+            if(Objects.isNull(properties.getMultiCertificationSystemInfo())){
+                return DEFAULT_CERTIFICATION_SYSTEM_INFO;
+            }
             //優先匹配最長路徑
             HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
-            List<String> mathPaths = properties.getPathPrefix2TokenType().values().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
-            return mathPaths.stream().max(Comparator.comparingInt(String::length)).map(properties.getPathPrefix2TokenType()::get).orElseThrow(RuntimeException::new);
+            List<String> mathPaths = properties.getMultiCertificationSystemInfo().keySet().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
+            return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(properties.getMultiCertificationSystemInfo()::get).orElseThrow(RuntimeException::new);
         };
         InstanceHolder.delegate = SpringContextHolder::getBean;
     }
 
     @Bean
-    public SessionRepository sessionRepository(){
+    public SessionRepository sessionRepository() {
         return new MemorySessionRepository();
     }
 
     @Bean
-    public TokenGenService jwtTokenGenService(){
+    public TokenGenService jwtTokenGenService() {
         return new JwtTokenGenService();
     }
 
     @Bean
-    public TokenGenService cookieTokenGenService(){
+    public TokenGenService cookieTokenGenService() {
         return new CookieTokenGenService();
     }
 
     @Bean
     @Primary
-    public TokenGenService tokenGenService(List<TokenGenService> tokenGenServices){
+    public TokenGenService tokenGenService(List<TokenGenService> tokenGenServices) {
         return new CompositeTokenGenService(tokenGenServices);
     }
 
     @Bean
-    public SessionManager sessionManager(SessionRepository sessionRepository, TokenGenService tokenGenService){
-        return new ServletSessionManager(sessionRepository,tokenGenService);
+    public SessionManager sessionManager(SessionRepository sessionRepository, TokenGenService tokenGenService) {
+        return new ServletSessionManager(sessionRepository, tokenGenService);
     }
 
     @Bean
-    public FilterRegistrationBean<Filter> registrationBean(){
+    public FilterRegistrationBean<Filter> registrationBean() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new SessionFilter());
         bean.addUrlPatterns("/**");
         return bean;

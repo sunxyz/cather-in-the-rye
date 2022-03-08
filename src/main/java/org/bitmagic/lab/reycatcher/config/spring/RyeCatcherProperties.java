@@ -19,22 +19,19 @@ import java.util.Map;
 @Data
 public class RyeCatcherProperties {
 
-    private Map<String,ConfigInfo> tokenType2Config;
-
-    private Map<String,String>  pathPrefix2TokenType;
-
-    {
-        tokenType2Config = new HashMap<>();
-        tokenType2Config.put(SessionToken.TokenTypeCons.COOKIE, ConfigInfo.of("JSESSIONID", 30*60*100, true, true));
-        pathPrefix2TokenType = new HashMap<>();
-        pathPrefix2TokenType.put("/",SessionToken.TokenTypeCons.COOKIE);
-    }
+    /**
+     * key: Path prefix value: info
+     */
+    private Map<String,CertificationSystemInfo> multiCertificationSystemInfo;
 
     @Data
     @AllArgsConstructor(staticName = "of")
     @NoArgsConstructor
-    public static class ConfigInfo{
+    public static class CertificationSystemInfo{
 
+        private String genTokenType = SessionToken.TokenTypeCons.COOKIE;
+
+        // not repeat
         private String tokenName = "JSESSIONID";
 
         private int sessionTimeOutMillisecond = 30*60*100;
@@ -43,6 +40,8 @@ public class RyeCatcherProperties {
 
         private boolean needOutClient;
 
+        private boolean multipleUsers;
     }
+
 
 }

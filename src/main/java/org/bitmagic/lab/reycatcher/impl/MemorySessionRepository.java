@@ -1,15 +1,16 @@
 package org.bitmagic.lab.reycatcher.impl;
 
-import org.bitmagic.lab.reycatcher.Page;
-import org.bitmagic.lab.reycatcher.Session;
-import org.bitmagic.lab.reycatcher.SessionRepository;
-import org.bitmagic.lab.reycatcher.SessionToken;
+import org.bitmagic.lab.reycatcher.*;
+import org.bitmagic.lab.reycatcher.utils.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @author yangrd
@@ -57,14 +58,14 @@ public class MemorySessionRepository implements SessionRepository {
     }
 
     @Override
-    public Page<Session> findAll(Object filterInfo, int size, int page) {
+    public Page<Session> findAll(SessionFilterInfo filterInfo, int size, int page) {
         List<Session> sessions = new ArrayList<>(listAll(filterInfo));
         return Page.of(sessions.subList(page * size, page * size + size), sessions.size());
     }
 
     @Override
-    public Collection<Session> listAll(Object filterInfo) {
-        return REPO.values();
+    public Collection<Session> listAll(SessionFilterInfo filterInfo) {
+        return REPO.values().stream().filter(filter0(filterInfo)).collect(Collectors.toList());
     }
 
     @Override
@@ -81,5 +82,18 @@ public class MemorySessionRepository implements SessionRepository {
 
     private String genKey(Object id, String deviceType) {
         return String.format("%s@%s", id, deviceType);
+    }
+
+    protected Predicate<Session> filter0(SessionFilterInfo filterInfo){
+            return session ->
+                 (Objects.isNull(filterInfo.getLoginUserId())||session.getLoginInfo().getUserId().equals(filterInfo.getLoginUserId()))
+                        &&(StringUtils.isEmpty(filterInfo.getTokenType())||session.getSessionToken().getType().contains(filterInfo.getTokenType()))
+                        &&(StringUtils.isEmpty(filterInfo.getTokenValue())||session.getSessionToken().getToken().contains(filterInfo.getTokenValue()))
+                        &&(StringUtils.isEmpty(filterInfo.getLoginDeviceType())||session.getLoginInfo().getDeviceType().contains(filterInfo.getLoginDeviceType()))
+                        &&(Objects.isNull(filterInfo.getBeginCreationTime())||session.getCreationTime()>filterInfo.getBeginCreationTime())
+                        &&(Objects.isNull(filterInfo.getEndCreationTime())||session.getCreationTime()<filterInfo.getEndCreationTime())
+                        &&(Objects.isNull(filterInfo.getBeginLastAccessedTime())||session.getLastAccessedTime()>filterInfo.getBeginLastAccessedTime())
+                        &&(Objects.isNull(filterInfo.getEndLastAccessedTime())||session.getLastAccessedTime()<filterInfo.getEndLastAccessedTime());
+
     }
 }
