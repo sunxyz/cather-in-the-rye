@@ -11,9 +11,9 @@ import java.util.Optional;
  */
 public class BaseSessionManager extends AbstractSessionManager {
 
-    private final TokenGenService tokenGenService;
+    private final TokenGenFactory tokenGenService;
 
-    public BaseSessionManager(SessionRepository repository, TokenGenService tokenGenService) {
+    public BaseSessionManager(SessionRepository repository, TokenGenFactory tokenGenService) {
         super(repository);
         this.tokenGenService = tokenGenService;
     }

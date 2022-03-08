@@ -3,12 +3,12 @@ package org.bitmagic.lab.reycatcher.config.spring;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.TokenGenService;
+import org.bitmagic.lab.reycatcher.TokenGenFactory;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
-import org.bitmagic.lab.reycatcher.impl.CompositeTokenGenService;
-import org.bitmagic.lab.reycatcher.impl.CookieTokenGenService;
-import org.bitmagic.lab.reycatcher.impl.JwtTokenGenService;
+import org.bitmagic.lab.reycatcher.impl.CompositeTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.CookieTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.JwtTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -60,23 +60,23 @@ public class SpringRyeCatcherConfiguration {
     }
 
     @Bean
-    public TokenGenService jwtTokenGenService() {
-        return new JwtTokenGenService();
+    public TokenGenFactory jwtTokenGenService() {
+        return new JwtTokenGenFactory();
     }
 
     @Bean
-    public TokenGenService cookieTokenGenService() {
-        return new CookieTokenGenService();
+    public TokenGenFactory cookieTokenGenService() {
+        return new CookieTokenGenFactory();
     }
 
     @Bean
     @Primary
-    public TokenGenService tokenGenService(List<TokenGenService> tokenGenServices) {
-        return new CompositeTokenGenService(tokenGenServices);
+    public TokenGenFactory tokenGenService(List<TokenGenFactory> tokenGenServices) {
+        return new CompositeTokenGenFactory(tokenGenServices);
     }
 
     @Bean
-    public SessionManager sessionManager(SessionRepository sessionRepository, TokenGenService tokenGenService) {
+    public SessionManager sessionManager(SessionRepository sessionRepository, TokenGenFactory tokenGenService) {
         return new ServletSessionManager(sessionRepository, tokenGenService);
     }
 

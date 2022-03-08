@@ -1,7 +1,7 @@
 package org.bitmagic.lab.reycatcher.impl;
 
 import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.TokenGenService;
+import org.bitmagic.lab.reycatcher.TokenGenFactory;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
@@ -14,17 +14,17 @@ import java.util.stream.Collectors;
  * @author yangrd
  * @date 2022/03/04
  */
-public class CompositeTokenGenService implements TokenGenService {
+public class CompositeTokenGenFactory implements TokenGenFactory {
 
-    public CompositeTokenGenService(List<TokenGenService> tokenGenServices) {
-        this.tokenGenServiceMap = tokenGenServices.stream().collect(Collectors.toMap(tokenGenService -> StringUtils.toUnderlineCase(tokenGenService.getClass().getSimpleName().replaceAll(TokenGenService.class.getSimpleName(),"")), Function.identity()));
+    public CompositeTokenGenFactory(List<TokenGenFactory> tokenGenServices) {
+        this.tokenGenFactories = tokenGenServices.stream().collect(Collectors.toMap(tokenGenService -> StringUtils.toUnderlineCase(tokenGenService.getClass().getSimpleName().replaceAll(TokenGenFactory.class.getSimpleName(),"")), Function.identity()));
     }
 
-    final Map<String,TokenGenService> tokenGenServiceMap;
+    final Map<String, TokenGenFactory> tokenGenFactories;
 
     @Override
     public SessionToken genToken(Object id, String deviceType, String sessionTokenType, Object clientExtMeta) {
-        TokenGenService tokenGenService = tokenGenServiceMap.get(sessionTokenType);
+        TokenGenFactory tokenGenService = tokenGenFactories.get(sessionTokenType);
         ValidateUtils.notNull(tokenGenService,sessionTokenType+": There is no corresponding token generator");
         return tokenGenService.genToken(id, deviceType, sessionTokenType, clientExtMeta);
     }
