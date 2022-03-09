@@ -8,9 +8,9 @@ import java.util.Random;
  * @author yangrd
  * @date 2022/03/04
  */
-public class CookieTokenGenFactory extends AbstractTokenGenFactory {
+public class SessionIdTokenGenFactory extends AbstractTokenGenFactory {
     @Override
     public SessionToken genToken(Object id, String deviceType, Object clientExtMeta) {
-        return SessionToken.of(SessionToken.TokenTypeCons.COOKIE, new Random().toString().replace("-","").toLowerCase());
+        return SessionToken.of(SessionToken.TokenTypeCons.SESSION_ID, new Random().toString().replace("-","").toLowerCase());
     }
 }

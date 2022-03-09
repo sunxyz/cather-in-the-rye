@@ -1,14 +1,14 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.extern.slf4j.Slf4j;
-import org.bitmagic.lab.reycatcher.RyeCatcherListener;
+import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionToken;
 
 /**
  * @author bloom
  */
 @Slf4j
-public class DefaultRyeCatcherListener implements RyeCatcherListener {
+public class DefaultRyeCatcherActionListener implements RyeCatcherActionListener {
     @Override
     public void doLogin(String ryeCatcherPath, Object id, String deviceType) {
         log.debug("doLogin ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);

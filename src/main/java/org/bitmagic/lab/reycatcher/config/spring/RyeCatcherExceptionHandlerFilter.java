@@ -18,7 +18,7 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
  * @author yangrd
  */
 @Slf4j
-public class RyeCatcherExceptionCatchFilter  extends GenericFilterBean {
+public class RyeCatcherExceptionHandlerFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         try {
@@ -29,6 +29,7 @@ public class RyeCatcherExceptionCatchFilter  extends GenericFilterBean {
             response.setStatus(SC_UNAUTHORIZED);
             response.addHeader("Basic", "realm= \""+e.getRealm()+"\"");
             response.flushBuffer();
+            throw e;
         }
     }
 }

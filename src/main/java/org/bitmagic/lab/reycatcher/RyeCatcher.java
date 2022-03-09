@@ -19,9 +19,9 @@ public class RyeCatcher {
 
     private static final SessionManager SESSION_MANAGER = InstanceHolder.getInstance(SessionManager.class);
 
-    private static final LoadMatchInfoService loadMatchInfoService = InstanceHolder.getInstance(LoadMatchInfoService.class);
+    private static final MatchInfoProvider MATCH_INFO_PROVIDER = InstanceHolder.getInstance(MatchInfoProvider.class);
 
-    private static final RyeCatcherListener ryeCatcherListener = InstanceHolder.getInstance(RyeCatcherListener.class);
+    private static final RyeCatcherActionListener ACTION_LISTENER = InstanceHolder.getInstance(RyeCatcherActionListener.class);
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(":");
 
@@ -30,7 +30,11 @@ public class RyeCatcher {
     }
 
     public static SessionToken login(Object id, String deviceType) {
-        Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(), null);
+       return login(id, deviceType, Collections.emptyMap());
+    }
+
+    public static SessionToken login(Object id, String deviceType, Map<String,Object> clientExtMeta) {
+        Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.save(session);
         }
@@ -41,11 +45,11 @@ public class RyeCatcher {
             if (ConfigHolder.isNeedSave()) {
                 Session session1 = getSavedSessionByLogin(id, deviceType);
                 SESSION_MANAGER.remove(session1);
-                ryeCatcherListener.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
+                ACTION_LISTENER.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
             }
         }
         SessionContextHolder.setContext(SessionContext.ofNullable(session));
-        ryeCatcherListener.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
+        ACTION_LISTENER.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
         return session.getSessionToken();
     }
 
@@ -131,7 +135,7 @@ public class RyeCatcher {
             session.setMaxInactiveInterval(0);
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
-        ryeCatcherListener.doLogout(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doLogout(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     public static void kickOut(Object id) {
@@ -143,12 +147,12 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        ryeCatcherListener.doKicked(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doKicked(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     private static Collection<String> listAuthorities(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return loadMatchInfoService.loadMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return MATCH_INFO_PROVIDER.loadMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {

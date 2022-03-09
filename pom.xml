@@ -13,19 +13,35 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <jose4j.version>0.7.10</jose4j.version>
+    <lombok.version>1.18.22</lombok.version>
+    <servlet-api.version>2.5</servlet-api.version>
   </properties>
 
   <dependencies>
+    <!--jose4j-->
+     <dependency>
+       <groupId>org.bitbucket.b_c</groupId>
+       <artifactId>jose4j</artifactId>
+       <version>${jose4j.version}</version>
+     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
+      <version>3.18.3</version>
+    </dependency>
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
+      <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <version>${servlet-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

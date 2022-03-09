@@ -4,7 +4,7 @@ import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.impl.CompositeTokenGenFactory;
-import org.bitmagic.lab.reycatcher.impl.CookieTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.SessionIdTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.JwtTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class SpringRyeCatcherConfiguration {
 
-    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.COOKIE, "JSESSIONID", 30 * 60 * 1000, true, true, true,"/");
+    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true,"/");
 
     @PostConstruct
     public void init(RyeCatcherProperties properties) {
@@ -65,7 +65,7 @@ public class SpringRyeCatcherConfiguration {
 
     @Bean
     public TokenGenFactory cookieTokenGenService() {
-        return new CookieTokenGenFactory();
+        return new SessionIdTokenGenFactory();
     }
 
     @Bean
@@ -79,10 +79,10 @@ public class SpringRyeCatcherConfiguration {
         return new ServletSessionManager(sessionRepository, tokenGenService);
     }
 
-    @ConditionalOnMissingBean(RyeCatcherListener.class)
+    @ConditionalOnMissingBean(RyeCatcherActionListener.class)
     @Bean
-    public RyeCatcherListener ryeCatcherListener(){
-        return new DefaultRyeCatcherListener();
+    public RyeCatcherActionListener ryeCatcherListener(){
+        return new DefaultRyeCatcherActionListener();
     }
 
     @Bean
@@ -94,7 +94,7 @@ public class SpringRyeCatcherConfiguration {
 
     @Bean
     public FilterRegistrationBean<Filter> registrationExceptionCatchFilter() {
-        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new RyeCatcherExceptionCatchFilter());
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new RyeCatcherExceptionHandlerFilter());
         bean.addUrlPatterns("/**");
         return bean;
     }

@@ -8,6 +8,8 @@ import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.bitmagic.lab.reycatcher.SessionToken.TokenTypeCons.SESSION_ID;
+
 /**
  * @author yangrd
  * @date 2022/03/04
@@ -15,7 +17,7 @@ import java.util.UUID;
 public interface Session {
 
     static Session of(SessionToken sessionToken, LoginInfo loginInfo, Object meta) {
-        return DefaultSession.of(UUID.randomUUID().toString(),sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeOutMillisecond());
+        return DefaultSession.of(SESSION_ID.equals(sessionToken.getType()) ? sessionToken.getToken() : UUID.randomUUID().toString(), sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeoutMillisecond());
     }
 
     static <T extends Session> T from(Session session) {

@@ -1,8 +1,14 @@
 package org.bitmagic.lab.reycatcher.impl;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.support.AuthorizationInfo;
+import org.bitmagic.lab.reycatcher.utils.JwtUtils;
+import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -27,13 +33,16 @@ public class BaseSessionManager extends AbstractSessionManager {
     public Optional<Session> getCurrentSession(String tokenName) {
         return findSessionTokenFromClient(tokenName).map(sessionToken -> {
             renewal(sessionToken);
-            if(ConfigHolder.isNeedSave()){
+            if (ConfigHolder.isNeedSave()) {
                 return findByToken(sessionToken).orElse(null);
-            }else if(SessionToken.TokenTypeCons.JWT_TOKEN.equals(sessionToken.getType())){
-                LoginInfo loginInfo = null;// jwt->login-info
-                Object meta = null; //jwt->login-info
-                return  Session.of(sessionToken, loginInfo, meta);
-            }else {
+            } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getType())) {
+                AuthorizationInfo authorizationInfo = sessionToken.getAuthorizationInfo();
+                ValidateUtils.checkBearer(authorizationInfo.getType(), "");
+                DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), authorizationInfo.getValue());
+                LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
+                Object meta = Collections.unmodifiableMap((Map) jwt.getClaim("ext")); //jwt->ext
+                return Session.of(sessionToken, loginInfo, meta);
+            } else {
                 return null;
             }
         });
@@ -41,14 +50,13 @@ public class BaseSessionManager extends AbstractSessionManager {
 
     @Override
     public Optional<SessionToken> findSessionTokenFromClient(String tokenName) {
-       throw new RuntimeException();
+        throw new RuntimeException();
     }
 
     @Override
     public void outSession2Client(String tokenName, Session session) {
         throw new RuntimeException();
     }
-
 
 
 }

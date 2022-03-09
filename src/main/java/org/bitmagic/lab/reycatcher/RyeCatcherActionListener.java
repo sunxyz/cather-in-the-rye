@@ -3,7 +3,7 @@ package org.bitmagic.lab.reycatcher;
 /**
  * @author bloom
  */
-public interface RyeCatcherListener {
+public interface RyeCatcherActionListener {
 
     /**
      * 登录

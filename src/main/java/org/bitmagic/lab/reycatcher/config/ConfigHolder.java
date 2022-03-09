@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher.config;
 
+import com.auth0.jwt.algorithms.Algorithm;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
 
 import java.util.function.Supplier;
@@ -24,7 +25,7 @@ public class ConfigHolder {
 
     public static String getOutClientTokenName(){return getConfigInfo().getOutClientTokenName();}
 
-    public static int getSessionTimeOutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
+    public static int getSessionTimeoutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
 
     public static boolean isNeedSave(){
         return getConfigInfo().isSessionNeedSave();
@@ -36,6 +37,10 @@ public class ConfigHolder {
 
     public static boolean isLoginMutex(){
         return  getConfigInfo().isLoginMutex();
+    }
+
+    public static Algorithm getAlgorithm(){
+        return Algorithm.HMAC512("test");
     }
 
     private static RyeCatcherProperties.CertificationSystemInfo getConfigInfo() {

@@ -1,7 +1,5 @@
 package org.bitmagic.lab.reycatcher.support;
 
-import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 
 import java.util.Optional;
@@ -11,9 +9,8 @@ import java.util.Optional;
  */
 public class TokenParseUtils {
 
-
-    public static Optional<SessionToken> getSessionToken(String token) {
-        String type = ConfigHolder.getGenTokenType();
+    public static Optional<AuthorizationInfo> findAuthorizationInfo(String token) {
+        String type = null;
         String value = token;
         String splitKey = " ";
         if (StringUtils.isNotEmpty(token)&&token.contains(splitKey)) {
@@ -21,6 +18,6 @@ public class TokenParseUtils {
             type = strArray[0];
             value = strArray[1];
         }
-        return StringUtils.isEmpty(token) ? Optional.of(SessionToken.of(type, value)) : Optional.empty();
+        return StringUtils.isEmpty(token) ? Optional.of(AuthorizationInfo.of(type, value)) : Optional.empty();
     }
 }
