@@ -43,6 +43,8 @@ public class RyeCatcherProperties {
 
         // not set val
         private String ryeCatcherPath;
+
+        private String jwtHmacSecret;
     }
 
 

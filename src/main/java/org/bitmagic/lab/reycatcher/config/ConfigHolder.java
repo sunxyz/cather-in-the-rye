@@ -3,6 +3,7 @@ package org.bitmagic.lab.reycatcher.config;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -15,32 +16,37 @@ public class ConfigHolder {
 
     public static Supplier<String> ryeCatcherPathDelegate;
 
-    public static String getRyeCatcherPath(){
+    public static String getRyeCatcherPath() {
         return ryeCatcherPathDelegate.get();
     }
 
-    public static String getGenTokenType(){
+    public static String getGenTokenType() {
         return getConfigInfo().getGenTokenType();
     }
 
-    public static String getOutClientTokenName(){return getConfigInfo().getOutClientTokenName();}
+    public static String getOutClientTokenName() {
+        return getConfigInfo().getOutClientTokenName();
+    }
 
-    public static int getSessionTimeoutMillisecond(){return getConfigInfo().getSessionTimeOutMillisecond();}
+    public static int getSessionTimeoutMillisecond() {
+        return getConfigInfo().getSessionTimeOutMillisecond();
+    }
 
-    public static boolean isNeedSave(){
+    public static boolean isNeedSave() {
         return getConfigInfo().isSessionNeedSave();
     }
 
-    public static boolean isNeedOutClient(){
+    public static boolean isNeedOutClient() {
         return getConfigInfo().isSessionNeedOutClient();
     }
 
-    public static boolean isLoginMutex(){
-        return  getConfigInfo().isLoginMutex();
+    public static boolean isLoginMutex() {
+        return getConfigInfo().isLoginMutex();
     }
 
-    public static Algorithm getAlgorithm(){
-        return Algorithm.HMAC512("test");
+    public static Algorithm getAlgorithm() {
+        Algorithm instance = InstanceHolder.getInstance(Algorithm.class);
+        return Objects.isNull(instance) ? Algorithm.HMAC512(getConfigInfo().getJwtHmacSecret()) : instance;
     }
 
     private static RyeCatcherProperties.CertificationSystemInfo getConfigInfo() {
