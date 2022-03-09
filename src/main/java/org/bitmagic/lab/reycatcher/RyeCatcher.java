@@ -117,13 +117,13 @@ public class RyeCatcher {
     }
 
     public static void switchTo(Object id, String deviceType) {
-        Session session = getSavedSessionByLogin(id, deviceType);
-        SessionContextHolder.setContext(SessionContext.ofNullable(session));
+        SESSION_MANAGER.switchId(getLogin(), LoginInfo.of(id, deviceType));
+        SessionContextHolder.clear();
     }
 
     public static void stopSwitch() {
+        SESSION_MANAGER.switchId(getLogin(), null);
         SessionContextHolder.clear();
-        ;
     }
 
     public static void logout() {

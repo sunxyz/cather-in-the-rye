@@ -21,6 +21,7 @@ public class MemorySessionRepository implements SessionRepository {
     private final Map<String,Session> REPO = new ConcurrentHashMap<>();
     private final Map<SessionToken, String> TOKEN2ID = new ConcurrentHashMap<>();
     private final Map<String, String> USER2ID = new ConcurrentHashMap<>();
+    private final Map<LoginInfo,LoginInfo> SWITCH_ID = new ConcurrentHashMap<>();
 
     {
         ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
@@ -86,6 +87,20 @@ public class MemorySessionRepository implements SessionRepository {
             Session.DefaultSession session = Session.from(o);
             session.setLastAccessedTime(System.currentTimeMillis());
         });
+    }
+
+    @Override
+    public void switchId(LoginInfo from, LoginInfo to) {
+        if(Objects.isNull(to)){
+            SWITCH_ID.remove(from);
+        }else{
+            SWITCH_ID.put(from,to);
+        }
+    }
+
+    @Override
+    public Optional<LoginInfo> findSwitchIdTo(LoginInfo from) {
+        return Optional.ofNullable(SWITCH_ID.get(from));
     }
 
     private String genKey(Session session) {

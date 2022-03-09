@@ -9,7 +9,7 @@ import lombok.Value;
 public interface LoginInfo {
 
     static LoginInfo of(Object userId, String deviceType){
-        return SimpleLoginInfo.of(userId,deviceType);
+        return  SimpleIdentityInfo.of(userId,deviceType);
     }
 
     Object getUserId();
@@ -17,7 +17,7 @@ public interface LoginInfo {
     String getDeviceType();
 
     @Value(staticConstructor = "of")
-    class SimpleLoginInfo implements LoginInfo{
+    class SimpleIdentityInfo implements LoginInfo {
         Object userId;
 
         String deviceType;

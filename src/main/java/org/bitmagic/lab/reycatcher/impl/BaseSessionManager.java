@@ -7,9 +7,7 @@ import org.bitmagic.lab.reycatcher.support.AuthorizationInfo;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author yangrd
@@ -31,7 +29,7 @@ public class BaseSessionManager extends AbstractSessionManager {
 
     @Override
     public Optional<Session> getCurrentSession(String tokenName) {
-        return findSessionTokenFromClient(tokenName).map(sessionToken -> {
+        Optional<Session> currentSession = findSessionTokenFromClient(tokenName).map(sessionToken -> {
             renewal(sessionToken);
             if (ConfigHolder.isNeedSave()) {
                 return findByToken(sessionToken).orElse(null);
@@ -46,6 +44,21 @@ public class BaseSessionManager extends AbstractSessionManager {
                 return null;
             }
         });
+        return currentSession.map(this::getSwitchSession);
+    }
+
+    private Session getSwitchSession(Session session) {
+        return findSwitchIdTo(session.getLoginInfo()).map(switchInfo->{
+            if (ConfigHolder.isNeedSave()) {
+                return findOne(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(()->{
+                    Session switchSession = Session.of(SessionToken.of("random", UUID.randomUUID().toString()), switchInfo, new HashMap<>(8));
+                    save(switchSession);
+                    return switchSession;
+                });
+            }else {
+                return genSession(switchInfo.getUserId(), switchInfo.getDeviceType(), session.getSessionToken().getType(), new HashMap<>(8), null);
+            }
+        }).orElse(session);
     }
 
     @Override

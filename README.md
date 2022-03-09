@@ -26,12 +26,12 @@
 临时切换账号
 - RyeCatcher.switchTo(id, deviceType);
 - RyeCatcher.stopSwitch();
-- 
+-
 退出、踢出
 - RyeCatcher.logout()
 - RyeCatcher.kickOut(id, deviceType)
 
- **注解**
+**注解**
 
 jsr-250
 - @RolesAllowed
@@ -272,7 +272,7 @@ class DemoController {
 }
 ```
 ## 自定义扩展
- **鉴权信息**
+**鉴权信息**
 ```java
 import java.util.List;
 import java.util.Map;

@@ -54,4 +54,14 @@ public abstract class AbstractSessionManager implements SessionManager {
     public void renewal(SessionToken token) {
         repository.renewal(token);
     }
+
+    @Override
+    public void switchId(LoginInfo from, LoginInfo to) {
+        repository.switchId(from,to);
+    }
+
+    @Override
+    public Optional<LoginInfo> findSwitchIdTo(LoginInfo from) {
+        return repository.findSwitchIdTo(from);
+    }
 }
