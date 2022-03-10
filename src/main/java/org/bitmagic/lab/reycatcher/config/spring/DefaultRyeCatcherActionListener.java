@@ -28,4 +28,14 @@ public class DefaultRyeCatcherActionListener implements RyeCatcherActionListener
     public void doBeReplaced(String ryeCatcherPath, Object id, String deviceType, SessionToken sessionToken) {
         log.debug("doBeReplaced ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
     }
+
+    @Override
+    public void doSwitch(String ryeCatcherPath, Object fromId, String fromDeviceType, Object toId, String toDeviceType) {
+        log.debug("doSwitch ryeCatcherPath:{} fromId:{} fromDeviceType:{} toId:{} toDeviceType:{}", ryeCatcherPath, fromId, fromDeviceType, toId, toDeviceType);
+    }
+
+    @Override
+    public void doStopSwitch(String ryeCatcherPath, Object id, String deviceType) {
+        log.debug("doStopSwitch ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    }
 }

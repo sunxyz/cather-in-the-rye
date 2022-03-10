@@ -15,7 +15,13 @@ public interface SessionRepository extends SessionDurationRenewal ,IdentitySwitc
 
     Optional<Session> findBySessionId(String sessionId);
 
-    Optional<Session> findOne(Object id, String deviceType);
+    /**
+     * findLastSessionByLoginInfo
+     * @param id
+     * @param deviceType
+     * @return
+     */
+    Optional<Session> findByLoginInfo(Object id, String deviceType);
 
     Optional<Session> findByToken(SessionToken token);
 

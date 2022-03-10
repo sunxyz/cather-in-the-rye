@@ -13,4 +13,8 @@ public interface SessionContext {
     static SessionContext ofNullable(Session session){
         return () -> Optional.ofNullable(session);
     }
+
+    static SessionContext of(Session session){
+        return () -> Optional.of(session);
+    }
 }

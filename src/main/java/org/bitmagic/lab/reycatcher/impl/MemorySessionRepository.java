@@ -45,6 +45,7 @@ public class MemorySessionRepository implements SessionRepository {
         REPO.remove(session.getId());
         TOKEN2ID.remove(session.getSessionToken());
         USER2ID.remove(genKey(session));
+        SWITCH_ID.put(session.getLoginInfo(), null);
     }
 
     @Override
@@ -53,7 +54,7 @@ public class MemorySessionRepository implements SessionRepository {
     }
 
     @Override
-    public Optional<Session> findOne(Object id, String deviceType) {
+    public Optional<Session> findByLoginInfo(Object id, String deviceType) {
         String sessionId = USER2ID.get(genKey(id, deviceType));
         if (Objects.isNull(sessionId)) {
             return Optional.empty();

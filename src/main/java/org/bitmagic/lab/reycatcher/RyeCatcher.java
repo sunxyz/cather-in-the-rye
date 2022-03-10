@@ -30,10 +30,10 @@ public class RyeCatcher {
     }
 
     public static SessionToken login(Object id, String deviceType) {
-       return login(id, deviceType, Collections.emptyMap());
+        return login(id, deviceType, Collections.emptyMap());
     }
 
-    public static SessionToken login(Object id, String deviceType, Map<String,Object> clientExtMeta) {
+    public static SessionToken login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
         Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.save(session);
@@ -41,14 +41,13 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedOutClient()) {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
-        if (ConfigHolder.isLoginMutex()) {
-            if (ConfigHolder.isNeedSave()) {
-                Session session1 = getSavedSessionByLogin(id, deviceType);
+        if (ConfigHolder.isLoginMutex() && ConfigHolder.isNeedSave()) {
+            SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
                 SESSION_MANAGER.remove(session1);
                 ACTION_LISTENER.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
-            }
+            });
         }
-        SessionContextHolder.setContext(SessionContext.ofNullable(session));
+        SessionContextHolder.setContext(SessionContext.of(session));
         ACTION_LISTENER.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
         return session.getSessionToken();
     }
@@ -78,7 +77,7 @@ public class RyeCatcher {
     }
 
     public static Session getSavedSessionByLogin(Object id, String deviceType) {
-        return SESSION_MANAGER.findOne(id, deviceType).orElseThrow(NotFoundSessionException::new);
+        return SESSION_MANAGER.findByLoginInfo(id, deviceType).orElseThrow(NotFoundSessionException::new);
     }
 
     public static boolean anyMatch(String type, String... authKeys) {
@@ -117,12 +116,16 @@ public class RyeCatcher {
     }
 
     public static void switchTo(Object id, String deviceType) {
-        SESSION_MANAGER.switchId(getLogin(), LoginInfo.of(id, deviceType));
+        LoginInfo login = getLogin();
+        SESSION_MANAGER.switchId(login, LoginInfo.of(id, deviceType));
+        ACTION_LISTENER.doSwitch(ConfigHolder.getRyeCatcherPath(), login.getUserId(), login.getDeviceType(), id, deviceType);
         SessionContextHolder.clear();
     }
 
     public static void stopSwitch() {
-        SESSION_MANAGER.switchId(getLogin(), null);
+        LoginInfo login = getLogin();
+        SESSION_MANAGER.switchId(login, null);
+        ACTION_LISTENER.doStopSwitch(ConfigHolder.getRyeCatcherPath(), login.getUserId(), login.getDeviceType());
         SessionContextHolder.clear();
     }
 

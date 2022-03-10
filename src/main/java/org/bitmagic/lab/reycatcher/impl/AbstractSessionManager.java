@@ -31,8 +31,8 @@ public abstract class AbstractSessionManager implements SessionManager {
     }
 
     @Override
-    public Optional<Session> findOne(Object id, String deviceType) {
-        return repository.findOne(id,deviceType);
+    public Optional<Session> findByLoginInfo(Object id, String deviceType) {
+        return repository.findByLoginInfo(id,deviceType);
     }
 
     @Override

@@ -3,6 +3,8 @@ package org.bitmagic.lab.reycatcher.impl;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
+import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 import org.bitmagic.lab.reycatcher.support.AuthorizationInfo;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
@@ -32,7 +34,7 @@ public class BaseSessionManager extends AbstractSessionManager {
         Optional<Session> currentSession = findSessionTokenFromClient(tokenName).map(sessionToken -> {
             renewal(sessionToken);
             if (ConfigHolder.isNeedSave()) {
-                return findByToken(sessionToken).orElse(null);
+                return findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
             } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getType())) {
                 AuthorizationInfo authorizationInfo = sessionToken.getAuthorizationInfo();
                 ValidateUtils.checkBearer(authorizationInfo.getType(), "");
@@ -41,16 +43,16 @@ public class BaseSessionManager extends AbstractSessionManager {
                 Object meta = Collections.unmodifiableMap((Map) jwt.getClaim("ext")); //jwt->ext
                 return Session.of(sessionToken, loginInfo, meta);
             } else {
-                return null;
+               throw new RyeCatcherException("not support");
             }
         });
-        return currentSession.map(this::getSwitchSession);
+        return currentSession.map(this::getSwitchSessionOrSelf);
     }
 
-    private Session getSwitchSession(Session session) {
+    private Session getSwitchSessionOrSelf(Session session) {
         return findSwitchIdTo(session.getLoginInfo()).map(switchInfo->{
             if (ConfigHolder.isNeedSave()) {
-                return findOne(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(()->{
+                return findByLoginInfo(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(()->{
                     Session switchSession = Session.of(SessionToken.of("random", UUID.randomUUID().toString()), switchInfo, new HashMap<>(8));
                     save(switchSession);
                     return switchSession;

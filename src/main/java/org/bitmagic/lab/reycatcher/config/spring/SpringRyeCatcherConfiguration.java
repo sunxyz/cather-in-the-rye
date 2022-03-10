@@ -7,6 +7,7 @@ import org.bitmagic.lab.reycatcher.impl.CompositeTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.JwtTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.impl.SessionIdTokenGenFactory;
+import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -40,7 +41,7 @@ public class SpringRyeCatcherConfiguration {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }
             //優先匹配最長路徑
-            HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
+            HttpServletRequest request = RyeCatcherContextHolder.getContext().getRequest();
             List<String> mathPaths = properties.getMultiCertificationSystemInfo().keySet().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
 
             return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(path->{
