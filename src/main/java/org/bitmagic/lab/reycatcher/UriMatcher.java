@@ -9,7 +9,7 @@ import java.util.function.BiConsumer;
  * @author yangrd
  * @date 2022/03/04
  */
-public interface UriMatcher<T extends UriMatcher> {
+public interface UriMatcher<T extends UriMatcher<T>> {
 
     T matchHandler(String matchPath, ThreeConsumer<HttpServletRequest, HttpServletResponse,T> handler);
 
