@@ -3,7 +3,7 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.RequiredArgsConstructor;
 import org.bitmagic.lab.reycatcher.*;
-import org.bitmagic.lab.reycatcher.helper.RyeCatcherBasicHelper;
+import org.bitmagic.lab.reycatcher.helper.RcBasicHelper;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -46,7 +46,7 @@ public class AnnotationInterceptor implements HandlerInterceptor {
             }
             CheckBasic checkBasic = getAnnotation(handler1, CheckBasic.class);
             if (Objects.nonNull(checkBasic)) {
-                RyeCatcherBasicHelper.check(checkBasic.value(), checkBasic.realm());
+                RcBasicHelper.check(checkBasic.value(), checkBasic.realm());
             }
             ValidateUtils.checkAuthority(Objects.isNull(getAnnotation(handler1, DenyAll.class)), "denyAll!");
             return true;

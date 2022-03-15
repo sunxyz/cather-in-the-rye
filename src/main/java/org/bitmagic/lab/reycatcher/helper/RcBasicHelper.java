@@ -13,7 +13,7 @@ import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
  * @date 2022/03/08
  */
 @Slf4j
-public class RyeCatcherBasicHelper {
+public class RcBasicHelper {
 
     public static void check(String usernameAndPwd) {
         check(usernameAndPwd, "realm");

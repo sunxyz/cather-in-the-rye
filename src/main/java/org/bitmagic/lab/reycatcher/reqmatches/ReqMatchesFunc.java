@@ -1,6 +1,6 @@
-package org.bitmagic.lab.reycatcher.urimatches;
+package org.bitmagic.lab.reycatcher.reqmatches;
 
-public interface UriMatchesFunc {
+public interface ReqMatchesFunc {
 
     void stopNextMatch();
 
