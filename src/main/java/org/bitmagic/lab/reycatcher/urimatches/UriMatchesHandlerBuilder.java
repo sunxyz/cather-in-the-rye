@@ -7,9 +7,7 @@ import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -19,6 +17,8 @@ import java.util.stream.Stream;
  * @author yangrd
  */
 public interface UriMatchesHandlerBuilder {
+
+    AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
     static UriMatchesHandlerBuilder of(Predicate<HttpServletRequest> predicate) {
         return UriMatchesHandlerBuilder.SimpleUriMatchHandlerBuilder.of(new ArrayList<>(Collections.singletonList(predicate)));
@@ -32,20 +32,22 @@ public interface UriMatchesHandlerBuilder {
 
     UriMatchesHandlerBuilder notMatches(String... uris);
 
-    UriMatchesHandlerBuilder childScope(UriMatchesHandler matchUri);
+    UriMatchesHandlerBuilder childScope(UriMatchesHandler... urlMatches);
 
-    UriMatchesHandler addHandler(NoArgsHandler handler);
+    UriMatchesHandler setHandler(NoArgsHandler handler);
 
-    UriMatchesHandler addHandler(Consumer<HttpServletRequest> handler);
+    UriMatchesHandler setHandler(Consumer<HttpServletRequest> handler);
 
-    UriMatchesHandler addHandler(BiConsumer<HttpServletRequest, HttpServletResponse> handler);
+    UriMatchesHandler setHandler(BiConsumer<HttpServletRequest, HttpServletResponse> handler);
 
-    UriMatchesHandler addHandler(ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesHandler> handler);
+    UriMatchesHandler setHandler(ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesFunc> handler);
 
-    AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+    UriMatchesHandler build();
 
     @RequiredArgsConstructor(staticName = "of")
     class SimpleUriMatchHandlerBuilder implements UriMatchesHandlerBuilder {
+        static final ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesFunc> NO_ARGS_HANDLER = ThreeConsumer.of(() -> {
+        });
         final List<Predicate<HttpServletRequest>> matchPredicates;
         List<Predicate<HttpServletRequest>> notMatchPredicates = new ArrayList<>();
         List<UriMatchesHandler> children = new ArrayList<>();
@@ -75,29 +77,39 @@ public interface UriMatchesHandlerBuilder {
         }
 
         @Override
-        public UriMatchesHandlerBuilder childScope(UriMatchesHandler matchUri) {
-            children.add(matchUri);
+        public UriMatchesHandlerBuilder childScope(UriMatchesHandler... urlMatches) {
+            children.addAll(Arrays.asList(urlMatches));
             return this;
         }
 
         @Override
-        public UriMatchesHandler addHandler(NoArgsHandler handler) {
-            return addHandler(ThreeConsumer.of(handler));
+        public UriMatchesHandler setHandler(NoArgsHandler handler) {
+            return setHandler(ThreeConsumer.of(handler));
         }
 
         @Override
-        public UriMatchesHandler addHandler(Consumer<HttpServletRequest> handler) {
-            return addHandler(ThreeConsumer.of(handler));
+        public UriMatchesHandler setHandler(Consumer<HttpServletRequest> handler) {
+            return setHandler(ThreeConsumer.of(handler));
         }
 
         @Override
-        public UriMatchesHandler addHandler(BiConsumer<HttpServletRequest, HttpServletResponse> handler) {
-            return addHandler(ThreeConsumer.of(handler));
+        public UriMatchesHandler setHandler(BiConsumer<HttpServletRequest, HttpServletResponse> handler) {
+            return setHandler(ThreeConsumer.of(handler));
         }
 
         @Override
-        public UriMatchesHandler addHandler(ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesHandler> handler) {
-            return UriMatchesHandler.SimpleUriMatchesHandler.of(matchPredicates, notMatchPredicates, handler, children);
+        public UriMatchesHandler setHandler(ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesFunc> handler) {
+            return UriMatchesHandler.SimpleUriMatchesHandler.of(matchPredicates, notMatchPredicates, (x, y, z) -> {
+                handler.accept(x, y, z);
+                String res = z.getReturnRes();
+                z.restReturnRes();
+                return Objects.isNull(res);
+            }, children);
+        }
+
+        @Override
+        public UriMatchesHandler build() {
+            return setHandler(NO_ARGS_HANDLER);
         }
     }
 }

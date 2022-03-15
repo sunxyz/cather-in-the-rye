@@ -1,8 +1,9 @@
 package org.bitmagic.lab.reycatcher.urimatches;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.bitmagic.lab.reycatcher.func.ThreeConsumer;
+import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,42 +13,40 @@ import java.util.function.Predicate;
 /**
  * @author yangrd
  */
-public interface UriMatchesHandler {
+public interface UriMatchesHandler extends UriMatchesFunc {
 
-    void handler(HttpServletRequest request, HttpServletResponse response, UriMatchesHandler handler);
-
-    void stopNextMatch();
-
-    void stopAllMatch();
+    boolean handler(HttpServletRequest request, HttpServletResponse response);
 
     void setParent(UriMatchesHandler parent);
-
 
     @RequiredArgsConstructor
     class SimpleUriMatchesHandler implements UriMatchesHandler {
         final List<Predicate<HttpServletRequest>> matchPredicates;
         final List<Predicate<HttpServletRequest>> notMatchPredicates;
-        final ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesHandler> handler;
+        final Handler handler;
         final List<UriMatchesHandler> children;
         private final ThreadLocal<Boolean> stopNextCache = ThreadLocal.withInitial(() -> false);
         @Setter
+        @Getter
         UriMatchesHandler parent;
+        private String res;
 
-        public static SimpleUriMatchesHandler of(List<Predicate<HttpServletRequest>> matchPredicates, List<Predicate<HttpServletRequest>> notMatchPredicates, ThreeConsumer<HttpServletRequest, HttpServletResponse, UriMatchesHandler> handler, List<UriMatchesHandler> children) {
+        public static SimpleUriMatchesHandler of(List<Predicate<HttpServletRequest>> matchPredicates, List<Predicate<HttpServletRequest>> notMatchPredicates, Handler handler, List<UriMatchesHandler> children) {
             SimpleUriMatchesHandler matchHandler = new SimpleUriMatchesHandler(matchPredicates, notMatchPredicates, handler, children);
             children.forEach(c -> c.setParent(matchHandler));
             return matchHandler;
         }
 
+
         @Override
-        public void handler(HttpServletRequest request, HttpServletResponse response, UriMatchesHandler handler) {
-            boolean matchFlag = matchPredicates.stream().anyMatch(predicate -> predicate.test(request));
-            boolean notMatchFlag = notMatchPredicates.stream().anyMatch(predicate -> predicate.test(request));
-            if (matchFlag && !notMatchFlag && !isStopNext()) {
-                handler.handler(request, response, handler);
-                children.forEach(uriMatchHandler -> uriMatchHandler.handler(request, response, uriMatchHandler));
+        public boolean handler(HttpServletRequest request, HttpServletResponse response) {
+            boolean matchFlag = matchPredicates.stream().anyMatch(predicate -> predicate.test(request)) && notMatchPredicates.stream().noneMatch(predicate -> predicate.test(request));
+            boolean flag = true;
+            if (matchFlag && !isStopNextFlag()) {
+                flag = handler.apply(request, response, this) && children.stream().allMatch(c -> c.handler(request, response));
             }
-            clear();
+            clearStopNextFlag();
+            return flag;
         }
 
         @Override
@@ -65,12 +64,28 @@ public interface UriMatchesHandler {
             }
         }
 
+        @lombok.SneakyThrows
+        @Override
+        public void returnRes(String o) {
+            this.res = o;
+            RyeCatcherContextHolder.getContext().getResponse().getWriter().write(o);
+        }
 
-        private boolean isStopNext() {
+        @Override
+        public String getReturnRes() {
+            return res;
+        }
+
+        @Override
+        public void restReturnRes() {
+            res = null;
+        }
+
+        private boolean isStopNextFlag() {
             return stopNextCache.get();
         }
 
-        private void clear() {
+        private void clearStopNextFlag() {
             stopNextCache.set(false);
         }
 
