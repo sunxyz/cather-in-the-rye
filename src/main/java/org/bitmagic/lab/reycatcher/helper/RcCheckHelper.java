@@ -2,6 +2,7 @@ package org.bitmagic.lab.reycatcher.helper;
 
 import org.bitmagic.lab.reycatcher.MatchRelation;
 import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
 
 /**
@@ -9,34 +10,38 @@ import org.bitmagic.lab.reycatcher.RyeCatcher;
  */
 public class RcCheckHelper {
 
-    public static void checkLogin(){
+    public static void checkLogin() {
         RyeCatcher.checkLogin();
     }
 
-    public static void noCheck(){
+    public static void noCheck() {
     }
 
-    public static void hasRole(String... roles){
+    public static void check(boolean pass, String error) {
+        ValidateUtils.check(pass, error);
+    }
+
+    public static void hasRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.ALL, roles);
     }
 
-    public static void anyRole(String... roles){
+    public static void anyRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.ANY, roles);
     }
 
-    public static void noneRole(String... roles){
+    public static void noneRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.NONE, roles);
     }
 
-    public static void hasPerm(String... roles){
+    public static void hasPerm(String... roles) {
         RyeCatcher.check("perm", MatchRelation.ALL, roles);
     }
 
-    public static void anyPerm(String... roles){
+    public static void anyPerm(String... roles) {
         RyeCatcher.check("perm", MatchRelation.ANY, roles);
     }
 
-    public static void nonePerm(String... roles){
+    public static void nonePerm(String... roles) {
         RyeCatcher.check("perm", MatchRelation.NONE, roles);
     }
 }

@@ -3,6 +3,7 @@ package org.bitmagic.lab.reycatcher.utils;
 import org.bitmagic.lab.reycatcher.ex.AuthorityException;
 import org.bitmagic.lab.reycatcher.ex.BasicException;
 import org.bitmagic.lab.reycatcher.ex.BearerException;
+import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 
 import java.util.Objects;
 
@@ -15,6 +16,12 @@ public final class ValidateUtils {
     public static void notNull(Object o, String error) {
         if (Objects.isNull(o)) {
             throw new IllegalArgumentException(error);
+        }
+    }
+
+    public static void check(boolean pass, String error) {
+        if (!pass) {
+            throw new RyeCatcherException(error);
         }
     }
 
