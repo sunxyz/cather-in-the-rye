@@ -343,3 +343,7 @@ interface SessionManager extends SessionRepository {
     void outSession2Client(String tokenName, Session session);
 }
 ```
+
+**参考资料：**
+
+> 方法命名参考了 Apache Shiro , Spring Security, Sa-Token
