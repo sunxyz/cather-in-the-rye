@@ -338,7 +338,7 @@ interface SessionManager extends SessionRepository {
 
     Optional<Session> getCurrentSession(String tokenName);
 
-    Optional<SessionToken> findSessionTokenFromClient(String tokenName);
+    Optional<ReqTokenInfo> findSessionTokenFromClient(String tokenName);
 
     void outSession2Client(String tokenName, Session session);
 }
