@@ -5,7 +5,7 @@ import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
-import org.bitmagic.lab.reycatcher.support.AuthorizationInfo;
+import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
@@ -36,9 +36,9 @@ public class BaseSessionManager extends AbstractSessionManager {
             if (ConfigHolder.isNeedSave()) {
                 return findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
             } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getType())) {
-                AuthorizationInfo authorizationInfo = sessionToken.getAuthorizationInfo();
-                ValidateUtils.checkBearer(authorizationInfo.getType(), "");
-                DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), authorizationInfo.getValue());
+                ReqTokenInfo reqTokenInfo = sessionToken.getReqTokenInfo();
+                ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
+                DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
                 Object meta = Collections.unmodifiableMap((Map) jwt.getClaim("ext")); //jwt->ext
                 return Session.of(sessionToken, loginInfo, meta);

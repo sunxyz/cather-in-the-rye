@@ -4,6 +4,8 @@ import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
+import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
+import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 import org.springframework.util.AntPathMatcher;
 
@@ -62,6 +64,11 @@ public class RyeCatcher {
 
     public static <T> T getLoginId() {
         return (T) getLogin().getUserId();
+    }
+
+    public static TokenInfo getTokenInfo() {
+        ReqTokenInfo reqTokenInfo = getSession().getSessionToken().getReqTokenInfo();
+        return TokenInfo.of(reqTokenInfo.getValue(), ConfigHolder.getSessionTimeoutMillisecond(), ConfigHolder.getRyeCatcherPath(), reqTokenInfo.getType());
     }
 
     public static Session getSession() {

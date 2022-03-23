@@ -9,7 +9,7 @@ import java.util.Optional;
  */
 public class TokenParseUtils {
 
-    public static Optional<AuthorizationInfo> findAuthorizationInfo(String token) {
+    public static Optional<ReqTokenInfo> findReqTokenInfo(String token) {
         String type = null;
         String value = token;
         String splitKey = " ";
@@ -18,6 +18,6 @@ public class TokenParseUtils {
             type = strArray[0];
             value = strArray[1];
         }
-        return StringUtils.isEmpty(token) ? Optional.of(AuthorizationInfo.of(type, value)) : Optional.empty();
+        return StringUtils.isNotEmpty(token) ? Optional.of(ReqTokenInfo.of(type, value)) : Optional.empty();
     }
 }

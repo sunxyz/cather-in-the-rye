@@ -6,7 +6,7 @@ import lombok.Value;
  * @author yangrd
  */
 @Value(staticConstructor = "of")
-public class AuthorizationInfo {
+public class ReqTokenInfo {
 
      String type;
 

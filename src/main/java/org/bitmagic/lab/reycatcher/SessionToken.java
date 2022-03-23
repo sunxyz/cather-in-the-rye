@@ -1,7 +1,7 @@
 package org.bitmagic.lab.reycatcher;
 
 import lombok.Value;
-import org.bitmagic.lab.reycatcher.support.AuthorizationInfo;
+import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 
 /**
@@ -23,8 +23,8 @@ public interface SessionToken {
 
     String getToken();
 
-    default AuthorizationInfo getAuthorizationInfo(){
-        return TokenParseUtils.findAuthorizationInfo(getToken()).orElseThrow(RuntimeException::new);
+    default ReqTokenInfo getReqTokenInfo(){
+        return TokenParseUtils.findReqTokenInfo(getToken()).orElseThrow(RuntimeException::new);
     }
 
     @Value(staticConstructor = "of")
