@@ -6,7 +6,9 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
+import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
+import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 import org.bitmagic.lab.reycatcher.utils.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -25,14 +27,13 @@ public class ServletSessionManager extends BaseSessionManager {
     }
 
     @Override
-    public Optional<SessionToken> findSessionTokenFromClient(String tokenName) {
+    public Optional<ReqTokenInfo> findReqTokenInfoFromClient(String tokenName) {
         HttpServletRequest request = RyeCatcherContextHolder.getContext().getRequest();
-        Optional<String> tokenOptional = Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst();
-        String token = tokenOptional.orElseGet(() -> {
-            String v = request.getHeader(tokenName);
-            return Objects.isNull(v) ? request.getParameter(tokenName) : v;
-        });
-        return StringUtils.isEmpty(token)?Optional.empty():Optional.of(SessionToken.of(ConfigHolder.getGenTokenType(), token));
+        Optional<String> tokenOptional =  Optional.ofNullable(request.getHeader(tokenName));
+        String token = tokenOptional.orElseGet(() ->
+             Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst().orElse(request.getParameter(tokenName))
+        );
+        return TokenParseUtils.findReqTokenInfo(token);
     }
 
     @Override

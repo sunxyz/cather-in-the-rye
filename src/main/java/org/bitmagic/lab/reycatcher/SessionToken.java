@@ -1,8 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
 import lombok.Value;
-import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
-import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 
 /**
  * @author yangrd
@@ -15,21 +13,17 @@ public interface SessionToken {
          String SESSION_ID = "session_id";
     }
 
-    static SessionToken of(String type, String token){
-        return SimpleSessionToken.of(type,token);
+    static SessionToken of(String genType, String token){
+        return SimpleSessionToken.of(genType,token);
     }
 
-    String getType();
+    String getGenType();
 
     String getToken();
 
-    default ReqTokenInfo getReqTokenInfo(){
-        return TokenParseUtils.findReqTokenInfo(getToken()).orElseThrow(RuntimeException::new);
-    }
-
     @Value(staticConstructor = "of")
     class SimpleSessionToken implements SessionToken {
-        String type;
+        String genType;
         String token;
     }
 

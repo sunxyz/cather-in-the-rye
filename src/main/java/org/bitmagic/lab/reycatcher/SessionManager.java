@@ -1,5 +1,7 @@
 package org.bitmagic.lab.reycatcher;
 
+import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
+
 import java.util.Optional;
 
 /**
@@ -12,7 +14,7 @@ public interface SessionManager extends SessionRepository {
 
     Optional<Session> getCurrentSession(String tokenName);
 
-    Optional<SessionToken> findSessionTokenFromClient(String tokenName);
+    Optional<ReqTokenInfo> findReqTokenInfoFromClient(String tokenName);
 
     void outSession2Client(String tokenName, Session session);
 }

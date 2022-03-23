@@ -31,12 +31,12 @@ public class BaseSessionManager extends AbstractSessionManager {
 
     @Override
     public Optional<Session> getCurrentSession(String tokenName) {
-        Optional<Session> currentSession = findSessionTokenFromClient(tokenName).map(sessionToken -> {
+        Optional<Session> currentSession = findReqTokenInfoFromClient(tokenName).map(reqTokenInfo -> {
+            SessionToken sessionToken = SessionToken.of(ConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
             renewal(sessionToken);
             if (ConfigHolder.isNeedSave()) {
                 return findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
-            } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getType())) {
-                ReqTokenInfo reqTokenInfo = sessionToken.getReqTokenInfo();
+            } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getGenType())) {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
                 DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
@@ -58,13 +58,13 @@ public class BaseSessionManager extends AbstractSessionManager {
                     return switchSession;
                 });
             }else {
-                return genSession(switchInfo.getUserId(), switchInfo.getDeviceType(), session.getSessionToken().getType(), new HashMap<>(8), null);
+                return genSession(switchInfo.getUserId(), switchInfo.getDeviceType(), session.getSessionToken().getGenType(), new HashMap<>(8), null);
             }
         }).orElse(session);
     }
 
     @Override
-    public Optional<SessionToken> findSessionTokenFromClient(String tokenName) {
+    public Optional<ReqTokenInfo> findReqTokenInfoFromClient(String tokenName) {
         throw new RuntimeException();
     }
 

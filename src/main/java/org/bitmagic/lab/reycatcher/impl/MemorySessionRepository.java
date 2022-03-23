@@ -115,7 +115,7 @@ public class MemorySessionRepository implements SessionRepository {
     protected Predicate<Session> filter0(SessionFilterInfo filterInfo){
             return session ->
                  (Objects.isNull(filterInfo.getLoginUserId())||session.getLoginInfo().getUserId().equals(filterInfo.getLoginUserId()))
-                        &&(StringUtils.isEmpty(filterInfo.getTokenType())||session.getSessionToken().getType().contains(filterInfo.getTokenType()))
+                        &&(StringUtils.isEmpty(filterInfo.getTokenType())||session.getSessionToken().getGenType().contains(filterInfo.getTokenType()))
                         &&(StringUtils.isEmpty(filterInfo.getTokenValue())||session.getSessionToken().getToken().contains(filterInfo.getTokenValue()))
                         &&(StringUtils.isEmpty(filterInfo.getLoginDeviceType())||session.getLoginInfo().getDeviceType().contains(filterInfo.getLoginDeviceType()))
                         &&(Objects.isNull(filterInfo.getBeginCreationTime())||session.getCreationTime()>filterInfo.getBeginCreationTime())

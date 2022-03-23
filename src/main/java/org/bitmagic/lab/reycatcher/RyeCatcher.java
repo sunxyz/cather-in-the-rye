@@ -68,8 +68,9 @@ public class RyeCatcher {
 
     public static TokenInfo getTokenInfo() {
         Session session = getSession();
-        ReqTokenInfo reqTokenInfo = session.getSessionToken().getReqTokenInfo();
-        return TokenInfo.of(reqTokenInfo.getValue(), session.getMaxInactiveInterval(), ConfigHolder.getRyeCatcherPath(), reqTokenInfo.getType());
+        SessionToken sessionToken = session.getSessionToken();
+        Optional<ReqTokenInfo> optionalReqTokenInfo = SESSION_MANAGER.findReqTokenInfoFromClient(ConfigHolder.getOutClientTokenName());
+        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), ConfigHolder.getRyeCatcherPath(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.TokenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
     }
 
     public static Session getSession() {
