@@ -20,7 +20,7 @@ public class RyeCatcher {
 
     private static final SessionManager SESSION_MANAGER = InstanceHolder.getInstance(SessionManager.class);
 
-    private static final MatchInfoProvider MATCH_INFO_PROVIDER = InstanceHolder.getInstance(MatchInfoProvider.class);
+    private static final AuthMatchInfoProvider MATCH_INFO_PROVIDER = InstanceHolder.getInstance(AuthMatchInfoProvider.class);
 
     private static final RyeCatcherActionListener ACTION_LISTENER = InstanceHolder.getInstance(RyeCatcherActionListener.class);
 
@@ -167,7 +167,7 @@ public class RyeCatcher {
 
     private static Collection<String> listAuthorizedInfo(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return MATCH_INFO_PROVIDER.loadMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {
