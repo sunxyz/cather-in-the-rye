@@ -50,9 +50,25 @@ jsr-250
 
 示例
 ```
-new UriMatcherInterceptor()
-                .matchHandler("/app", (request, response, uriMatch) ->{ RyeCatcher.check("role", MatchRelation.ANY, "user"); uriMatch.stopNext();})
-                .matchHandler("/app/**", (request, response) -> RyeCatcher.check("perm", MatchRelation.ANY, "user"));
+ ReqMatcherInterceptor reqMatcherInterceptor = new ReqMatcherInterceptor(req ->
+        req.matches("/**", RcCheckHelper::noCheck,
+                req.matches("/api/**").notMatches("/api/version").childScope(
+                        req.matches("/api/hello", (request, handler) -> {
+                            handler.returnRes("hello");
+                        }),
+                        req.matches(HttpMethod.GET, "/api/say", () -> checkAllRole("user"))
+                ).build(),
+                req.matches(request -> Arrays.stream(request.getCookies()).anyMatch(cookie -> cookie.getName().equals("no-login")),
+                        request -> ValidateUtils.check(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("no-login")).findFirst().map(cookie -> cookie.getValue().equals("true")).orElse(false), "no-login"))
+        )
+);
+ReqMatcherInterceptor demoReqMatcherInterceptor = new ReqMatcherInterceptor(req ->
+        req.matches("/**", RcCheckHelper::checkLogin,
+                req.matches("/api/**", request -> {
+                    RcCheckHelper.checkAllPerm(request.getRequestURI().replaceAll("/api","").replaceAll("/",":"));
+                })
+        )
+);
 ```
 ## 使用
 
@@ -79,9 +95,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-class CustomLoadMatchInfoService implements LoadMatchInfoService {
+class CustomAuthMatchInfoProvider implements AuthMatchInfoProvider {
     //ryeCatcherPath: multi-certification-system-info 中匹配到的路径 优先uri长度长的
-    public Map<String, Collection<String>> loadMatchInfo(String ryeCatcherPath, Object id, String deviceType) {
+    public Map<String, Collection<String>> loadAuthMatchInfo(String ryeCatcherPath, Object id, String deviceType) {
         Map<String, Collection<String>> matchInfos = new HashMap<>();
         matchInfos.put("role", Arrays.asList("user", "admin"));
         matchInfos.put("perm", Arrays.asList("user:add", "user:view"));
