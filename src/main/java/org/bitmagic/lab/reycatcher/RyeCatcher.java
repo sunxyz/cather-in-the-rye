@@ -89,21 +89,25 @@ public class RyeCatcher {
     }
 
     public static boolean anyMatch(String type, String... authKeys) {
-        Collection<String> authorities = listAuthorities(type);
+        Collection<String> authorities = listAuthorizedInfo(type);
         return Arrays.stream(authKeys).anyMatch(authKey -> match(authorities, authKey));
     }
 
     public static boolean allMatch(String type, String... authKeys) {
-        Collection<String> authorities = listAuthorities(type);
+        Collection<String> authorities = listAuthorizedInfo(type);
         return Arrays.stream(authKeys).allMatch(authKey -> match(authorities, authKey));
     }
 
     public static boolean noneMatch(String type, String... authKeys) {
-        Collection<String> authorities = listAuthorities(type);
+        Collection<String> authorities = listAuthorizedInfo(type);
         return Arrays.stream(authKeys).noneMatch(authKey -> match(authorities, authKey));
     }
 
     public static void check(String type, MatchRelation matchRelation, String... authKeys) {
+        ValidateUtils.checkAuthority(has(type, matchRelation, authKeys), String.join(",", authKeys));
+    }
+
+    public static boolean has(String type, MatchRelation matchRelation, String... authKeys){
         boolean flag = true;
         if (MatchRelation.ALL.equals(matchRelation)) {
             flag = allMatch(type, authKeys);
@@ -112,7 +116,7 @@ public class RyeCatcher {
         } else if (MatchRelation.NONE.equals(matchRelation)) {
             flag = noneMatch(type, authKeys);
         }
-        ValidateUtils.checkAuthority(flag, String.join(",", authKeys));
+        return flag;
     }
 
     public static void checkLogin() {
@@ -161,7 +165,7 @@ public class RyeCatcher {
         ACTION_LISTENER.doKicked(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
-    private static Collection<String> listAuthorities(String type) {
+    private static Collection<String> listAuthorizedInfo(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
         return MATCH_INFO_PROVIDER.loadMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }

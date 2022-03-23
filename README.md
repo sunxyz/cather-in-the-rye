@@ -146,7 +146,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 class MeController {
 
     @PostMapping("/me")
-    public LoginInfo logout() {
+    public LoginInfo me() {
         return RyeCatcher.getLogin();
     }
 }
@@ -235,13 +235,18 @@ public class RyeCatcherMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
-                new UriMatcherInterceptor()
-                        .matchHandler("/app", (request, response, uriMatch) -> {
-                            RyeCatcher.check("role", MatchRelation.ANY, "user");
-                            uriMatch.stopNext();
-                        })
-                        .matchHandler("/app/**", (request, response) -> RyeCatcher.check("perm", MatchRelation.ANY, "user"))
-                        .matchHandler("/api/me/**", (request, response) -> RyeCatcher.checkLogin())
+                new ReqMatcherInterceptor(req ->
+                        req.matches("/**", RcCheckHelper::noCheck,
+                                req.matches("/api/**").notMatches("/api/version").childScope(
+                                        req.matches("/api/hello", (request, handler) -> {
+                                            handler.returnRes("hello");
+                                        }),
+                                        req.matches(HttpMethod.GET, "/api/say", () -> hasRole("user"))
+                                ).build(),
+                                req.matches(request -> Arrays.stream(request.getCookies()).anyMatch(cookie -> cookie.getName().equals("no-login")),
+                                        request -> ValidateUtils.check(Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals("no-login")).findFirst().map(cookie -> cookie.getValue().equals("true")).orElse(false), "no-login"))
+                        )
+                );
         ).addPathPatterns("/**");
     }
 }
@@ -251,6 +256,7 @@ public class RyeCatcherMvcConfigurer implements WebMvcConfigurer {
 ```java
 import org.bitmagic.lab.reycatcher.MatchRelation;
 import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.bitmagic.lab.reycatcher.helper.RcCheckHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -261,6 +267,8 @@ class DemoController {
     public void hello() {
         RyeCatcher.check("role", MatchRelation.ANY, "user", "admin");
         RyeCatcher.check("perm", MatchRelation.ANY, "user:add", "user:view");
+        RcCheckHelper.checkRole("admin");
+        RcCheckHelper.checkPerm("user:view");
         RyeCatcher.checkLogin();
     }
 

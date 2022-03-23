@@ -21,28 +21,36 @@ public class RcCheckHelper {
         ValidateUtils.check(pass, error);
     }
 
-    public static void hasRole(String... roles) {
+    public static void checkRole(String... roles) {
+        checkAllRole(roles);
+    }
+
+    public static void checkAllRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.ALL, roles);
     }
 
-    public static void anyRole(String... roles) {
+    public static void checkAnyRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.ANY, roles);
     }
 
-    public static void noneRole(String... roles) {
+    public static void checkNoneRole(String... roles) {
         RyeCatcher.check("role", MatchRelation.NONE, roles);
     }
 
-    public static void hasPerm(String... roles) {
-        RyeCatcher.check("perm", MatchRelation.ALL, roles);
+    public static void checkPerm(String... perms) {
+        checkAllPerm(perms);
     }
 
-    public static void anyPerm(String... roles) {
-        RyeCatcher.check("perm", MatchRelation.ANY, roles);
+    public static void checkAllPerm(String... perms) {
+        RyeCatcher.check("perm", MatchRelation.ALL, perms);
     }
 
-    public static void nonePerm(String... roles) {
-        RyeCatcher.check("perm", MatchRelation.NONE, roles);
+    public static void checkAnyPerm(String... perms) {
+        RyeCatcher.check("perm", MatchRelation.ANY, perms);
+    }
+
+    public static void checkNonePerm(String... perms) {
+        RyeCatcher.check("perm", MatchRelation.NONE, perms);
     }
 }
 
