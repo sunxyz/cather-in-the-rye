@@ -3,7 +3,7 @@ package org.bitmagic.lab.reycatcher.config.spring;
 import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.TokenGenFactory;
+import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
 import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
@@ -20,7 +20,7 @@ import java.util.Optional;
  * @date 2022/03/05
  */
 public class ServletSessionManager extends BaseSessionManager {
-    public ServletSessionManager(SessionRepository repository, TokenGenFactory tokenGenService) {
+    public ServletSessionManager(SessionRepository repository, SessionTokenGenFactory tokenGenService) {
         super(repository, tokenGenService);
     }
 

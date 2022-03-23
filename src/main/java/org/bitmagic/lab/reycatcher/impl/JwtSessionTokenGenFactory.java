@@ -11,7 +11,7 @@ import java.util.Map;
  * @author yangrd
  * @date 2022/03/04
  */
-public class JwtTokenGenFactory extends AbstractTokenGenFactory {
+public class JwtSessionTokenGenFactory extends AbstractSessionTokenGenFactory {
     @Override
     public SessionToken genToken(Object id, String deviceType, Object clientExtMeta) {
         Map<String,Object> claims = new HashMap<>(3);

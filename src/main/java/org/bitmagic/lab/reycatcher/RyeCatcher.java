@@ -27,15 +27,15 @@ public class RyeCatcher {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(":");
 
-    public static SessionToken login(Object id) {
+    public static TokenInfo login(Object id) {
         return login(id, DEFAULT_DEVICE_TYPE);
     }
 
-    public static SessionToken login(Object id, String deviceType) {
+    public static TokenInfo login(Object id, String deviceType) {
         return login(id, deviceType, Collections.emptyMap());
     }
 
-    public static SessionToken login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
+    public static TokenInfo login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
         Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.save(session);
@@ -51,7 +51,7 @@ public class RyeCatcher {
         }
         SessionContextHolder.setContext(SessionContext.of(session));
         ACTION_LISTENER.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
-        return session.getSessionToken();
+        return getTokenInfo();
     }
 
     public static boolean isLogin() {
@@ -67,8 +67,9 @@ public class RyeCatcher {
     }
 
     public static TokenInfo getTokenInfo() {
-        ReqTokenInfo reqTokenInfo = getSession().getSessionToken().getReqTokenInfo();
-        return TokenInfo.of(reqTokenInfo.getValue(), ConfigHolder.getSessionTimeoutMillisecond(), ConfigHolder.getRyeCatcherPath(), reqTokenInfo.getType());
+        Session session = getSession();
+        ReqTokenInfo reqTokenInfo = session.getSessionToken().getReqTokenInfo();
+        return TokenInfo.of(reqTokenInfo.getValue(), session.getMaxInactiveInterval(), ConfigHolder.getRyeCatcherPath(), reqTokenInfo.getType());
     }
 
     public static Session getSession() {

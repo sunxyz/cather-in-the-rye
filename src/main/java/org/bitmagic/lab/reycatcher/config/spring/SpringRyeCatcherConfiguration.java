@@ -3,10 +3,10 @@ package org.bitmagic.lab.reycatcher.config.spring;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
-import org.bitmagic.lab.reycatcher.impl.CompositeTokenGenFactory;
-import org.bitmagic.lab.reycatcher.impl.JwtTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.CompositeSessionTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.JwtSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
-import org.bitmagic.lab.reycatcher.impl.SessionIdTokenGenFactory;
+import org.bitmagic.lab.reycatcher.impl.SessionIdSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,8 +14,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
@@ -60,23 +58,23 @@ public class SpringRyeCatcherConfiguration {
     }
 
     @Bean
-    public TokenGenFactory jwtTokenGenService() {
-        return new JwtTokenGenFactory();
+    public SessionTokenGenFactory jwtTokenGenService() {
+        return new JwtSessionTokenGenFactory();
     }
 
     @Bean
-    public TokenGenFactory cookieTokenGenService() {
-        return new SessionIdTokenGenFactory();
+    public SessionTokenGenFactory cookieTokenGenService() {
+        return new SessionIdSessionTokenGenFactory();
     }
 
     @Bean
     @Primary
-    public TokenGenFactory tokenGenService(List<TokenGenFactory> tokenGenServices) {
-        return new CompositeTokenGenFactory(tokenGenServices);
+    public SessionTokenGenFactory tokenGenService(List<SessionTokenGenFactory> tokenGenServices) {
+        return new CompositeSessionTokenGenFactory(tokenGenServices);
     }
 
     @Bean
-    public SessionManager sessionManager(SessionRepository sessionRepository, TokenGenFactory tokenGenService) {
+    public SessionManager sessionManager(SessionRepository sessionRepository, SessionTokenGenFactory tokenGenService) {
         return new ServletSessionManager(sessionRepository, tokenGenService);
     }
 
