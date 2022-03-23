@@ -27,13 +27,15 @@ public class AnnotationInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (handler instanceof HandlerMethod) {
             HandlerMethod handler1 = (HandlerMethod) handler;
-            CheckPermissions checkPermissions = getAnnotation(handler1, CheckPermissions.class);
-            if (Objects.nonNull(checkPermissions)) {
-                RyeCatcher.check("perm", checkPermissions.matchRelation(), checkPermissions.value());
+            CheckPermission checkPermission = getAnnotation(handler1, CheckPermission.class);
+            if (Objects.nonNull(checkPermission)) {
+                CheckRole or = checkPermission.or();
+                boolean flag = RyeCatcher.has("perm", checkPermission.matchRelation(), checkPermission.value())||(or.value().length != 0 && RyeCatcher.has("role", or.matchRelation(), or.value()));
+                ValidateUtils.checkAuthority(flag, checkPermission.matchRelation()+": "+String.join(",", checkPermission.value())+" or "+or.matchRelation()+": " + String.join(",", or.value()));
             }
-            CheckRoles checkRoles = getAnnotation(handler1, CheckRoles.class);
-            if (Objects.nonNull(checkRoles)) {
-                RyeCatcher.check("role", checkRoles.matchRelation(), checkRoles.value());
+            CheckRole checkRole = getAnnotation(handler1, CheckRole.class);
+            if (Objects.nonNull(checkRole)) {
+                RyeCatcher.check("role", checkRole.matchRelation(), checkRole.value());
             }
             //jsr-250
             RolesAllowed rolesAllowed = getAnnotation(handler1, RolesAllowed.class);

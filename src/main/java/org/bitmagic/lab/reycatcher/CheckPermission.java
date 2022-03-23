@@ -9,10 +9,12 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Documented
-public @interface CheckRoles {
+public @interface CheckPermission {
 
     String[] value();
 
     MatchRelation matchRelation() default MatchRelation.ANY;
 
+    // CheckPermission 使用频率较高所以加这个上了
+    CheckRole or() default @CheckRole({});
 }

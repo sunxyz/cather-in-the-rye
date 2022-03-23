@@ -104,7 +104,7 @@ public class RyeCatcher {
     }
 
     public static void check(String type, MatchRelation matchRelation, String... authKeys) {
-        ValidateUtils.checkAuthority(has(type, matchRelation, authKeys), String.join(",", authKeys));
+        ValidateUtils.checkAuthority(has(type, matchRelation, authKeys), matchRelation+": "+ String.join(",", authKeys));
     }
 
     public static boolean has(String type, MatchRelation matchRelation, String... authKeys){

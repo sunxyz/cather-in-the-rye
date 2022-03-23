@@ -175,42 +175,42 @@ class DemoController {
 
 
     @GetMapping("/hello")
-    @CheckRoles("user")
+    @CheckRole("user")
     public void hello() {
     }
-    
+
     @GetMapping("/hello0")
-    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.ALL)
+    @CheckRole(value = {"user", "admin"}, matchRelation = MatchRelation.ALL)
     public void hello0() {
     }
 
     @GetMapping("/hello1")
-    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.NONE)
+    @CheckRole(value = {"user", "admin"}, matchRelation = MatchRelation.NONE)
     public void hello1() {
     }
 
     @GetMapping("/hello2")
-    @CheckRoles(value = {"user", "admin"}, matchRelation = MatchRelation.ANY)
+    @CheckRole(value = {"user", "admin"}, matchRelation = MatchRelation.ANY)
     public void hello2() {
     }
 
     @GetMapping("/hello3")
-    @CheckPermissions(value = {"user:add", "admin:add"}, matchRelation = MatchRelation.ALL)
+    @CheckPermission(value = {"user:add", "admin:add"}, matchRelation = MatchRelation.ALL)
     public void hello3() {
     }
 
     @GetMapping("/hello4")
-    @CheckPermissions(value = {"user:*", "admin:*"}, matchRelation = MatchRelation.NONE)
+    @CheckPermission(value = {"user:*", "admin:*"}, matchRelation = MatchRelation.NONE)
     public void hello4() {
     }
 
     @GetMapping("/hello5")
-    @CheckPermissions(value = {"user:*", "admin:**"}, matchRelation = MatchRelation.ANY)
+    @CheckPermission(value = {"user:*", "admin:**"}, matchRelation = MatchRelation.ANY)
     public void hello5() {
     }
 
     @GetMapping("/hello6")
-    @RolesAllowed({"user","admin"})
+    @RolesAllowed({"user", "admin"})
     public void rolesAllowed() {
     }
 
