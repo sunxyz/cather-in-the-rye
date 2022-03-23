@@ -285,8 +285,8 @@ class DemoController {
 import java.util.List;
 import java.util.Map;
 
-interface CatcherLoadMatchInfoService {
-    Map<String, List<String>> loadMatchInfo(String ryeCatcherPath, Object id, String deviceType);
+interface AuthMatchInfoProvider {
+    Map<String, List<String>> loadAuthMatchInfo(String ryeCatcherPath, Object id, String deviceType);
 }
 ```
 **会话持续时间续订**
@@ -298,12 +298,22 @@ public interface SessionDurationRenewal {
 }
 
 ```
+**身份切换**
+
+```java
+public interface IdentitySwitch {
+
+    void switchId(LoginInfo from, LoginInfo to);
+
+    Optional<LoginInfo> findSwitchIdTo(LoginInfo from);
+}
+```
 **会话存储**
 ```java
 import java.util.Collection;
 import java.util.Optional;
 
-interface SessionRepository extends SessionDurationRenewal{
+interface SessionRepository extends SessionDurationRenewal, IdentitySwitch{
 
     void save(Session session);
 
