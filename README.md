@@ -8,10 +8,11 @@
 登录相关
 - RyeCatcher.login(id, deviceType)
 
-拿到session或登录信息
+拿到session或登录信息或token信息
 - RyeCatcher.isLogin()
 - RyeCatcher.getLogin()
 - RyeCatcher.getLoginId()
+- RyeCatcher.getTokenInfo()
 - RyeCatcher.findSession()
 - RyeCatcher.getSession()
 - RyeCatcher.getSavedSessionByLogin(id, deviceType)
@@ -20,6 +21,7 @@
 - RyeCatcher.allMatch(type,...authKeys)
 - RyeCatcher.anyMatch(type,...authKeys)
 - RyeCatcher.noMatch(type,...authKeys)
+- RyeCatcher.has(type,matchRelation,...authKeys)
 - RyeCatcher.check(type,matchRelation,...authKeys)
 - RyeCatcher.checkLogin()
 
@@ -39,14 +41,14 @@ jsr-250
 - @DenyAll
 
 自定义
-- @CheckRoles(matchRelation, ...s)
-- @CheckPermissions(matchRelation, ...s)
+- @CheckRole(matchRelation, ...s)
+- @CheckPermission(CheckRole or ,matchRelation, ...s)
 
 **路径**
-- UriMatcher.matchHandler(matchPath, handler)
-- UriMatcher.match(matchPath).handler(handler)
-- UriMatcher.notMatch(matchPath)
-- UriMatcher.stopNext
+- ReqMatchesCreate.matches(String... uris).setHandler(handler)
+- ReqMatchesCreate.matches(HttpMethod method, String... uris).setHandler(handler)
+- ReqMatchesCreate.matches(Predicate<HttpServletRequest> predicate).setHandler(handler)
+- ReqMatchesCreate.matches(Predicate<HttpServletRequest> predicate).childScope(reqMatchesHandler).setHandler(handler)
 
 示例
 ```
