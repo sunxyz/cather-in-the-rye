@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.ex.BasicException;
 import org.bitmagic.lab.reycatcher.ex.ForbiddenException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
+import org.bitmagic.lab.reycatcher.utils.Base64Utils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,6 +32,6 @@ public class RcWebExceptionHandler {
 
     @ExceptionHandler(BasicException.class)
     public ResponseEntity<Object> t(BasicException e){
-        return ResponseEntity.status(SC_UNAUTHORIZED).header("WWW-Authenticate","Basic realm=\""+e.getRealm()+"\"").build();
+        return ResponseEntity.status(SC_UNAUTHORIZED).header("WWW-Authenticate","Basic realm="+ Base64Utils.encode(e.getRealm())).build();
     }
 }
