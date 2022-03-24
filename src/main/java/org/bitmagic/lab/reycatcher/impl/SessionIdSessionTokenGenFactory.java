@@ -10,6 +10,6 @@ import org.bitmagic.lab.reycatcher.utils.IdGenerator;
 public class SessionIdSessionTokenGenFactory extends AbstractSessionTokenGenFactory {
     @Override
     public SessionToken genToken(Object id, String deviceType, Object clientExtMeta) {
-        return SessionToken.of(SessionToken.TokenTypeCons.SESSION_ID, IdGenerator.genUuid());
+        return SessionToken.of(SessionToken.GenTypeCons.SESSION_ID, IdGenerator.genUuid());
     }
 }

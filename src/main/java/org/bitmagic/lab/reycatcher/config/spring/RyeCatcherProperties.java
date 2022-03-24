@@ -28,7 +28,7 @@ public class RyeCatcherProperties {
     @NoArgsConstructor
     public static class CertificationSystemInfo{
 
-        private String genTokenType = SessionToken.TokenTypeCons.SESSION_ID;
+        private String genTokenType = SessionToken.GenTypeCons.SESSION_ID;
 
         // not repeat
         private String outClientTokenName = "JSESSIONID";
