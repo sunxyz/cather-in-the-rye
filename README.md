@@ -123,7 +123,7 @@ rye-catcher:
     # 默认值JSESSIONID 当有多个路径配置时 不建议使用相同的名称 此值当session-need-out-client: true时会生效
     out-client-token-name: JSESSIONID
     # 默认值30分钟
-    session-time-out-millisecond: 180000
+    session-time-out-millisecond: 1800000
     session-need-save: true
     session-need-out-client: true
     login-mutex: true
