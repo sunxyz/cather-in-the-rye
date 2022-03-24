@@ -6,6 +6,7 @@ import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
+import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
 import javax.servlet.FilterChain;
@@ -20,7 +21,7 @@ import java.io.IOException;
  * @date 2022/03/06
  */
 @Slf4j
-public class SessionFilter extends GenericFilterBean {
+public class ContextHolderInitFilter extends GenericFilterBean {
 
     private final SessionManager sessionManager = InstanceHolder.getInstance(SessionManager.class);
 
@@ -32,5 +33,6 @@ public class SessionFilter extends GenericFilterBean {
         sessionManager.findReqTokenInfoFromClient(ConfigHolder.getOutClientTokenName()).map(reqTokenInfo -> SessionToken.of(ConfigHolder.getGenTokenType(), reqTokenInfo.getValue())).ifPresent(sessionManager::renewal);
         filterChain.doFilter(servletRequest, servletResponse);
         SessionContextHolder.clear();
+        RcRequestContextHolder.clear();
     }
 }

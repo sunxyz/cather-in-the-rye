@@ -7,7 +7,7 @@ import org.bitmagic.lab.reycatcher.impl.CompositeSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.JwtSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.impl.SessionIdSessionTokenGenFactory;
-import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
+import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -39,7 +39,7 @@ public class SpringRyeCatcherConfiguration {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }
             //優先匹配最長路徑
-            HttpServletRequest request = RyeCatcherContextHolder.getContext().getRequest();
+            HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
             List<String> mathPaths = properties.getMultiCertificationSystemInfo().keySet().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
 
             return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(path->{
@@ -86,7 +86,7 @@ public class SpringRyeCatcherConfiguration {
 
     @Bean
     public FilterRegistrationBean<Filter> registrationSessionFilter() {
-        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new SessionFilter());
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter());
         bean.addUrlPatterns("/**");
         return bean;
     }

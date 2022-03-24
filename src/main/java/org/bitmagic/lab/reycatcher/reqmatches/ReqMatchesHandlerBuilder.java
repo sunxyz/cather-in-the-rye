@@ -2,10 +2,14 @@ package org.bitmagic.lab.reycatcher.reqmatches;
 
 import lombok.RequiredArgsConstructor;
 import org.bitmagic.lab.reycatcher.func.NoArgsHandler;
+import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -92,9 +96,7 @@ public interface ReqMatchesHandlerBuilder {
         public ReqMatchesHandler setHandler(BiConsumer<HttpServletRequest, ReqMatchesFunc> handler) {
             return ReqMatchesHandler.SimpleReqMatchesHandler.of(matchPredicates, notMatchPredicates, (x, y) -> {
                 handler.accept(x, y);
-                String res = y.getReturnRes();
-                y.restReturnRes();
-                return Objects.isNull(res);
+                return !RcRequestContextHolder.getContext().containsAttr(ReqMatchesHandler.RES_FLAG);
             }, children);
         }
 

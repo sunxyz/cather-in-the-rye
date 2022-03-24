@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author yangrd
  */
-public interface RyeCatcherContext {
+public interface RcRequestContext {
 
     default HttpServletRequest getRequest(){
         return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
@@ -18,4 +18,16 @@ public interface RyeCatcherContext {
     default HttpServletResponse getResponse(){
         return ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getResponse();
     }
+
+    void setAttr(String key, Object v);
+
+    <T>T getAttr(String key, Class<T> tClass);
+
+    Object getAttr(String key);
+
+    boolean containsAttr(String key);
+
+    void removeAttr(String key);
+
+    void clearAll();
 }

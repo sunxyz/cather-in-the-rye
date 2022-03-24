@@ -4,17 +4,14 @@ import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
 import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
-import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
+import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
-import org.bitmagic.lab.reycatcher.utils.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,7 +25,7 @@ public class ServletSessionManager extends BaseSessionManager {
 
     @Override
     public Optional<ReqTokenInfo> findReqTokenInfoFromClient(String tokenName) {
-        HttpServletRequest request = RyeCatcherContextHolder.getContext().getRequest();
+        HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
         Optional<String> tokenOptional =  Optional.ofNullable(request.getHeader(tokenName));
         String token = tokenOptional.orElseGet(() ->
              Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst().orElse(request.getParameter(tokenName))
@@ -44,7 +41,7 @@ public class ServletSessionManager extends BaseSessionManager {
         } else {
             cookie.setMaxAge(-1);
         }
-        RyeCatcherContextHolder.getContext().getResponse().addCookie(cookie);
+        RcRequestContextHolder.getContext().getResponse().addCookie(cookie);
     }
 
     @Override

@@ -3,7 +3,7 @@ package org.bitmagic.lab.reycatcher.reqmatches;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.bitmagic.lab.reycatcher.support.RyeCatcherContextHolder;
+import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -13,6 +13,8 @@ import java.util.function.Predicate;
  * @author yangrd
  */
 public interface ReqMatchesHandler extends ReqMatchesFunc {
+
+     String  RES_FLAG = "RES_FLAG";
 
     boolean handler(HttpServletRequest request);
 
@@ -28,7 +30,6 @@ public interface ReqMatchesHandler extends ReqMatchesFunc {
         @Setter
         @Getter
         ReqMatchesHandler parent;
-        private String res;
 
         public static SimpleReqMatchesHandler of(List<Predicate<HttpServletRequest>> matchPredicates, List<Predicate<HttpServletRequest>> notMatchPredicates, Handler handler, List<ReqMatchesHandler> children) {
             SimpleReqMatchesHandler matchHandler = new SimpleReqMatchesHandler(matchPredicates, notMatchPredicates, handler, children);
@@ -66,18 +67,8 @@ public interface ReqMatchesHandler extends ReqMatchesFunc {
         @lombok.SneakyThrows
         @Override
         public void returnRes(String o) {
-            this.res = o;
-            RyeCatcherContextHolder.getContext().getResponse().getWriter().write(o);
-        }
-
-        @Override
-        public String getReturnRes() {
-            return res;
-        }
-
-        @Override
-        public void restReturnRes() {
-            res = null;
+            RcRequestContextHolder.getContext().setAttr(RES_FLAG,true);
+            RcRequestContextHolder.getContext().getResponse().getWriter().write(o);
         }
 
         private boolean isStopNextFlag() {

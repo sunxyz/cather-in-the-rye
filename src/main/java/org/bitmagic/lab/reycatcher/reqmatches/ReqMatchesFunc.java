@@ -7,8 +7,4 @@ public interface ReqMatchesFunc {
     void stopAllMatch();
 
     void returnRes(String o);
-
-    String getReturnRes();
-
-    void restReturnRes();
 }
