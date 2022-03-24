@@ -8,5 +8,5 @@ import java.util.Map;
  * @date 2022/03/04
  */
 public interface AuthMatchInfoProvider {
-    Map<String , Collection<String>> loadAuthMatchInfo(String ryeCatcherPath, Object id, String deviceType);
+    Map<String , Collection<String>> loadAuthMatchInfo(String certificationSystemId, Object id, String deviceType);
 }

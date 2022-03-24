@@ -112,18 +112,21 @@ class CustomAuthMatchInfoProvider implements AuthMatchInfoProvider {
 # 默认值是cookie相关 可以不做配置
 rye-catcher:
   # 认证体系
-  multi-certification-system-info:
+  certification-systems:
     # 根路径下认证信息
-    /:
-        # 默认值cookie
-        gen-token-type: cookie/jwt_token
-        # 默认值JSESSIONID 当有多个路径配置时 不建议使用相同的名称 此值当session-need-out-client: true时会生效
-        out-client-token-name: JSESSIONID
-        # 默认值30分钟
-        session-time-out-millisecond: 180000
-        session-need-save: true
-        session-need-out-client: true
-        login-mutex: true
+    id: 'default-id'
+    predicates:
+      -Path=/**
+    jwt-hmac-secret: 000
+    # 默认值cookie
+    gen-token-type: cookie/jwt_token
+    # 默认值JSESSIONID 当有多个路径配置时 不建议使用相同的名称 此值当session-need-out-client: true时会生效
+    out-client-token-name: JSESSIONID
+    # 默认值30分钟
+    session-time-out-millisecond: 180000
+    session-need-save: true
+    session-need-out-client: true
+    login-mutex: true
 ```
 **2.开始**
 

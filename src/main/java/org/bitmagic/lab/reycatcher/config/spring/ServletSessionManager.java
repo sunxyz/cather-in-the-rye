@@ -35,7 +35,7 @@ public class ServletSessionManager extends BaseSessionManager {
 
     @Override
     public void outSession2Client(String tokenName, Session session) {
-        Cookie cookie = new Cookie(tokenName, session.getSessionToken().getToken());
+        Cookie cookie = new Cookie(tokenName, SessionToken.GenTypeCons.JWT.equals(session.getSessionToken().getGenType())? "Bearer "+session.getSessionToken().getToken():session.getSessionToken().getToken());
         if (session.getMaxInactiveInterval() == 0) {
             cookie.setMaxAge(session.getMaxInactiveInterval());
         } else {

@@ -109,7 +109,7 @@ public class MemorySessionRepository implements SessionRepository {
     }
 
     private String genKey(Object id, String deviceType) {
-        return String.format("%s@%s@%s", ConfigHolder.getRyeCatcherPath(), id, deviceType);
+        return String.format("%s@%s@%s", ConfigHolder.getCertificationSystemId(), id, deviceType);
     }
 
     protected Predicate<Session> filter0(SessionFilterInfo filterInfo){

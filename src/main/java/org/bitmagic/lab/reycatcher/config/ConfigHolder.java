@@ -3,6 +3,8 @@ package org.bitmagic.lab.reycatcher.config;
 import com.auth0.jwt.algorithms.Algorithm;
 import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -12,10 +14,11 @@ import java.util.function.Supplier;
  */
 public class ConfigHolder {
 
-    public static Supplier<RyeCatcherProperties.CertificationSystemInfo> delegate;
+    private static final Map<String, Algorithm> SYS_ID_2_ALGORITHM_CACHE = new HashMap<>();
+    public static Supplier<RyeCatcherProperties.CertificationSystemDefine> delegate;
 
-    public static String getRyeCatcherPath() {
-        return delegate.get().getRyeCatcherPath();
+    public static String getCertificationSystemId() {
+        return delegate.get().getId();
     }
 
     public static String getGenTokenType() {
@@ -43,11 +46,13 @@ public class ConfigHolder {
     }
 
     public static Algorithm getAlgorithm() {
-        Algorithm instance = InstanceHolder.getInstance(Algorithm.class);
-        return Objects.isNull(instance) ? Algorithm.HMAC512(getConfigInfo().getJwtHmacSecret()) : instance;
+        return SYS_ID_2_ALGORITHM_CACHE.computeIfAbsent(getCertificationSystemId(), k -> {
+            Algorithm instance = InstanceHolder.getInstance(Algorithm.class);
+            return Objects.isNull(instance) ? Algorithm.HMAC512(getConfigInfo().getJwtHmacSecret()) : instance;
+        });
     }
 
-    private static RyeCatcherProperties.CertificationSystemInfo getConfigInfo() {
+    private static RyeCatcherProperties.CertificationSystemDefine getConfigInfo() {
         return delegate.get();
     }
 

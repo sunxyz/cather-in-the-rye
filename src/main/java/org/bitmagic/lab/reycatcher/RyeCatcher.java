@@ -40,7 +40,7 @@ public class RyeCatcher {
         if (ConfigHolder.isLoginMutex() && ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
                 SESSION_MANAGER.replaced(session1);
-                ACTION_LISTENER.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
+                ACTION_LISTENER.doBeReplaced(ConfigHolder.getCertificationSystemId(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
             });
         }
         if (ConfigHolder.isNeedSave()) {
@@ -50,7 +50,7 @@ public class RyeCatcher {
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
-        ACTION_LISTENER.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
+        ACTION_LISTENER.doLogin(ConfigHolder.getCertificationSystemId(), id, deviceType);
         return getTokenInfo();
     }
 
@@ -70,7 +70,7 @@ public class RyeCatcher {
         Session session = getSession();
         SessionToken sessionToken = session.getSessionToken();
         Optional<ReqTokenInfo> optionalReqTokenInfo = SESSION_MANAGER.findReqTokenInfoFromClient(ConfigHolder.getOutClientTokenName());
-        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), ConfigHolder.getRyeCatcherPath(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
+        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), ConfigHolder.getCertificationSystemId(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
     }
 
     public static Session getSession() {
@@ -131,14 +131,14 @@ public class RyeCatcher {
     public static void switchTo(Object id, String deviceType) {
         LoginInfo login = getLogin();
         SESSION_MANAGER.switchId(login, LoginInfo.of(id, deviceType));
-        ACTION_LISTENER.doSwitch(ConfigHolder.getRyeCatcherPath(), login.getUserId(), login.getDeviceType(), id, deviceType);
+        ACTION_LISTENER.doSwitch(ConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType(), id, deviceType);
         SessionContextHolder.clear();
     }
 
     public static void stopSwitch() {
         LoginInfo login = getLogin();
         SESSION_MANAGER.switchId(login, null);
-        ACTION_LISTENER.doStopSwitch(ConfigHolder.getRyeCatcherPath(), login.getUserId(), login.getDeviceType());
+        ACTION_LISTENER.doStopSwitch(ConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType());
         SessionContextHolder.clear();
     }
 
@@ -151,7 +151,7 @@ public class RyeCatcher {
             session.setMaxInactiveInterval(0);
             SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
-        ACTION_LISTENER.doLogout(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doLogout(ConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     public static void kickOut(Object id) {
@@ -163,12 +163,12 @@ public class RyeCatcher {
         if (ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        ACTION_LISTENER.doKicked(ConfigHolder.getRyeCatcherPath(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doKicked(ConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     private static Collection<String> listAuthorizedInfo(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(ConfigHolder.getRyeCatcherPath(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(ConfigHolder.getCertificationSystemId(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {

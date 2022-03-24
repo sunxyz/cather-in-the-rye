@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author yangrd
@@ -19,12 +19,19 @@ public class RyeCatcherProperties {
     /**
      * key: Path prefix value: info
      */
-    private Map<String,CertificationSystemInfo> multiCertificationSystemInfo;
+    private List<CertificationSystemDefine> certificationSystems;
 
     @Data
     @AllArgsConstructor(staticName = "of")
     @NoArgsConstructor
-    public static class CertificationSystemInfo{
+    public static class CertificationSystemDefine {
+
+        // not set val
+        private String id;
+
+        private List<String> predicates;
+
+        private String jwtHmacSecret;
 
         private String genTokenType = SessionToken.GenTypeCons.SESSION_ID;
 
@@ -39,10 +46,6 @@ public class RyeCatcherProperties {
 
         private boolean loginMutex;
 
-        // not set val
-        private String ryeCatcherPath;
-
-        private String jwtHmacSecret;
     }
 
 

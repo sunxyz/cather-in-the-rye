@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
@@ -12,8 +13,6 @@ import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -23,10 +22,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.Filter;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,26 +37,34 @@ import java.util.stream.Collectors;
 @Configuration
 @AutoConfigureBefore({ErrorMvcAutoConfiguration.class})
 @EnableConfigurationProperties(RyeCatcherProperties.class)
+
+@Slf4j
 public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
-    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true, "/", "");
+    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+
+    private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), null, SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
     public void init(RyeCatcherProperties properties) {
         ConfigHolder.delegate = () -> {
-            if (Objects.isNull(properties.getMultiCertificationSystemInfo())) {
+            if (Objects.isNull(properties.getCertificationSystems())) {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }
-            //優先匹配最長路徑
-            HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
-            List<String> mathPaths = properties.getMultiCertificationSystemInfo().keySet().stream().filter(path -> request.getRequestURI().indexOf(path) == 0).collect(Collectors.toList());
-
-            return mathPaths.isEmpty() ? DEFAULT_CERTIFICATION_SYSTEM_INFO : mathPaths.stream().max(Comparator.comparingInt(String::length)).map(path -> {
-                RyeCatcherProperties.CertificationSystemInfo certificationSystemInfo = properties.getMultiCertificationSystemInfo().get(path);
-                certificationSystemInfo.setRyeCatcherPath(path);
-                return certificationSystemInfo;
-            }).orElseThrow(RuntimeException::new);
+            String requestUri = RcRequestContextHolder.getContext().getRequest().getRequestURI();
+            List<RyeCatcherProperties.CertificationSystemDefine> systemDefines = properties.getCertificationSystems().stream().filter(o -> ANT_PATH_MATCHER.match(o.getPredicates().get(0).replace("Path=", ""), requestUri)).collect(Collectors.toList());
+            if (systemDefines.size() != 1) {
+                throw new IllegalStateException("systemDefines == 1");
+            }
+            return systemDefines.iterator().next();
         };
-        InstanceHolder.delegate = SpringContextHolder::getBean;
+        InstanceHolder.delegate =c->{
+            try {
+                return SpringContextHolder.getBean(c);
+            }catch (BeansException beansException){
+                log.warn("BeansException msg:{}",beansException.getMessage());
+                return null;
+            }
+        };
     }
 
     @ConditionalOnMissingBean(SessionRepository.class)
@@ -103,20 +110,22 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    public RcErrorAttributes rcErrorAttributes(){
+    public RcErrorAttributes rcErrorAttributes() {
         return new RcErrorAttributes();
     }
 
     @Bean
-    public RcWebExceptionHandler rcWebExceptionHandler(){return new RcWebExceptionHandler();}
+    public RcWebExceptionHandler rcWebExceptionHandler() {
+        return new RcWebExceptionHandler();
+    }
 
     @Bean
-    public SpringContextHolder springContextHolder(){
+    public SpringContextHolder springContextHolder() {
         return new SpringContextHolder();
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        init( applicationContext.getBean(RyeCatcherProperties.class));
+        init(applicationContext.getBean(RyeCatcherProperties.class));
     }
 }
