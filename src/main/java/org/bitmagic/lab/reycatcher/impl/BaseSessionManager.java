@@ -35,13 +35,12 @@ public class BaseSessionManager extends AbstractSessionManager {
             SessionToken sessionToken = SessionToken.of(ConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
             if (ConfigHolder.isNeedSave()) {
                 Session session = findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
-                if(session.isReplaced()){
+                if (session.isReplaced()) {
                     remove(session);
-                    throw new ReplacedException(String.format("token:%s, loginId:%s,loginType:%s",reqTokenInfo.getValue(),session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType()));
-                }else {
-                    renewal(sessionToken);
-                    return session;
+                    throw new ReplacedException(String.format("token:%s, loginId:%s,loginType:%s", reqTokenInfo.getValue(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType()));
                 }
+                renewal(sessionToken);
+                return session;
             } else if (SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType())) {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
                 DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
@@ -49,21 +48,21 @@ public class BaseSessionManager extends AbstractSessionManager {
                 Object meta = Collections.unmodifiableMap((Map) jwt.getClaim("ext")); //jwt->ext
                 return Session.of(sessionToken, loginInfo, meta);
             } else {
-               throw new RyeCatcherException("not support");
+                throw new RyeCatcherException("not support");
             }
         });
         return currentSession.map(this::getSwitchSessionOrSelf);
     }
 
     private Session getSwitchSessionOrSelf(Session session) {
-        return findSwitchIdTo(session.getLoginInfo()).map(switchInfo->{
+        return findSwitchIdTo(session.getLoginInfo()).map(switchInfo -> {
             if (ConfigHolder.isNeedSave()) {
-                return findByLoginInfo(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(()->{
+                return findByLoginInfo(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(() -> {
                     Session switchSession = Session.of(SessionToken.of("random", UUID.randomUUID().toString()), switchInfo, new HashMap<>(8));
                     save(switchSession);
                     return switchSession;
                 });
-            }else {
+            } else {
                 return genSession(switchInfo.getUserId(), switchInfo.getDeviceType(), session.getSessionToken().getGenType(), new HashMap<>(8), null);
             }
         }).orElse(session);
@@ -81,8 +80,8 @@ public class BaseSessionManager extends AbstractSessionManager {
 
     @Override
     public void replaced(Session session) {
-       Session.DefaultSession s = Session.from(session);
-       s.setReplaced(true);
+        Session.DefaultSession s = Session.from(session);
+        s.setReplaced(true);
     }
 
 }
