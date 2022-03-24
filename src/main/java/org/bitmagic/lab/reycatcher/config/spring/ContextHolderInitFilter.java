@@ -1,7 +1,7 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.extern.slf4j.Slf4j;
-import org.bitmagic.lab.reycatcher.SessionContextHolder;
+import org.bitmagic.lab.reycatcher.support.SessionContextHolder;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;

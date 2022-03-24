@@ -1,4 +1,6 @@
-package org.bitmagic.lab.reycatcher;
+package org.bitmagic.lab.reycatcher.support;
+
+import org.bitmagic.lab.reycatcher.Session;
 
 import java.util.Optional;
 

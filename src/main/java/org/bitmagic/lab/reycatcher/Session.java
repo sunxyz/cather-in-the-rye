@@ -8,7 +8,7 @@ import org.bitmagic.lab.reycatcher.utils.IdGenerator;
 
 import java.util.Map;
 
-import static org.bitmagic.lab.reycatcher.SessionToken.TokenTypeCons.SESSION_ID;
+import static org.bitmagic.lab.reycatcher.SessionToken.GenTypeCons.SESSION_ID;
 
 /**
  * @author yangrd
