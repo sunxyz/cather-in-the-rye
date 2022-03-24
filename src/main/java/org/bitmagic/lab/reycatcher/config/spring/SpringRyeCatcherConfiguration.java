@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Configuration
 public class SpringRyeCatcherConfiguration {
 
-    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.TokenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true,"/", "");
+    private static final RyeCatcherProperties.CertificationSystemInfo DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemInfo.of(SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true,"/", "");
 
     @PostConstruct
     public void init(RyeCatcherProperties properties) {

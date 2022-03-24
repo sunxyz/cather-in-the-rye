@@ -18,6 +18,6 @@ public class JwtSessionTokenGenFactory extends AbstractSessionTokenGenFactory {
         claims.put("deviceType",deviceType);
         claims.put("ext", (Map) clientExtMeta);
         String token = JwtUtils.createToken(ConfigHolder.getAlgorithm(), id.toString(), System.currentTimeMillis() + ConfigHolder.getSessionTimeoutMillisecond(), claims);
-        return SessionToken.of(SessionToken.TokenTypeCons.JWT, token);
+        return SessionToken.of(SessionToken.GenTypeCons.JWT, token);
     }
 }
