@@ -12,6 +12,7 @@ import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,7 +29,7 @@ public class ServletSessionManager extends BaseSessionManager {
         HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
         Optional<String> tokenOptional =  Optional.ofNullable(request.getHeader(tokenName));
         String token = tokenOptional.orElseGet(() ->
-             Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst().orElse(request.getParameter(tokenName))
+                Objects.nonNull(request.getCookies())?Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst().orElse(request.getParameter(tokenName)):request.getParameter(tokenName)
         );
         return TokenParseUtils.findReqTokenInfo(token);
     }
