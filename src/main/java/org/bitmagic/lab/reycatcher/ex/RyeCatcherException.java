@@ -1,5 +1,8 @@
 package org.bitmagic.lab.reycatcher.ex;
 
+/**
+ * @author yangrd
+ */
 public class RyeCatcherException extends RuntimeException{
 
     public RyeCatcherException() {

@@ -37,17 +37,17 @@ public class RyeCatcher {
 
     public static TokenInfo login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
         Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
-        if (ConfigHolder.isNeedSave()) {
-            SESSION_MANAGER.save(session);
-        }
-        if (ConfigHolder.isNeedOutClient()) {
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
-        }
         if (ConfigHolder.isLoginMutex() && ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
                 SESSION_MANAGER.replaced(session1);
                 ACTION_LISTENER.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
             });
+        }
+        if (ConfigHolder.isNeedSave()) {
+            SESSION_MANAGER.save(session);
+        }
+        if (ConfigHolder.isNeedOutClient()) {
+            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
         ACTION_LISTENER.doLogin(ConfigHolder.getRyeCatcherPath(), id, deviceType);
@@ -105,7 +105,7 @@ public class RyeCatcher {
     }
 
     public static void check(String type, MatchRelation matchRelation, String... authKeys) {
-        ValidateUtils.checkAuthority(has(type, matchRelation, authKeys), matchRelation+": "+ String.join(",", authKeys));
+        ValidateUtils.checkGrant(has(type, matchRelation, authKeys), type+" matchRelation:"+matchRelation+": "+ String.join(",", authKeys));
     }
 
     public static boolean has(String type, MatchRelation matchRelation, String... authKeys){

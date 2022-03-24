@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.support.SessionContextHolder;
 import org.bitmagic.lab.reycatcher.SessionManager;
@@ -21,9 +22,10 @@ import java.io.IOException;
  * @date 2022/03/06
  */
 @Slf4j
+@RequiredArgsConstructor
 public class ContextHolderInitFilter extends GenericFilterBean {
 
-    private final SessionManager sessionManager = InstanceHolder.getInstance(SessionManager.class);
+    private final SessionManager sessionManager;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

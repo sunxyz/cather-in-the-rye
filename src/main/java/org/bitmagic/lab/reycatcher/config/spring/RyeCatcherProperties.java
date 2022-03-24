@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 import java.util.Map;
 
@@ -13,7 +12,6 @@ import java.util.Map;
  * @author yangrd
  * @date 2022/03/06
  */
-@EnableConfigurationProperties
 @ConfigurationProperties("rye-catcher")
 @Data
 public class RyeCatcherProperties {

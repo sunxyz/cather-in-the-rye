@@ -1,6 +1,6 @@
 package org.bitmagic.lab.reycatcher.utils;
 
-import org.bitmagic.lab.reycatcher.ex.UnauthorizedException;
+import org.bitmagic.lab.reycatcher.ex.ForbiddenException;
 import org.bitmagic.lab.reycatcher.ex.BasicException;
 import org.bitmagic.lab.reycatcher.ex.BearerException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
@@ -25,9 +25,9 @@ public final class ValidateUtils {
         }
     }
 
-    public static void checkAuthority(boolean pass, String error) {
+    public static void checkGrant(boolean pass, String error) {
         if (!pass) {
-            throw new UnauthorizedException(error);
+            throw new ForbiddenException(error);
         }
     }
 

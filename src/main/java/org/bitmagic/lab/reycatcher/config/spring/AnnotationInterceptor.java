@@ -31,7 +31,7 @@ public class AnnotationInterceptor implements HandlerInterceptor {
             if (Objects.nonNull(checkPermission)) {
                 CheckRole or = checkPermission.or();
                 boolean flag = RyeCatcher.has("perm", checkPermission.matchRelation(), checkPermission.value())||(or.value().length != 0 && RyeCatcher.has("role", or.matchRelation(), or.value()));
-                ValidateUtils.checkAuthority(flag, checkPermission.matchRelation()+": "+String.join(",", checkPermission.value())+" or "+or.matchRelation()+": " + String.join(",", or.value()));
+                ValidateUtils.checkGrant(flag, checkPermission.matchRelation()+": "+String.join(",", checkPermission.value())+" or "+or.matchRelation()+": " + String.join(",", or.value()));
             }
             CheckRole checkRole = getAnnotation(handler1, CheckRole.class);
             if (Objects.nonNull(checkRole)) {
@@ -50,7 +50,7 @@ public class AnnotationInterceptor implements HandlerInterceptor {
             if (Objects.nonNull(checkBasic)) {
                 RcBasicHelper.check(checkBasic.value(), checkBasic.realm());
             }
-            ValidateUtils.checkAuthority(Objects.isNull(getAnnotation(handler1, DenyAll.class)), "denyAll!");
+            ValidateUtils.checkGrant(Objects.isNull(getAnnotation(handler1, DenyAll.class)), "denyAll!");
             return true;
         } else {
             return true;
