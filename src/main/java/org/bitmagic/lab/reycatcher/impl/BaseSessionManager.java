@@ -4,8 +4,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
+import org.bitmagic.lab.reycatcher.ex.ReplacedException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
-import org.bitmagic.lab.reycatcher.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
@@ -33,10 +33,16 @@ public class BaseSessionManager extends AbstractSessionManager {
     public Optional<Session> getCurrentSession(String tokenName) {
         Optional<Session> currentSession = findReqTokenInfoFromClient(tokenName).map(reqTokenInfo -> {
             SessionToken sessionToken = SessionToken.of(ConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
-            renewal(sessionToken);
             if (ConfigHolder.isNeedSave()) {
-                return findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
-            } else if (SessionToken.TokenTypeCons.JWT.equals(sessionToken.getGenType())) {
+                Session session = findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
+                if(session.isReplaced()){
+                    remove(session);
+                    throw new ReplacedException(String.format("token:%s, loginId:%s,loginType:%s",reqTokenInfo.getValue(),session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType()));
+                }else {
+                    renewal(sessionToken);
+                    return session;
+                }
+            } else if (SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType())) {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
                 DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
@@ -73,5 +79,10 @@ public class BaseSessionManager extends AbstractSessionManager {
         throw new RuntimeException();
     }
 
+    @Override
+    public void replaced(Session session) {
+       Session.DefaultSession s = Session.from(session);
+       s.setReplaced(true);
+    }
 
 }

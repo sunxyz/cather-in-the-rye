@@ -15,8 +15,8 @@ public class SessionContextHolder {
 
     private static final ThreadLocal<SessionContext> CACHE = ThreadLocal.withInitial(()-> SessionContext.ofNullable(sessionManager.getCurrentSession(ConfigHolder.getOutClientTokenName()).orElseThrow(NotFoundSessionException::new)));
 
-    public static void setContext(SessionContext reyCatcherContext){
-        CACHE.set(reyCatcherContext);
+    public static void setContext(SessionContext sessionContext){
+        CACHE.set(sessionContext);
     }
 
     public static SessionContext getContext(){

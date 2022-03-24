@@ -9,7 +9,7 @@ import lombok.Value;
 @Value(staticConstructor = "of")
 public class SessionToken {
 
-    interface GenTypeCons {
+   public interface GenTypeCons {
          String JWT = "jwt";
          String SESSION_ID = "session_id";
     }

@@ -17,7 +17,7 @@ import static org.bitmagic.lab.reycatcher.SessionToken.GenTypeCons.SESSION_ID;
 public interface Session {
 
     static Session of(SessionToken sessionToken, LoginInfo loginInfo, Object meta) {
-        return DefaultSession.of(SESSION_ID.equals(sessionToken.getGenType()) ? sessionToken.getToken() : IdGenerator.genUuid(), sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeoutMillisecond());
+        return DefaultSession.of(SESSION_ID.equals(sessionToken.getGenType()) ? sessionToken.getToken() : IdGenerator.genUuid(), sessionToken, loginInfo, meta, System.currentTimeMillis(), System.currentTimeMillis(), ConfigHolder.getSessionTimeoutMillisecond(),false);
     }
 
     static <T extends Session> T from(Session session) {
@@ -46,6 +46,8 @@ public interface Session {
 
     void removeAttribute(String var1);
 
+    boolean isReplaced();
+
     @AllArgsConstructor(staticName = "of")
     @Getter
     class DefaultSession implements Session {
@@ -65,6 +67,12 @@ public interface Session {
 
         @Setter
         int maxInactiveInterval;
+
+        /**
+         * 被取代
+         */
+        @Setter
+        boolean replaced;
 
         @Override
         public void setAttribute(String key, Object val) {

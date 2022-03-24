@@ -45,7 +45,7 @@ public class RyeCatcher {
         }
         if (ConfigHolder.isLoginMutex() && ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
-                SESSION_MANAGER.remove(session1);
+                SESSION_MANAGER.replaced(session1);
                 ACTION_LISTENER.doBeReplaced(ConfigHolder.getRyeCatcherPath(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
             });
         }

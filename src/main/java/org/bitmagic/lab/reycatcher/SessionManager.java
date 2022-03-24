@@ -15,4 +15,6 @@ public interface SessionManager extends SessionRepository {
     Optional<ReqTokenInfo> findReqTokenInfoFromClient(String tokenName);
 
     void outSession2Client(String tokenName, Session session);
+
+    void replaced(Session session);
 }
