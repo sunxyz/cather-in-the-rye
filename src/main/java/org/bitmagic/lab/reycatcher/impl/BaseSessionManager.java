@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher.impl;
 
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.ConfigHolder;
@@ -45,7 +46,8 @@ public class BaseSessionManager extends AbstractSessionManager {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
                 DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
-                Object meta = Collections.unmodifiableMap((Map) jwt.getClaim("ext")); //jwt->ext
+                Claim ext = jwt.getClaim("ext");
+                Object meta = Collections.unmodifiableMap(ext.asMap()); //jwt->ext
                 return Session.of(sessionToken, loginInfo, meta);
             } else {
                 throw new RyeCatcherException("not support");

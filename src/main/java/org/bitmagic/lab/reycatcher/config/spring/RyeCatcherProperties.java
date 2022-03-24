@@ -38,7 +38,7 @@ public class RyeCatcherProperties {
         // not repeat
         private String outClientTokenName = "JSESSIONID";
 
-        private int sessionTimeOutMillisecond = 30*60*100;
+        private int sessionTimeOutMillisecond = 30*60*1000;
 
         private boolean sessionNeedSave;
 
