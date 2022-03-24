@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.support;
+package org.bitmagic.lab.reycatcher;
 
 import lombok.Value;
 

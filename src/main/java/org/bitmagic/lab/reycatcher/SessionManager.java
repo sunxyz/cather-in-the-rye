@@ -1,7 +1,5 @@
 package org.bitmagic.lab.reycatcher;
 
-import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
-
 import java.util.Optional;
 
 /**

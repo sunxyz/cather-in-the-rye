@@ -1,14 +1,12 @@
 package org.bitmagic.lab.reycatcher;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 /**
  * @author yangrd
  */
-@Value
-@RequiredArgsConstructor(staticName = "of")
+@Value(staticConstructor = "of")
 public class TokenInfo {
 
     String accessToken;

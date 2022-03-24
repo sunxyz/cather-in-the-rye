@@ -5,7 +5,7 @@ import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.BaseSessionManager;
-import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
+import org.bitmagic.lab.reycatcher.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 

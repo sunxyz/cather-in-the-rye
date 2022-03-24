@@ -4,7 +4,6 @@ import org.bitmagic.lab.reycatcher.config.ConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
-import org.bitmagic.lab.reycatcher.support.ReqTokenInfo;
 import org.bitmagic.lab.reycatcher.support.SessionContext;
 import org.bitmagic.lab.reycatcher.support.SessionContextHolder;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
