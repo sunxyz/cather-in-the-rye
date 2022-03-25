@@ -171,7 +171,7 @@ public class RyeCatcher {
     }
 
     private static Collection<String> listAuthorizedInfo(String type) {
-        if (DynamicRcConfigHolder.getGenTokenType().equals(SessionToken.GenTypeCons.JWT) && DynamicRcConfigHolder.isEnableJwtAuthMathInfo()) {
+        if (DynamicRcConfigHolder.getGenTokenType().equals(SessionToken.GenTypeCons.JWT) && DynamicRcConfigHolder.isEnableJwtAuthMatchInfo()) {
             Object v = getSession().getAttribute("auth-"+type);
             return Objects.isNull(v)?Collections.emptyList():((Claim)v).asList(String.class);
         }
