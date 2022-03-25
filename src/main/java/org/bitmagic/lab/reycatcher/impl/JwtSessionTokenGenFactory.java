@@ -1,7 +1,7 @@
 package org.bitmagic.lab.reycatcher.impl;
 
 import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ public class JwtSessionTokenGenFactory extends AbstractSessionTokenGenFactory {
         Map<String,Object> claims = new HashMap<>(3);
         claims.put("deviceType",deviceType);
         claims.put("ext", (Map) clientExtMeta);
-        String token = JwtUtils.createToken(ConfigHolder.getAlgorithm(), id.toString(), System.currentTimeMillis() + ConfigHolder.getSessionTimeoutMillisecond(), claims);
+        String token = JwtUtils.createToken(DynamicRcConfigHolder.getAlgorithm(), id.toString(), System.currentTimeMillis() + DynamicRcConfigHolder.getSessionTimeoutMillisecond(), claims);
         return SessionToken.of(SessionToken.GenTypeCons.JWT, token);
     }
 }

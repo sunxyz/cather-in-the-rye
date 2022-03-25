@@ -12,7 +12,7 @@ import java.util.function.Supplier;
  * @author yangrd
  * @date 2022/03/06
  */
-public class ConfigHolder {
+public class DynamicRcConfigHolder {
 
     private static final Map<String, Algorithm> SYS_ID_2_ALGORITHM_CACHE = new HashMap<>();
     public static Supplier<RyeCatcherProperties.CertificationSystemDefine> delegate;

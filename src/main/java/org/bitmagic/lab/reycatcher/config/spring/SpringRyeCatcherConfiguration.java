@@ -2,7 +2,7 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.*;
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.impl.CompositeSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.JwtSessionTokenGenFactory;
@@ -47,7 +47,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
     private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), null, SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
     public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate) {
-        ConfigHolder.delegate = () -> {
+        DynamicRcConfigHolder.delegate = () -> {
             if (Objects.isNull(properties.getCertificationSystems())) {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }

@@ -3,7 +3,7 @@ package org.bitmagic.lab.reycatcher.impl;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.ex.ReplacedException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
@@ -33,8 +33,8 @@ public class BaseSessionManager extends AbstractSessionManager {
     @Override
     public Optional<Session> getCurrentSession(String tokenName) {
         Optional<Session> currentSession = findReqTokenInfoFromClient(tokenName).map(reqTokenInfo -> {
-            SessionToken sessionToken = SessionToken.of(ConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
-            if (ConfigHolder.isNeedSave()) {
+            SessionToken sessionToken = SessionToken.of(DynamicRcConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
+            if (DynamicRcConfigHolder.isNeedSave()) {
                 Session session = findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
                 if (session.isReplaced()) {
                     remove(session);
@@ -44,7 +44,7 @@ public class BaseSessionManager extends AbstractSessionManager {
                 return session;
             } else if (SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType())) {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
-                DecodedJWT jwt = JwtUtils.verifierGetJwt(ConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
+                DecodedJWT jwt = JwtUtils.verifierGetJwt(DynamicRcConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
                 Claim ext = jwt.getClaim("ext");
                 Object meta = Collections.unmodifiableMap(ext.asMap()); //jwt->ext
@@ -58,7 +58,7 @@ public class BaseSessionManager extends AbstractSessionManager {
 
     private Session getSwitchSessionOrSelf(Session session) {
         return findSwitchIdTo(session.getLoginInfo()).map(switchInfo -> {
-            if (ConfigHolder.isNeedSave()) {
+            if (DynamicRcConfigHolder.isNeedSave()) {
                 return findByLoginInfo(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(() -> {
                     Session switchSession = Session.of(SessionToken.of("random", UUID.randomUUID().toString()), switchInfo, new HashMap<>(8));
                     save(switchSession);

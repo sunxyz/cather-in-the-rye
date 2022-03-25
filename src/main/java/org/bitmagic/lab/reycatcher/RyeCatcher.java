@@ -1,6 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
-import org.bitmagic.lab.reycatcher.config.ConfigHolder;
+import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
@@ -36,21 +36,21 @@ public class RyeCatcher {
     }
 
     public static TokenInfo login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
-        Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
-        if (ConfigHolder.isSameDriveMutex() && ConfigHolder.isNeedSave()) {
+        Session session = SESSION_MANAGER.genSession(id, deviceType, DynamicRcConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
+        if (DynamicRcConfigHolder.isSameDriveMutex() && DynamicRcConfigHolder.isNeedSave()) {
             SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
                 SESSION_MANAGER.replaced(session1);
-                ACTION_LISTENER.doBeReplaced(ConfigHolder.getCertificationSystemId(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
+                ACTION_LISTENER.doBeReplaced(DynamicRcConfigHolder.getCertificationSystemId(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());
             });
         }
-        if (ConfigHolder.isNeedSave()) {
+        if (DynamicRcConfigHolder.isNeedSave()) {
             SESSION_MANAGER.save(session);
         }
-        if (ConfigHolder.isNeedOutClient()) {
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
+        if (DynamicRcConfigHolder.isNeedOutClient()) {
+            SESSION_MANAGER.outSession2Client(DynamicRcConfigHolder.getOutClientTokenName(), session);
         }
         SessionContextHolder.setContext(SessionContext.of(session));
-        ACTION_LISTENER.doLogin(ConfigHolder.getCertificationSystemId(), id, deviceType);
+        ACTION_LISTENER.doLogin(DynamicRcConfigHolder.getCertificationSystemId(), id, deviceType);
         return getTokenInfo();
     }
 
@@ -69,8 +69,8 @@ public class RyeCatcher {
     public static TokenInfo getTokenInfo() {
         Session session = getSession();
         SessionToken sessionToken = session.getSessionToken();
-        Optional<ReqTokenInfo> optionalReqTokenInfo = SESSION_MANAGER.findReqTokenInfoFromClient(ConfigHolder.getOutClientTokenName());
-        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), ConfigHolder.getCertificationSystemId(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
+        Optional<ReqTokenInfo> optionalReqTokenInfo = SESSION_MANAGER.findReqTokenInfoFromClient(DynamicRcConfigHolder.getOutClientTokenName());
+        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), DynamicRcConfigHolder.getCertificationSystemId(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
     }
 
     public static Session getSession() {
@@ -131,27 +131,27 @@ public class RyeCatcher {
     public static void switchTo(Object id, String deviceType) {
         LoginInfo login = getLogin();
         SESSION_MANAGER.switchId(login, LoginInfo.of(id, deviceType));
-        ACTION_LISTENER.doSwitch(ConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType(), id, deviceType);
+        ACTION_LISTENER.doSwitch(DynamicRcConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType(), id, deviceType);
         SessionContextHolder.clear();
     }
 
     public static void stopSwitch() {
         LoginInfo login = getLogin();
         SESSION_MANAGER.switchId(login, null);
-        ACTION_LISTENER.doStopSwitch(ConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType());
+        ACTION_LISTENER.doStopSwitch(DynamicRcConfigHolder.getCertificationSystemId(), login.getUserId(), login.getDeviceType());
         SessionContextHolder.clear();
     }
 
     public static void logout() {
         Session session = getSession();
-        if (ConfigHolder.isNeedSave()) {
+        if (DynamicRcConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        if (ConfigHolder.isNeedOutClient()) {
+        if (DynamicRcConfigHolder.isNeedOutClient()) {
             session.setMaxInactiveInterval(0);
-            SESSION_MANAGER.outSession2Client(ConfigHolder.getOutClientTokenName(), session);
+            SESSION_MANAGER.outSession2Client(DynamicRcConfigHolder.getOutClientTokenName(), session);
         }
-        ACTION_LISTENER.doLogout(ConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doLogout(DynamicRcConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     public static void kickOut(Object id) {
@@ -160,15 +160,15 @@ public class RyeCatcher {
 
     public static void kickOut(Object id, String deviceType) {
         Session session = getSavedSessionByLogin(id, deviceType);
-        if (ConfigHolder.isNeedSave()) {
+        if (DynamicRcConfigHolder.isNeedSave()) {
             SESSION_MANAGER.remove(session);
         }
-        ACTION_LISTENER.doKicked(ConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        ACTION_LISTENER.doKicked(DynamicRcConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
     }
 
     private static Collection<String> listAuthorizedInfo(String type) {
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(ConfigHolder.getCertificationSystemId(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(DynamicRcConfigHolder.getCertificationSystemId(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {
