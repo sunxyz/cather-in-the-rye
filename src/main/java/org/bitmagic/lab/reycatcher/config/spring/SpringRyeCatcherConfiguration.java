@@ -133,7 +133,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
     }
 
     private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request){
-        return certificationSystemDefine.getPredicates().stream().anyMatch(t -> {
+        return certificationSystemDefine.getPredicates().stream().allMatch(t -> {
 //                    Path=k:v,k1:v1
             String[] split = t.split("=");
             String name = split[0];
