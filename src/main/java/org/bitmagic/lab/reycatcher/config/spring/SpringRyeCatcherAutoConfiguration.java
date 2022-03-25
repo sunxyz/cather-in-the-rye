@@ -11,9 +11,11 @@ import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.impl.SessionIdSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.predicates.CertificationSystemPredicate;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
+import org.bitmagic.lab.reycatcher.support.RyeCatcherServletFilter;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,7 +26,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.annotation.Order;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
@@ -101,12 +102,22 @@ public class SpringRyeCatcherAutoConfiguration implements ApplicationContextAwar
     }
 
     @Bean
-    @Order(Integer.MAX_VALUE)
     public FilterRegistrationBean<Filter> registrationSessionFilter(SessionManager sessionManager) {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
         bean.setName("registrationSessionFilter");
-        bean.setOrder(-300);
+        bean.setOrder(10);
+        return bean;
+    }
+
+
+    @ConditionalOnBean(RyeCatcherServletFilter.class)
+    @Bean
+    public FilterRegistrationBean<Filter> registrationRyeCatcherServletFilter(RyeCatcherServletFilter ryeCatcherServletFilter) {
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(ryeCatcherServletFilter);
+        bean.addUrlPatterns("/*");
+        bean.setName("RyeCatcherServletFilter");
+        bean.setOrder(100);
         return bean;
     }
 
