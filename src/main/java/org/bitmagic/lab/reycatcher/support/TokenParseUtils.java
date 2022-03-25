@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public class TokenParseUtils {
 
-    public static Optional<ReqTokenInfo> findReqTokenInfo(String token) {
+    public static Optional<ReqTokenInfo> parseReqTokenInfo(String token) {
         String type = null;
         String value = token;
         if(StringUtils.isNotEmpty(token)){

@@ -31,7 +31,7 @@ public class ServletSessionManager extends BaseSessionManager {
         String token = tokenOptional.orElseGet(() ->
                 Objects.nonNull(request.getCookies())?Arrays.stream(request.getCookies()).filter(cookie -> cookie.getName().equals(tokenName)).map(Cookie::getValue).findFirst().orElse(request.getParameter(tokenName)):request.getParameter(tokenName)
         );
-        return TokenParseUtils.findReqTokenInfo(token);
+        return TokenParseUtils.parseReqTokenInfo(token);
     }
 
     @Override

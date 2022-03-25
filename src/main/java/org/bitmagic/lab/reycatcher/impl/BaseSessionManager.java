@@ -1,16 +1,19 @@
 package org.bitmagic.lab.reycatcher.impl;
 
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.ex.ReplacedException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
+import org.bitmagic.lab.reycatcher.utils.IdGenerator;
 import org.bitmagic.lab.reycatcher.utils.JwtUtils;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author yangrd
@@ -59,7 +62,7 @@ public class BaseSessionManager extends AbstractSessionManager {
         return findSwitchIdTo(session.getLoginInfo()).map(switchInfo -> {
             if (DynamicRcConfigHolder.isNeedSave()) {
                 return findByLoginInfo(switchInfo.getUserId(), switchInfo.getDeviceType()).orElseGet(() -> {
-                    Session switchSession = Session.of(SessionToken.of("random", UUID.randomUUID().toString()), switchInfo, new HashMap<>(8));
+                    Session switchSession = Session.of(SessionToken.of("random", IdGenerator.genUuid()), switchInfo, new HashMap<>(8));
                     save(switchSession);
                     return switchSession;
                 });
