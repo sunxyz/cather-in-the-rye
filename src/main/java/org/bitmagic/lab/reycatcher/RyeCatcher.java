@@ -67,10 +67,13 @@ public class RyeCatcher {
     }
 
     public static TokenInfo getTokenInfo() {
-        Session session = getSession();
-        SessionToken sessionToken = session.getSessionToken();
-        Optional<ReqTokenInfo> optionalReqTokenInfo = SESSION_MANAGER.findReqTokenInfoFromClient(DynamicRcConfigHolder.getOutClientTokenName());
-        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), DynamicRcConfigHolder.getCertificationSystemId(), optionalReqTokenInfo.map(ReqTokenInfo::getType).orElse(SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null));
+        return SESSION_MANAGER.findReqTokenInfoFromClient(DynamicRcConfigHolder.getOutClientTokenName()).map(reqTokenInfo -> {
+            return TokenInfo.of(reqTokenInfo.getValue(), DynamicRcConfigHolder.getSessionTimeoutMillisecond(), DynamicRcConfigHolder.getCertificationSystemId(), reqTokenInfo.getType(), DynamicRcConfigHolder.getOutClientTokenName());
+        }).orElseGet(() -> {
+            Session session = getSession();
+            SessionToken sessionToken = session.getSessionToken();
+            return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), DynamicRcConfigHolder.getCertificationSystemId(), SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null, DynamicRcConfigHolder.getOutClientTokenName());
+        });
     }
 
     public static Session getSession() {
@@ -105,10 +108,10 @@ public class RyeCatcher {
     }
 
     public static void check(String type, MatchRelation matchRelation, String... authKeys) {
-        ValidateUtils.checkGrant(has(type, matchRelation, authKeys), type+" matchRelation:"+matchRelation+": "+ String.join(",", authKeys));
+        ValidateUtils.checkGrant(has(type, matchRelation, authKeys), type + " matchRelation:" + matchRelation + ": " + String.join(",", authKeys));
     }
 
-    public static boolean has(String type, MatchRelation matchRelation, String... authKeys){
+    public static boolean has(String type, MatchRelation matchRelation, String... authKeys) {
         boolean flag = true;
         if (MatchRelation.ALL.equals(matchRelation)) {
             flag = allMatch(type, authKeys);

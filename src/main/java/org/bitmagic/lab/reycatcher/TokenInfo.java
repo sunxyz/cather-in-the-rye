@@ -13,4 +13,5 @@ public class TokenInfo {
     Integer expiresIn;
     String scope;
     String type;
+    String tokenName;
 }
