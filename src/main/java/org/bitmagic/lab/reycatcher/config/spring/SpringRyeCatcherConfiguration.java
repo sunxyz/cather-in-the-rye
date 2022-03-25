@@ -2,6 +2,7 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.*;
+import org.bitmagic.lab.reycatcher.config.CertificationSystemDefine;
 import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.impl.CompositeSessionTokenGenFactory;
@@ -44,7 +45,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
-    private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), SessionToken.GenTypeCons.SESSION_ID, null,false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+    private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Arrays.asList(""), SessionToken.GenTypeCons.SESSION_ID, null,false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
     public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate) {
         DynamicRcConfigHolder.delegate = () -> {
@@ -52,7 +53,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }
             HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
-            List<RyeCatcherProperties.CertificationSystemDefine> systemDefines = properties.getCertificationSystems().stream().filter(o -> mathCertificationSystemDefine(o,certificationSystemPredicate,request)).collect(Collectors.toList());
+            List<CertificationSystemDefine> systemDefines = properties.getCertificationSystems().stream().filter(o -> mathCertificationSystemDefine(o,certificationSystemPredicate,request)).collect(Collectors.toList());
             if (systemDefines.size() != 1) {
                 throw new IllegalStateException("systemDefines == 1");
             }
@@ -131,7 +132,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
         init(applicationContext.getBean(RyeCatcherProperties.class), applicationContext.getBean(CertificationSystemPredicate.class));
     }
 
-    private boolean mathCertificationSystemDefine(RyeCatcherProperties.CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request){
+    private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request){
         return certificationSystemDefine.getPredicates().stream().anyMatch(t -> {
 //                    Path=k:v,k1:v1
             String[] split = t.split("=");

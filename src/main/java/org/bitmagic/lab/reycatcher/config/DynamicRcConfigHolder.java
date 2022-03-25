@@ -1,7 +1,6 @@
 package org.bitmagic.lab.reycatcher.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import org.bitmagic.lab.reycatcher.config.spring.RyeCatcherProperties;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +14,10 @@ import java.util.function.Supplier;
 public class DynamicRcConfigHolder {
 
     private static final Map<String, Algorithm> SYS_ID_2_ALGORITHM_CACHE = new HashMap<>();
-    public static Supplier<RyeCatcherProperties.CertificationSystemDefine> delegate;
+    public static Supplier<CertificationSystemDefine> delegate;
 
     public static String getCertificationSystemId() {
-        return delegate.get().getId();
+        return getConfigInfo().getId();
     }
 
     public static String getGenTokenType() {
@@ -56,7 +55,7 @@ public class DynamicRcConfigHolder {
         });
     }
 
-    private static RyeCatcherProperties.CertificationSystemDefine getConfigInfo() {
+    private static CertificationSystemDefine getConfigInfo() {
         return delegate.get();
     }
 
