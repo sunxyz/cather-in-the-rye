@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.bitmagic.lab.reycatcher.config.spring.SpringRyeCatcherConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.bitmagic.lab.reycatcher.config.spring.SpringRyeCatcherAutoConfiguration

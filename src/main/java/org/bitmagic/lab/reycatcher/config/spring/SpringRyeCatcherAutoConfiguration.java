@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
-import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.Filter;
 import javax.servlet.http.HttpServletRequest;
@@ -41,11 +40,9 @@ import java.util.stream.Collectors;
 @EnableConfigurationProperties(RyeCatcherProperties.class)
 @Import(CsPredicateConfiguration.class)
 @Slf4j
-public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
+public class SpringRyeCatcherAutoConfiguration implements ApplicationContextAware {
 
-    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
-
-    private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Arrays.asList(""), SessionToken.GenTypeCons.SESSION_ID, null,false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+    private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Collections.emptyList(), SessionToken.GenTypeCons.SESSION_ID, null,false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
     public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate) {
         DynamicRcConfigHolder.delegate = () -> {
