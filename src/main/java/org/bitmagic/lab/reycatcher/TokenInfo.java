@@ -11,7 +11,7 @@ public class TokenInfo {
 
     String accessToken;
     Integer expiresIn;
-    String scope;
+    Object scope;
     String type;
     String tokenName;
 }

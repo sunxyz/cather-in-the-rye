@@ -3,6 +3,7 @@ package org.bitmagic.lab.reycatcher.config;
 import com.auth0.jwt.algorithms.Algorithm;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -30,6 +31,10 @@ public class DynamicRcConfigHolder {
 
     public static int getSessionTimeoutMillisecond() {
         return getConfigInfo().getSessionTimeOutMillisecond();
+    }
+
+    public static List<String> listCertificationSystemPredicate(){
+        return getConfigInfo().getPredicates();
     }
 
     public static boolean isNeedSave() {
