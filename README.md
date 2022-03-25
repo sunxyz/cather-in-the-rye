@@ -128,7 +128,7 @@ rye-catcher:
     # 默认值30分钟
     session-time-out-millisecond: 1800000
     session-need-save: true
-    session-need-out-client: true
+    token-need-out-client: true
     same-drive-mutex: true
 ```
 **2.开始**

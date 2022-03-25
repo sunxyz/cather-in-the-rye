@@ -45,7 +45,7 @@ public class RyeCatcherProperties {
 
         private boolean sessionNeedSave;
 
-        private boolean sessionNeedOutClient;
+        private boolean tokenNeedOutClient;
 
         private boolean sameDriveMutex;
 

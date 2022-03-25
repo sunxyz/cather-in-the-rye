@@ -38,7 +38,7 @@ public class DynamicRcConfigHolder {
     }
 
     public static boolean isNeedOutClient() {
-        return getConfigInfo().isSessionNeedOutClient();
+        return getConfigInfo().isTokenNeedOutClient();
     }
 
     public static boolean isSameDriveMutex() {
