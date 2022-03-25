@@ -106,6 +106,7 @@ public class SpringRyeCatcherAutoConfiguration implements ApplicationContextAwar
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
         bean.setName("registrationSessionFilter");
+        bean.setOrder(-300);
         return bean;
     }
 

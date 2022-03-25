@@ -15,6 +15,8 @@ import java.util.stream.Stream;
  */
 public class ReqMatchesCreate {
 
+    public static ReqMatchesCreate INSTANCE = new ReqMatchesCreate();
+
     static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
     public ReqMatchesHandlerBuilder matches(String... uris) {

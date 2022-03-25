@@ -14,15 +14,15 @@ import java.util.function.Function;
  */
 public class ReqMatcherInterceptor implements HandlerInterceptor {
 
-    private final ReqMatchesHandler uriMatchesHandler;
+    private final ReqMatchesHandler reqMatchesHandler;
 
-    public ReqMatcherInterceptor(Function<ReqMatchesCreate, ReqMatchesHandler> uriMatchesHandlerMapper) {
-        this.uriMatchesHandler = uriMatchesHandlerMapper.apply(new ReqMatchesCreate());
+    public ReqMatcherInterceptor(Function<ReqMatchesCreate, ReqMatchesHandler> reqMatchesHandler) {
+        this.reqMatchesHandler = reqMatchesHandler.apply(ReqMatchesCreate.INSTANCE);
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        return uriMatchesHandler.handler(request);
+        return reqMatchesHandler.handler(request);
     }
 
 }
