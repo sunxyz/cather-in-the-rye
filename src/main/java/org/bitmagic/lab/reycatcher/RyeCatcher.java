@@ -171,12 +171,12 @@ public class RyeCatcher {
     }
 
     private static Collection<String> listAuthorizedInfo(String type) {
-        if (DynamicRcConfigHolder.getGenTokenType().equals(SessionToken.GenTypeCons.JWT) && DynamicRcConfigHolder.isEnableJwtAuthMatchInfo()) {
-            Object v = getSession().getAttribute("auth-"+type);
-            return Objects.isNull(v)?Collections.emptyList():((Claim)v).asList(String.class);
+        if (DynamicRcConfigHolder.getGenTokenType().equals(SessionToken.GenTypeCons.JWT) && DynamicRcConfigHolder.isEnableJwtAuthMatchInfoPayload()) {
+            Object v = getSession().getAttribute("auth-" + type);
+            return Objects.isNull(v) ? Collections.emptyList() : ((Claim) v).asList(String.class);
         }
         LoginInfo loginInfo = getSession().getLoginInfo();
-        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(DynamicRcConfigHolder.getCertificationSystemId(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
+        return MATCH_INFO_PROVIDER.loadAuthMatchInfo(DynamicRcConfigHolder.getCertificationSystemId(), type, loginInfo.getUserId(), loginInfo.getDeviceType());
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {

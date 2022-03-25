@@ -28,7 +28,7 @@ public class JwtSessionTokenGenFactory extends AbstractSessionTokenGenFactory {
         } else {
             claims.put("ext", clientExtMeta);
         }
-        if (DynamicRcConfigHolder.isEnableJwtAuthMatchInfo()) {
+        if (DynamicRcConfigHolder.isEnableJwtAuthMatchInfoPayload()) {
             InstanceHolder.getInstance(AuthMatchInfoProvider.class).loadAuthMatchInfo(DynamicRcConfigHolder.getCertificationSystemId(), id, deviceType).forEach((k, v) -> {
                 claims.put("auth-" + k, v);
             });

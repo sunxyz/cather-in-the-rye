@@ -38,7 +38,7 @@ public class RyeCatcherProperties {
 
         private String jwtHmacSecret;
 
-        private boolean enableJwtAuthMatchInfo;
+        private boolean enableJwtAuthMatchInfoPayload;
 
         // not repeat
         private String outClientTokenName = "JSESSIONID";

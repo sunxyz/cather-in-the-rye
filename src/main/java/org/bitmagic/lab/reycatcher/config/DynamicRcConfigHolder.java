@@ -45,8 +45,8 @@ public class DynamicRcConfigHolder {
         return getConfigInfo().isSameDriveMutex();
     }
 
-    public static boolean isEnableJwtAuthMatchInfo(){
-        return getConfigInfo().isEnableJwtAuthMatchInfo();
+    public static boolean isEnableJwtAuthMatchInfoPayload(){
+        return getConfigInfo().isEnableJwtAuthMatchInfoPayload();
     }
 
     public static Algorithm getAlgorithm() {
