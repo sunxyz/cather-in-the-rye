@@ -45,6 +45,10 @@ public class DynamicRcConfigHolder {
         return getConfigInfo().isSameDriveMutex();
     }
 
+    public static boolean isEnableJwtAuthMathInfo(){
+        return getConfigInfo().isEnableJwtAuthMathInfo();
+    }
+
     public static Algorithm getAlgorithm() {
         return SYS_ID_2_ALGORITHM_CACHE.computeIfAbsent(getCertificationSystemId(), k -> {
             Algorithm instance = InstanceHolder.getInstance(Algorithm.class);

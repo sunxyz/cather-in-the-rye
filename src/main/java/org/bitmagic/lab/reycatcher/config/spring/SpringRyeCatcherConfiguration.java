@@ -44,7 +44,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
 
-    private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), null, SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+    private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), SessionToken.GenTypeCons.SESSION_ID, null,false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
     public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate) {
         DynamicRcConfigHolder.delegate = () -> {
@@ -90,6 +90,7 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
         return new CompositeSessionTokenGenFactory(tokenGenServices);
     }
 
+    @ConditionalOnMissingBean(SessionManager.class)
     @Bean
     public SessionManager sessionManager(SessionRepository sessionRepository, SessionTokenGenFactory tokenGenService) {
         return new ServletSessionManager(sessionRepository, tokenGenService);

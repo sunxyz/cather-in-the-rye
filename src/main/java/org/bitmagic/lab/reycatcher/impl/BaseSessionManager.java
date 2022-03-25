@@ -46,8 +46,7 @@ public class BaseSessionManager extends AbstractSessionManager {
                 ValidateUtils.checkBearer(reqTokenInfo.getType(), "");
                 DecodedJWT jwt = JwtUtils.verifierGetJwt(DynamicRcConfigHolder.getAlgorithm(), reqTokenInfo.getValue());
                 LoginInfo loginInfo = LoginInfo.of(jwt.getSubject(), jwt.getClaim("deviceType").asString()); // jwt->login-info
-                Claim ext = jwt.getClaim("ext");
-                Object meta = Collections.unmodifiableMap(ext.asMap()); //jwt->ext
+                Object meta = Collections.unmodifiableMap( jwt.getClaims()); //jwt->ext
                 return Session.of(sessionToken, loginInfo, meta);
             } else {
                 throw new RyeCatcherException("not support");

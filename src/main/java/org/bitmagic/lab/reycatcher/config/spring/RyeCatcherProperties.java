@@ -34,9 +34,11 @@ public class RyeCatcherProperties {
 
         private List<String> predicates;
 
+        private String genTokenType = SessionToken.GenTypeCons.SESSION_ID;
+
         private String jwtHmacSecret;
 
-        private String genTokenType = SessionToken.GenTypeCons.SESSION_ID;
+        private boolean enableJwtAuthMathInfo;
 
         // not repeat
         private String outClientTokenName = "JSESSIONID";

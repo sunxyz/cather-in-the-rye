@@ -1,5 +1,6 @@
 package org.bitmagic.lab.reycatcher;
 
+import com.auth0.jwt.interfaces.Claim;
 import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
@@ -170,6 +171,10 @@ public class RyeCatcher {
     }
 
     private static Collection<String> listAuthorizedInfo(String type) {
+        if (DynamicRcConfigHolder.getGenTokenType().equals(SessionToken.GenTypeCons.JWT) && DynamicRcConfigHolder.isEnableJwtAuthMathInfo()) {
+            Object v = getSession().getAttribute("auth-"+type);
+            return Objects.isNull(v)?Collections.emptyList():((Claim)v).asList(String.class);
+        }
         LoginInfo loginInfo = getSession().getLoginInfo();
         return MATCH_INFO_PROVIDER.loadAuthMatchInfo(DynamicRcConfigHolder.getCertificationSystemId(), loginInfo.getUserId(), loginInfo.getDeviceType()).getOrDefault(type, Collections.emptyList());
     }
