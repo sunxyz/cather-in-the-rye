@@ -115,8 +115,11 @@ rye-catcher:
   certification-systems:
     # 根路径下认证信息
     id: 'default-id'
+    # 匹配规则   predicateName=k[:v][,k1[:v1]]
+    # predicateName: Path,Cookie,Params,Header,Host,Method
     predicates:
       -Path=/**
+    # jwt hmac 秘钥
     jwt-hmac-secret: 000
     # 默认值cookie
     gen-token-type: cookie/jwt_token
@@ -126,7 +129,7 @@ rye-catcher:
     session-time-out-millisecond: 1800000
     session-need-save: true
     session-need-out-client: true
-    login-mutex: true
+    same-drive-mutex: true
 ```
 **2.开始**
 

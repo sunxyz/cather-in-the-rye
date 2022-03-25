@@ -2,11 +2,13 @@ package org.bitmagic.lab.reycatcher.config.spring;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.bitmagic.lab.reycatcher.SessionToken;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author yangrd
@@ -19,10 +21,11 @@ public class RyeCatcherProperties {
     /**
      * key: Path prefix value: info
      */
-    private List<CertificationSystemDefine> certificationSystems;
+    private Set<CertificationSystemDefine> certificationSystems;
 
     @Data
     @AllArgsConstructor(staticName = "of")
+    @EqualsAndHashCode(of = "id")
     @NoArgsConstructor
     public static class CertificationSystemDefine {
 
@@ -44,7 +47,7 @@ public class RyeCatcherProperties {
 
         private boolean sessionNeedOutClient;
 
-        private boolean loginMutex;
+        private boolean sameDriveMutex;
 
     }
 

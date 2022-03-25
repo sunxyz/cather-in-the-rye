@@ -37,7 +37,7 @@ public class RyeCatcher {
 
     public static TokenInfo login(Object id, String deviceType, Map<String, Object> clientExtMeta) {
         Session session = SESSION_MANAGER.genSession(id, deviceType, ConfigHolder.getGenTokenType(), new HashMap<>(8), clientExtMeta);
-        if (ConfigHolder.isLoginMutex() && ConfigHolder.isNeedSave()) {
+        if (ConfigHolder.isSameDriveMutex() && ConfigHolder.isNeedSave()) {
             SESSION_MANAGER.findByLoginInfo(id, deviceType).ifPresent(session1 -> {
                 SESSION_MANAGER.replaced(session1);
                 ACTION_LISTENER.doBeReplaced(ConfigHolder.getCertificationSystemId(), session1.getLoginInfo().getUserId(), session1.getLoginInfo().getDeviceType(), session1.getSessionToken());

@@ -8,6 +8,7 @@ import org.bitmagic.lab.reycatcher.impl.CompositeSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.JwtSessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.MemorySessionRepository;
 import org.bitmagic.lab.reycatcher.impl.SessionIdSessionTokenGenFactory;
+import org.bitmagic.lab.reycatcher.predicates.CertificationSystemPredicate;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.bitmagic.lab.reycatcher.utils.SpringContextHolder;
 import org.springframework.beans.BeansException;
@@ -20,14 +21,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.Filter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 @Configuration
 @AutoConfigureBefore({ErrorMvcAutoConfiguration.class})
 @EnableConfigurationProperties(RyeCatcherProperties.class)
-
+@Import(CsPredicateConfiguration.class)
 @Slf4j
 public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
@@ -45,23 +46,23 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
     private static final RyeCatcherProperties.CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = RyeCatcherProperties.CertificationSystemDefine.of("default-id", Arrays.asList(""), null, SessionToken.GenTypeCons.SESSION_ID, "JSESSIONID", 30 * 60 * 1000, true, true, true);
 
-    public void init(RyeCatcherProperties properties) {
+    public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate) {
         ConfigHolder.delegate = () -> {
             if (Objects.isNull(properties.getCertificationSystems())) {
                 return DEFAULT_CERTIFICATION_SYSTEM_INFO;
             }
-            String requestUri = RcRequestContextHolder.getContext().getRequest().getRequestURI();
-            List<RyeCatcherProperties.CertificationSystemDefine> systemDefines = properties.getCertificationSystems().stream().filter(o -> ANT_PATH_MATCHER.match(o.getPredicates().get(0).replace("Path=", ""), requestUri)).collect(Collectors.toList());
+            HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
+            List<RyeCatcherProperties.CertificationSystemDefine> systemDefines = properties.getCertificationSystems().stream().filter(o -> mathCertificationSystemDefine(o,certificationSystemPredicate,request)).collect(Collectors.toList());
             if (systemDefines.size() != 1) {
                 throw new IllegalStateException("systemDefines == 1");
             }
             return systemDefines.iterator().next();
         };
-        InstanceHolder.delegate =c->{
+        InstanceHolder.delegate = c -> {
             try {
                 return SpringContextHolder.getBean(c);
-            }catch (BeansException beansException){
-                log.warn("BeansException msg:{}",beansException.getMessage());
+            } catch (BeansException beansException) {
+                log.warn("BeansException msg:{}", beansException.getMessage());
                 return null;
             }
         };
@@ -126,6 +127,31 @@ public class SpringRyeCatcherConfiguration implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        init(applicationContext.getBean(RyeCatcherProperties.class));
+        init(applicationContext.getBean(RyeCatcherProperties.class), applicationContext.getBean(CertificationSystemPredicate.class));
+    }
+
+    private boolean mathCertificationSystemDefine(RyeCatcherProperties.CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request){
+        return certificationSystemDefine.getPredicates().stream().anyMatch(t -> {
+//                    Path=k:v,k1:v1
+            String[] split = t.split("=");
+            String name = split[0];
+            String values = split[1];
+            String[] kvs = null;
+            if (values.contains(",")) {
+                kvs = values.split(",");
+            } else {
+                kvs = new String[]{values};
+            }
+            Map<String, String> map = new HashMap<>();
+            for (String kv : kvs) {
+                if (kv.contains(":")) {
+                    String[] kv0 = kv.split(":");
+                    map.put(kv0[0], kv0[1]);
+                } else {
+                    map.put(kv, "true");
+                }
+            }
+            return certificationSystemPredicate.test(name, request, map);
+        });
     }
 }

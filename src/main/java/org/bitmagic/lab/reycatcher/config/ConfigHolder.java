@@ -41,8 +41,8 @@ public class ConfigHolder {
         return getConfigInfo().isSessionNeedOutClient();
     }
 
-    public static boolean isLoginMutex() {
-        return getConfigInfo().isLoginMutex();
+    public static boolean isSameDriveMutex() {
+        return getConfigInfo().isSameDriveMutex();
     }
 
     public static Algorithm getAlgorithm() {
