@@ -6,9 +6,6 @@ import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesCreate;
 import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesHandler;
 import org.bitmagic.lab.reycatcher.utils.Base64Utils;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,7 +20,6 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 /**
  * @author yangrd
  */
-@Order(-200)
 public class RyeCatcherServletFilter extends HttpFilter {
 
     private ReqMatchesHandler reqMatchesHandler;
@@ -39,13 +35,10 @@ public class RyeCatcherServletFilter extends HttpFilter {
                 chain.doFilter(request, response);
             }
         } catch (BasicException ex) {
-            response.sendError(SC_UNAUTHORIZED);
+            response.setStatus(SC_UNAUTHORIZED);
             response.setHeader("WWW-Authenticate", "Basic realm=" + Base64Utils.encode(ex.getRealm()));
-            response.flushBuffer();
         } catch (RyeCatcherException e) {
-            request.setAttribute("javax.servlet.error.cover.status_code", e instanceof ForbiddenException ? 403 : 401);
-            request.setAttribute("message", e.getMessage());
-            throw e;
+            response.sendError(e instanceof ForbiddenException ? 403 : 401,e.getMessage());
         }
     }
 

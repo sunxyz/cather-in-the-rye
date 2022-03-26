@@ -105,7 +105,7 @@ public class SpringRyeCatcherAutoConfiguration implements ApplicationContextAwar
     public FilterRegistrationBean<Filter> registrationSessionFilter(SessionManager sessionManager) {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
-        bean.setName("registrationSessionFilter");
+        bean.setName("rcSessionFilter");
         bean.setOrder(10);
         return bean;
     }
@@ -116,7 +116,7 @@ public class SpringRyeCatcherAutoConfiguration implements ApplicationContextAwar
     public FilterRegistrationBean<Filter> registrationRyeCatcherServletFilter(RyeCatcherServletFilter ryeCatcherServletFilter) {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(ryeCatcherServletFilter);
         bean.addUrlPatterns("/*");
-        bean.setName("RyeCatcherServletFilter");
+        bean.setName("ryeCatcherServletFilter");
         bean.setOrder(100);
         return bean;
     }

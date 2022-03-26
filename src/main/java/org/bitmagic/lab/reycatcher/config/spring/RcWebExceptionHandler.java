@@ -23,9 +23,8 @@ public class RcWebExceptionHandler {
     @ExceptionHandler(RyeCatcherException.class)
     public String handlerRc(RyeCatcherException e, HttpServletRequest request) {
         log.warn("err class: {}, msg: {}", e.getClass(), e.getMessage());
-
         request.setAttribute("javax.servlet.error.status_code", e instanceof ForbiddenException ? 403 : 401);
-        request.setAttribute("message", e.getMessage());
+        request.setAttribute("javax.servlet.error.message", e.getMessage());
         // do something
         return "forward:/error";
     }

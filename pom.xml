@@ -20,11 +20,6 @@
 
   <dependencies>
     <!--jose4j-->
-     <dependency>
-       <groupId>org.bitbucket.b_c</groupId>
-       <artifactId>jose4j</artifactId>
-       <version>${jose4j.version}</version>
-     </dependency>
     <!-- https://mvnrepository.com/artifact/com.auth0/java-jwt -->
     <dependency>
       <groupId>com.auth0</groupId>
@@ -77,4 +72,17 @@
       </plugin>
     </plugins>
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>Releases</name>
+      <url>http://repo.3j168.com/repository/maven-releases</url>
+    </repository>
+    <snapshotRepository>
+      <id>nexus</id>
+      <name>Snapshot</name>
+      <url>http://repo.3j168.com/repository/maven-snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
