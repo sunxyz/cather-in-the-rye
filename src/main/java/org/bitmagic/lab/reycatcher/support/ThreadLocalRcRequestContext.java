@@ -1,14 +1,32 @@
 package org.bitmagic.lab.reycatcher.support;
 
+import lombok.RequiredArgsConstructor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * @author yangrd
  */
+@RequiredArgsConstructor(staticName = "of")
 public class ThreadLocalRcRequestContext implements RcRequestContext {
 
-    private final ThreadLocal<Map<String,Object>> threadLocal = ThreadLocal.withInitial(HashMap::new);
+    private static final ThreadLocal<Map<String,Object>> THREAD_LOCAL = ThreadLocal.withInitial(HashMap::new);
+    private final Supplier<HttpServletRequest> httpServletRequestSupplier;
+    private final Supplier<HttpServletResponse> httpServletResponseSupplier;
+
+    @Override
+    public HttpServletRequest getRequest() {
+        return httpServletRequestSupplier.get();
+    }
+
+    @Override
+    public HttpServletResponse getResponse() {
+        return httpServletResponseSupplier.get();
+    }
 
     @Override
     public void setAttr(String key, Object v) {
@@ -41,6 +59,6 @@ public class ThreadLocalRcRequestContext implements RcRequestContext {
     }
 
     private Map<String, Object> getThreadLocalMap() {
-        return threadLocal.get();
+        return THREAD_LOCAL.get();
     }
 }

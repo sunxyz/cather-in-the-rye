@@ -6,7 +6,7 @@ package org.bitmagic.lab.reycatcher.support;
  */
 public class RcRequestContextHolder {
 
-    private static RcRequestContext INSTANCE = new ThreadLocalRcRequestContext();
+    private static RcRequestContext INSTANCE;
 
     public static RcRequestContext getContext() {
         return INSTANCE;
