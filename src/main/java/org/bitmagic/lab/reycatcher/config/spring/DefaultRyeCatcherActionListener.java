@@ -10,32 +10,32 @@ import org.bitmagic.lab.reycatcher.SessionToken;
 @Slf4j
 public class DefaultRyeCatcherActionListener implements RyeCatcherActionListener {
     @Override
-    public void doLogin(String ryeCatcherPath, Object id, String deviceType) {
-        log.debug("doLogin ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    public void doLogin(String certificationSystemId, Object id, String deviceType) {
+        log.debug("doLogin certificationSystemId:{} id:{} deviceType:{}", certificationSystemId, id, deviceType);
     }
 
     @Override
-    public void doLogout(String ryeCatcherPath, Object id, String deviceType, SessionToken sessionToken) {
-        log.debug("doLogout ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    public void doLogout(String certificationSystemId, Object id, String deviceType, SessionToken sessionToken) {
+        log.debug("doLogout certificationSystemId:{} id:{} deviceType:{}", certificationSystemId, id, deviceType);
     }
 
     @Override
-    public void doKicked(String ryeCatcherPath, Object id, String deviceType, SessionToken sessionToken) {
-        log.debug("doKicked ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    public void doKicked(String certificationSystemId, Object id, String deviceType, SessionToken sessionToken) {
+        log.debug("doKicked certificationSystemId:{} id:{} deviceType:{}", certificationSystemId, id, deviceType);
     }
 
     @Override
-    public void doBeReplaced(String ryeCatcherPath, Object id, String deviceType, SessionToken sessionToken) {
-        log.debug("doBeReplaced ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    public void doBeReplaced(String certificationSystemId, Object id, String deviceType, SessionToken sessionToken) {
+        log.debug("doBeReplaced certificationSystemId:{} id:{} deviceType:{}", certificationSystemId, id, deviceType);
     }
 
     @Override
-    public void doSwitch(String ryeCatcherPath, Object fromId, String fromDeviceType, Object toId, String toDeviceType) {
-        log.debug("doSwitch ryeCatcherPath:{} fromId:{} fromDeviceType:{} toId:{} toDeviceType:{}", ryeCatcherPath, fromId, fromDeviceType, toId, toDeviceType);
+    public void doSwitch(String certificationSystemId, Object fromId, String fromDeviceType, Object toId, String toDeviceType) {
+        log.debug("doSwitch certificationSystemId:{} fromId:{} fromDeviceType:{} toId:{} toDeviceType:{}", certificationSystemId, fromId, fromDeviceType, toId, toDeviceType);
     }
 
     @Override
-    public void doStopSwitch(String ryeCatcherPath, Object id, String deviceType) {
-        log.debug("doStopSwitch ryeCatcherPath:{} id:{} deviceType:{}", ryeCatcherPath, id, deviceType);
+    public void doStopSwitch(String certificationSystemId, Object id, String deviceType) {
+        log.debug("doStopSwitch certificationSystemId:{} id:{} deviceType:{}", certificationSystemId, id, deviceType);
     }
 }

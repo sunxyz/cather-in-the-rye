@@ -45,7 +45,7 @@ public class MemorySessionRepository implements SessionRepository {
         REPO.remove(session.getId());
         TOKEN2ID.remove(session.getSessionToken());
         USER2ID.remove(genKey(session));
-        SWITCH_ID.put(session.getLoginInfo(), null);
+        SWITCH_ID.remove(session.getLoginInfo());
     }
 
     @Override

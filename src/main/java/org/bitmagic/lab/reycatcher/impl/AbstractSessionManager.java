@@ -22,7 +22,7 @@ public abstract class AbstractSessionManager implements SessionManager {
 
     @Override
     public void remove(Session session) {
-        repository.save(session);
+        repository.remove(session);
     }
 
     @Override
@@ -32,7 +32,7 @@ public abstract class AbstractSessionManager implements SessionManager {
 
     @Override
     public Optional<Session> findByLoginInfo(Object id, String deviceType) {
-        return repository.findByLoginInfo(id,deviceType);
+        return repository.findByLoginInfo(id, deviceType);
     }
 
     @Override
@@ -42,7 +42,7 @@ public abstract class AbstractSessionManager implements SessionManager {
 
     @Override
     public Page<Session> findAll(SessionFilterInfo filterInfo, int size, int page) {
-        return repository.findAll(filterInfo,size,page);
+        return repository.findAll(filterInfo, size, page);
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class AbstractSessionManager implements SessionManager {
 
     @Override
     public void switchId(LoginInfo from, LoginInfo to) {
-        repository.switchId(from,to);
+        repository.switchId(from, to);
     }
 
     @Override
