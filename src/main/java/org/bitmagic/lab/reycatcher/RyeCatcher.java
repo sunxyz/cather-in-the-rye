@@ -26,7 +26,7 @@ public class RyeCatcher {
 
     private static final RyeCatcherActionListener ACTION_LISTENER = InstanceHolder.getInstance(RyeCatcherActionListener.class);
 
-    private static final PathMatcher COLON_PATH_MATCHER = InstanceHolder.getInstance("colonPathMatcher",PathMatcher.class);
+    private static final PathMatcher COLON_PATH_MATCHER = InstanceHolder.getInstance("colonPathMatcher", PathMatcher.class);
 
     public static TokenInfo login(Object id) {
         return login(id, DEFAULT_DEVICE_TYPE);
