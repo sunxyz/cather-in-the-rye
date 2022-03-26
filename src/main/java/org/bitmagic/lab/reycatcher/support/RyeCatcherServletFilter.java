@@ -42,34 +42,32 @@ public class RyeCatcherServletFilter extends HttpFilter {
             if (reqMatchesHandler.handler(request)) {
                 chain.doFilter(request, response);
             }
-        } catch (BasicException ex) {
-            if (existErrCatcher()) {
-                errCatcher.accept(ex, response);
-            } else {
-                log.warn("error class: {} msg:{}", ex.getClass(), ex.getMessage());
-                response.setStatus(SC_UNAUTHORIZED);
-                response.setHeader("WWW-Authenticate", "Basic realm=" + Base64Utils.encode(ex.getRealm()));
-            }
         } catch (RyeCatcherException e) {
             if (existErrCatcher()) {
                 errCatcher.accept(e, response);
             } else {
                 log.warn("error class: {} msg:{}", e.getClass(), e.getMessage());
-                response.sendError(e instanceof ForbiddenException ? 403 : 401, e.getMessage());
+                if(e instanceof BasicException){
+                    response.setStatus(SC_UNAUTHORIZED);
+                    response.setHeader("WWW-Authenticate", "Basic realm=" + Base64Utils.encode(((BasicException)e).getRealm()));
+                }else {
+                    response.sendError(e instanceof ForbiddenException ? 403 : 401, e.getMessage());
+                }
             }
         }
     }
 
-    public void setErrCatcher(BiConsumer<RuntimeException, HttpServletResponse> errCatcher) {
+    public RyeCatcherServletFilter setErrCatcher(BiConsumer<RuntimeException, HttpServletResponse> errCatcher) {
         this.errCatcher = errCatcher;
+        return this;
     }
 
-    public void setErrCatcher(Consumer<RuntimeException> errCatcher) {
-        this.errCatcher = BiConsumers.of(errCatcher);
+    public RyeCatcherServletFilter setErrCatcher(Consumer<RuntimeException> errCatcher) {
+        return setErrCatcher(BiConsumers.of(errCatcher));
     }
 
-    public void setErrCatcher(Function<RuntimeException, Object> errCatcher) {
-        this.errCatcher = ((e, response) -> {
+    public RyeCatcherServletFilter setErrCatcher(Function<RuntimeException, Object> errCatcher) {
+        return setErrCatcher((e, response) -> {
             try {
                 response.setHeader("Content-Type", "application/json");
                 response.getWriter().print(errCatcher.apply(e));
