@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * @author bloom
+ * @author yangrd
  */
 public class CookieCertificationSystemPredicate implements CertificationSystemPredicate0 {
 

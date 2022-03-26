@@ -14,7 +14,7 @@ import java.util.function.Predicate;
  */
 public interface ReqMatchesHandler extends ReqMatchesFunc {
 
-     String  RES_FLAG = "RES_FLAG";
+    String RES_FLAG = "RES_FLAG";
 
     boolean handler(HttpServletRequest request);
 
@@ -67,7 +67,7 @@ public interface ReqMatchesHandler extends ReqMatchesFunc {
         @lombok.SneakyThrows
         @Override
         public void returnRes(String o) {
-            RcRequestContextHolder.getContext().setAttr(RES_FLAG,true);
+            RcRequestContextHolder.getContext().setAttr(RES_FLAG, true);
             RcRequestContextHolder.getContext().getResponse().getWriter().write(o);
         }
 

@@ -1,8 +1,9 @@
 package org.bitmagic.lab.reycatcher.reqmatches;
 
+import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.func.NoArgsHandler;
+import org.bitmagic.lab.reycatcher.func.PathMatcher;
 import org.springframework.http.HttpMethod;
-import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.function.BiConsumer;
@@ -15,23 +16,23 @@ import java.util.stream.Stream;
  */
 public class ReqMatchesCreate {
 
+    static final PathMatcher PATH_MATCHER = InstanceHolder.getInstance("antPathMatcher", PathMatcher.class);
     public static ReqMatchesCreate INSTANCE = new ReqMatchesCreate();
 
-    static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
-
     public ReqMatchesHandlerBuilder matches(String... uris) {
-        return matches(request -> Stream.of(uris).anyMatch(uriKey -> ANT_PATH_MATCHER.match(uriKey, request.getRequestURI())));
+        return matches(request -> Stream.of(uris).anyMatch(uriKey -> PATH_MATCHER.match(uriKey, request.getRequestURI())));
     }
 
     public ReqMatchesHandlerBuilder matches(HttpMethod method, String... uris) {
-        return matches(request -> Stream.of(uris).anyMatch(uriKey -> method.matches(request.getMethod()) && ANT_PATH_MATCHER.match(uriKey, request.getRequestURI())));
+        return matches(request -> Stream.of(uris).anyMatch(uriKey -> method.matches(request.getMethod()) && PATH_MATCHER.match(uriKey, request.getRequestURI())));
     }
 
     public ReqMatchesHandlerBuilder matches(Predicate<HttpServletRequest> predicate) {
         return ReqMatchesHandlerBuilder.of(predicate);
     }
 
-    //     简写方式
+    //---     简写方式
+
     public ReqMatchesHandler matches(String uri, BiConsumer<HttpServletRequest, ReqMatchesFunc> check) {
         return matches(uri).setHandler(check);
     }

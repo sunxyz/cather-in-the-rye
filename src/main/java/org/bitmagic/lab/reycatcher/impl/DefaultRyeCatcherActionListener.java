@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.config.spring;
+package org.bitmagic.lab.reycatcher.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;

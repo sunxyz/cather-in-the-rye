@@ -1,9 +1,10 @@
 package org.bitmagic.lab.reycatcher.reqmatches;
 
 import lombok.RequiredArgsConstructor;
+import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.func.NoArgsHandler;
+import org.bitmagic.lab.reycatcher.func.PathMatcher;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
-import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  */
 public interface ReqMatchesHandlerBuilder {
 
-    AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher();
+    PathMatcher ANT_PATH_MATCHER = InstanceHolder.getInstance("antPathMatcher", PathMatcher.class);
 
     static ReqMatchesHandlerBuilder of(Predicate<HttpServletRequest> predicate) {
         return SimpleReqMatchHandlerBuilder.of(new ArrayList<>(Collections.singletonList(predicate)));

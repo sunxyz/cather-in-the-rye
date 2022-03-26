@@ -5,10 +5,10 @@ import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
 import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.ex.NoLoginException;
 import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
+import org.bitmagic.lab.reycatcher.func.PathMatcher;
 import org.bitmagic.lab.reycatcher.support.SessionContext;
 import org.bitmagic.lab.reycatcher.support.SessionContextHolder;
 import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
-import org.springframework.util.AntPathMatcher;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class RyeCatcher {
 
     private static final RyeCatcherActionListener ACTION_LISTENER = InstanceHolder.getInstance(RyeCatcherActionListener.class);
 
-    private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(":");
+    private static final PathMatcher COLON_PATH_MATCHER = InstanceHolder.getInstance("colonPathMatcher",PathMatcher.class);
 
     public static TokenInfo login(Object id) {
         return login(id, DEFAULT_DEVICE_TYPE);
@@ -180,6 +180,6 @@ public class RyeCatcher {
     }
 
     private static boolean match(Collection<String> authorities, String authKey) {
-        return authorities.stream().anyMatch(auth -> ANT_PATH_MATCHER.match(authKey, auth));
+        return authorities.stream().anyMatch(auth -> COLON_PATH_MATCHER.match(authKey, auth));
     }
 }
