@@ -16,7 +16,7 @@ import java.util.*;
  * @author yangrd
  * @date 2022/03/04
  */
-public class RyeCatcher {
+public final class RyeCatcher {
 
     private static final String DEFAULT_DEVICE_TYPE = "DEFAULT_DEVICE";
 
@@ -27,6 +27,9 @@ public class RyeCatcher {
     private static final RyeCatcherActionListener ACTION_LISTENER = InstanceHolder.getInstance(RyeCatcherActionListener.class);
 
     private static final PathMatcher COLON_PATH_MATCHER = InstanceHolder.getInstance("colonPathMatcher", PathMatcher.class);
+
+    private RyeCatcher() {
+    }
 
     public static TokenInfo login(Object id) {
         return login(id, DEFAULT_DEVICE_TYPE);
