@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public class BiConsumers {
 
-    static <T, U> BiConsumer<T, U> of(Consumer<? super T> consumer) {
+    public static <T, U> BiConsumer<T, U> of(Consumer<? super T> consumer) {
         Objects.requireNonNull(consumer);
         return (v1, v2) -> {
             consumer.accept(v1);
