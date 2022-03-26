@@ -69,8 +69,14 @@ public class RyeCatcherServletFilter extends HttpFilter {
     public RyeCatcherServletFilter setErrCatcher(Function<RuntimeException, Object> errCatcher) {
         return setErrCatcher((e, response) -> {
             try {
-                response.setHeader("Content-Type", "application/json");
-                response.getWriter().print(errCatcher.apply(e));
+                Object apply = errCatcher.apply(e);
+                if(Objects.isNull(response.getContentType())){
+                    response.setContentType("application/json;charset=UTF-8");
+                    if(apply instanceof String){
+                        response.setContentType("text/plain;charset=UTF-8");
+                    }
+                }
+                response.getWriter().print(apply);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
