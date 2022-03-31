@@ -123,7 +123,7 @@ public class SpringRyeCatcherAutoConfiguration {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
         bean.setName("rcSessionFilter");
-        bean.setOrder(10);
+        bean.setOrder(-200);
         return bean;
     }
 
@@ -133,7 +133,7 @@ public class SpringRyeCatcherAutoConfiguration {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(ryeCatcherServletFilter);
         bean.addUrlPatterns("/*");
         bean.setName("ryeCatcherServletFilter");
-        bean.setOrder(100);
+        bean.setOrder(-100);
         return bean;
     }
 

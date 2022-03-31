@@ -6,26 +6,41 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * @author yangrd
  */
-@RequiredArgsConstructor(staticName = "of")
+@RequiredArgsConstructor(staticName = "create")
 public class ThreadLocalRcRequestContext implements RcRequestContext {
 
+    private static final String REQUEST="request";
+    private static final String RESPONSE="response";
+
     private static final ThreadLocal<Map<String,Object>> THREAD_LOCAL = ThreadLocal.withInitial(HashMap::new);
-    private final Supplier<HttpServletRequest> httpServletRequestSupplier;
-    private final Supplier<HttpServletResponse> httpServletResponseSupplier;
+
 
     @Override
     public HttpServletRequest getRequest() {
-        return httpServletRequestSupplier.get();
+        return (HttpServletRequest) getThreadLocalMap().get(REQUEST);
     }
 
     @Override
     public HttpServletResponse getResponse() {
-        return httpServletResponseSupplier.get();
+        return (HttpServletResponse) getThreadLocalMap().get(RESPONSE);
+    }
+
+    public RcRequestContext init(HttpServletRequest request, HttpServletResponse response) {
+        setRequest(request);
+        setResponse(response);
+        return this;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        getThreadLocalMap().put(REQUEST, request);
+    }
+
+    public void setResponse(HttpServletResponse response) {
+        getThreadLocalMap().put(RESPONSE, response);
     }
 
     @Override
