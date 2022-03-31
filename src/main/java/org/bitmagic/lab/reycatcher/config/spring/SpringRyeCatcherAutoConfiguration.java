@@ -65,13 +65,9 @@ public class SpringRyeCatcherAutoConfiguration {
                 return null;
             }
         };
-        Map<String, Object> beans = new HashMap<>(8);
-        beans.put("antPathMatcher", (PathMatcher) new AntPathMatcher()::match);
-        beans.put("colonPathMatcher", (PathMatcher) new AntPathMatcher(":")::match);
         InstanceHolder.delegate2 = (beanName, c) -> {
             try {
-                Object o = beans.get(beanName);
-                return Objects.nonNull(o) ? o : SpringContextHolder.getBean(beanName, c);
+                return SpringContextHolder.getBean(beanName, c);
             } catch (BeansException beansException) {
                 log.warn("BeansException msg:{}", beansException.getMessage());
                 return null;
