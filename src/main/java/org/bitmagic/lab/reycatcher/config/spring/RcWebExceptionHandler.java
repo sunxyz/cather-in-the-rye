@@ -31,6 +31,6 @@ public class RcWebExceptionHandler {
 
     @ExceptionHandler(BasicException.class)
     public ResponseEntity<Object> t(BasicException e){
-        return ResponseEntity.status(SC_UNAUTHORIZED).header("WWW-Authenticate","Basic realm="+ Base64Utils.encode(e.getRealm())).build();
+        return ResponseEntity.status(SC_UNAUTHORIZED).header("WWW-Authenticate","Basic realm="+ Base64Utils.encode(e.getRealm()) +",error=\""+e.getMessage()+"\"").build();
     }
 }
