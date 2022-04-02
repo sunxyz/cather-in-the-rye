@@ -1,6 +1,7 @@
 package org.bitmagic.lab.reycatcher.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.AuthMatchInfoProvider;
 import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
@@ -15,20 +16,21 @@ import java.util.stream.Collectors;
 /**
  * @author yangrd
  */
+
 public interface RyeCatcherBootstrap {
 
     static RyeCatcherBootstrap getInstance() {
-        return SimpleRyeCatcherBootstrap.INSTANCE;
+        return DefaultRyeCatcherBootstrap.INSTANCE;
     }
 
     void init(Configuration config);
 
-    class SimpleRyeCatcherBootstrap implements RyeCatcherBootstrap {
+    @Slf4j
+    class DefaultRyeCatcherBootstrap implements RyeCatcherBootstrap {
 
-       static RyeCatcherBootstrap INSTANCE = new SimpleRyeCatcherBootstrap();
+       static RyeCatcherBootstrap INSTANCE = new DefaultRyeCatcherBootstrap();
 
         private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Collections.emptyList(), SessionToken.GenTypeCons.SESSION_ID, null, false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
-
 
         @Override
         public void init(Configuration config) {
@@ -52,6 +54,7 @@ public interface RyeCatcherBootstrap {
                 }
                 return systemDefines.iterator().next();
             };
+            log.info("RyeCatcher init success");
         }
 
         private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request) {
