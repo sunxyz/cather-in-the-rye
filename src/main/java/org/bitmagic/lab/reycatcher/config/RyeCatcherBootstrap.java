@@ -41,7 +41,7 @@ public interface RyeCatcherBootstrap {
             beans.put(AuthMatchInfoProvider.class, environment.getAuthMatchInfoProvider());
             beans.put(RyeCatcherActionListener.class, environment.getRyeCatcherActionListener());
             beans.put(Algorithm.class, environment.getAlgorithm());
-            beans.put(HttpRequestPredicate.class, environment.getCertificationSystemPredicate());
+            beans.put(HttpRequestPredicate.class, environment.getHttpRequestPredicate());
             InstanceHolder.delegate = beans::get;
 
             DynamicRcConfigHolder.delegate = () -> {
@@ -49,7 +49,7 @@ public interface RyeCatcherBootstrap {
                     return DEFAULT_CERTIFICATION_SYSTEM_INFO;
                 }
                 HttpServletRequest request = RcRequestContextHolder.getContext().getRequest();
-                List<CertificationSystemDefine> systemDefines = config.getCertificationSystemDefines().stream().filter(o -> mathCertificationSystemDefine(o, environment.getCertificationSystemPredicate(), request)).collect(Collectors.toList());
+                List<CertificationSystemDefine> systemDefines = config.getCertificationSystemDefines().stream().filter(o -> mathCertificationSystemDefine(o, environment.getHttpRequestPredicate(), request)).collect(Collectors.toList());
                 if (systemDefines.size() != 1) {
                     throw new IllegalStateException("systemDefines == 1");
                 }

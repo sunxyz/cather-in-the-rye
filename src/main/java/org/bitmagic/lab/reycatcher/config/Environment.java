@@ -9,8 +9,8 @@ import org.bitmagic.lab.reycatcher.AuthMatchInfoProvider;
 import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.impl.DefaultRyeCatcherActionListener;
-import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 import org.bitmagic.lab.reycatcher.predicate.CompositeHttpRequestPredicate;
+import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -38,11 +38,11 @@ public class Environment {
 
     private Set<HttpRequestPredicate> httpRequestPredicates = new HashSet<>();
 
-    public void addCertificationSystemPredicate(HttpRequestPredicate predicate) {
+    public void addHttpRequestPredicate(HttpRequestPredicate predicate) {
         httpRequestPredicates.add(predicate);
     }
 
-    public HttpRequestPredicate getCertificationSystemPredicate() {
+    public HttpRequestPredicate getHttpRequestPredicate() {
         return new CompositeHttpRequestPredicate(this.httpRequestPredicates);
     }
 
