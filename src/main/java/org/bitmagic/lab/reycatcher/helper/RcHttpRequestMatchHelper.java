@@ -4,6 +4,7 @@ import org.bitmagic.lab.reycatcher.config.InstanceHolder;
 import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,13 +15,18 @@ public class RcHttpRequestMatchHelper {
 
     private static final HttpRequestPredicate PREDICATE = InstanceHolder.getInstance(HttpRequestPredicate.class);
 
-    public static boolean match(HttpServletRequest request, String spec) {
-        return match(request, spec, PREDICATE);
+    public static boolean match(HttpServletRequest request, String... specs) {
+        return match(PREDICATE, request, specs);
+    }
+
+    public static boolean match(HttpRequestPredicate predicate, HttpServletRequest request, String... specs) {
+        return Arrays.stream(specs).anyMatch(spec -> match(request, spec, predicate));
     }
 
     /**
-     *  * # 匹配规则   predicateName=k[:v][,k1[:v1]]
-     *  * # predicateName: Path,Cookie,Params,Header,Host,Method
+     * * # 匹配规则   predicateName=k[:v][,k1[:v1]]
+     * * # predicateName: Path,Cookie,Params,Header,Host,Method
+     *
      * @param request
      * @param spec
      * @param predicate
