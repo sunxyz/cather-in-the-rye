@@ -6,7 +6,8 @@ import org.bitmagic.lab.reycatcher.AuthMatchInfoProvider;
 import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionToken;
-import org.bitmagic.lab.reycatcher.predicates.CertificationSystemPredicate;
+import org.bitmagic.lab.reycatcher.helper.RcHttpRequestMatchHelper;
+import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,9 +29,8 @@ public interface RyeCatcherBootstrap {
     @Slf4j
     class DefaultRyeCatcherBootstrap implements RyeCatcherBootstrap {
 
-       static RyeCatcherBootstrap INSTANCE = new DefaultRyeCatcherBootstrap();
-
         private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Collections.emptyList(), SessionToken.GenTypeCons.SESSION_ID, null, false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+        static RyeCatcherBootstrap INSTANCE = new DefaultRyeCatcherBootstrap();
 
         @Override
         public void init(Configuration config) {
@@ -41,6 +41,7 @@ public interface RyeCatcherBootstrap {
             beans.put(AuthMatchInfoProvider.class, environment.getAuthMatchInfoProvider());
             beans.put(RyeCatcherActionListener.class, environment.getRyeCatcherActionListener());
             beans.put(Algorithm.class, environment.getAlgorithm());
+            beans.put(HttpRequestPredicate.class, environment.getCertificationSystemPredicate());
             InstanceHolder.delegate = beans::get;
 
             DynamicRcConfigHolder.delegate = () -> {
@@ -57,29 +58,8 @@ public interface RyeCatcherBootstrap {
             log.info("RyeCatcher init success");
         }
 
-        private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, CertificationSystemPredicate certificationSystemPredicate, HttpServletRequest request) {
-            return certificationSystemDefine.getPredicates().stream().allMatch(t -> {
-//                    Path=k:v,k1:v1
-                String[] split = t.split("=");
-                String name = split[0];
-                String values = split[1];
-                String[] kvs = null;
-                if (values.contains(",")) {
-                    kvs = values.split(",");
-                } else {
-                    kvs = new String[]{values};
-                }
-                Map<String, String> map = new HashMap<>();
-                for (String kv : kvs) {
-                    if (kv.contains(":")) {
-                        String[] kv0 = kv.split(":");
-                        map.put(kv0[0], kv0[1]);
-                    } else {
-                        map.put(kv, "true");
-                    }
-                }
-                return certificationSystemPredicate.test(name, request, map);
-            });
+        private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, HttpRequestPredicate httpRequestPredicate, HttpServletRequest request) {
+            return certificationSystemDefine.getPredicates().stream().allMatch(specStr -> RcHttpRequestMatchHelper.match(request, specStr, httpRequestPredicate));
         }
     }
 }

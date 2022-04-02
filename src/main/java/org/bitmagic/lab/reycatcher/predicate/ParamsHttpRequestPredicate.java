@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.predicates;
+package org.bitmagic.lab.reycatcher.predicate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 /**
  * @author yangrd
  */
-public class ParamsCertificationSystemPredicate implements CertificationSystemPredicate0{
+public class ParamsHttpRequestPredicate implements HttpRequestPredicate0 {
     @Override
     public boolean test(HttpServletRequest request, Map<String, String> kvs) {
         return kvs.entrySet().stream().anyMatch(e->{

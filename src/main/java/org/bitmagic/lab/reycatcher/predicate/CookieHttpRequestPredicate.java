@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.predicates;
+package org.bitmagic.lab.reycatcher.predicate;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 /**
  * @author yangrd
  */
-public class CookieCertificationSystemPredicate implements CertificationSystemPredicate0 {
+public class CookieHttpRequestPredicate implements HttpRequestPredicate0 {
 
     @Override
     public boolean test(HttpServletRequest request, Map<String, String> kvs) {

@@ -6,7 +6,7 @@ import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.config.Environment;
 import org.bitmagic.lab.reycatcher.config.RyeCatcherBootstrap;
-import org.bitmagic.lab.reycatcher.predicates.CertificationSystemPredicate;
+import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 import org.bitmagic.lab.reycatcher.support.RyeCatcherServletFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -34,8 +34,8 @@ public class SpringRyeCatcherAutoConfiguration {
 
 
     @Autowired
-    public void init(RyeCatcherProperties properties, CertificationSystemPredicate certificationSystemPredicate, SessionManager sessionManager, AuthMatchInfoProvider authMatchInfoProvider, RyeCatcherActionListener ryeCatcherActionListener) {
-        Environment environment = Environment.of(sessionManager, authMatchInfoProvider, ryeCatcherActionListener, null, Collections.singleton(certificationSystemPredicate));
+    public void init(RyeCatcherProperties properties, HttpRequestPredicate httpRequestPredicate, SessionManager sessionManager, AuthMatchInfoProvider authMatchInfoProvider, RyeCatcherActionListener ryeCatcherActionListener) {
+        Environment environment = Environment.of(sessionManager, authMatchInfoProvider, ryeCatcherActionListener, null, Collections.singleton(httpRequestPredicate));
         org.bitmagic.lab.reycatcher.config.Configuration configuration = org.bitmagic.lab.reycatcher.config.Configuration.of(environment, properties.getCertificationSystems());
         RyeCatcherBootstrap.getInstance().init(configuration);
     }

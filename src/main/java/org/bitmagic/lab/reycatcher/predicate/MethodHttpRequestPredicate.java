@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.predicates;
+package org.bitmagic.lab.reycatcher.predicate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author yangrd
  */
-public class MethodCertificationSystemPredicate implements CertificationSystemPredicate0{
+public class MethodHttpRequestPredicate implements HttpRequestPredicate0 {
 
     @Override
     public boolean test(HttpServletRequest request, Map<String, String> kvs) {

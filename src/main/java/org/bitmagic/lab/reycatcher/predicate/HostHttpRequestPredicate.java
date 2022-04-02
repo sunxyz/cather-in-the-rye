@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.predicates;
+package org.bitmagic.lab.reycatcher.predicate;
 
 import org.springframework.util.AntPathMatcher;
 
@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author yangrd
  */
-public class HostCertificationSystemPredicate implements CertificationSystemPredicate0{
+public class HostHttpRequestPredicate implements HttpRequestPredicate0 {
 
     private static final AntPathMatcher ANT_PATH_MATCHER = new AntPathMatcher(".");
     @Override

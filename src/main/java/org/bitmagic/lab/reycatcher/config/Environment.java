@@ -9,8 +9,8 @@ import org.bitmagic.lab.reycatcher.AuthMatchInfoProvider;
 import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.impl.DefaultRyeCatcherActionListener;
-import org.bitmagic.lab.reycatcher.predicates.CertificationSystemPredicate;
-import org.bitmagic.lab.reycatcher.predicates.CompositeCertificationSystemPredicate;
+import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
+import org.bitmagic.lab.reycatcher.predicate.CompositeHttpRequestPredicate;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,14 +36,14 @@ public class Environment {
     @Setter
     private Algorithm algorithm;
 
-    private Set<CertificationSystemPredicate> certificationSystemPredicates = new HashSet<>();
+    private Set<HttpRequestPredicate> httpRequestPredicates = new HashSet<>();
 
-    public void addCertificationSystemPredicate(CertificationSystemPredicate predicate) {
-        certificationSystemPredicates.add(predicate);
+    public void addCertificationSystemPredicate(HttpRequestPredicate predicate) {
+        httpRequestPredicates.add(predicate);
     }
 
-    public CertificationSystemPredicate getCertificationSystemPredicate() {
-        return new CompositeCertificationSystemPredicate(this.certificationSystemPredicates);
+    public HttpRequestPredicate getCertificationSystemPredicate() {
+        return new CompositeHttpRequestPredicate(this.httpRequestPredicates);
     }
 
 

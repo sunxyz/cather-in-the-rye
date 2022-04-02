@@ -5,7 +5,7 @@ import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.SessionRepository;
 import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
 import org.bitmagic.lab.reycatcher.impl.*;
-import org.bitmagic.lab.reycatcher.predicates.*;
+import org.bitmagic.lab.reycatcher.predicate.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,37 +57,37 @@ public class SpringRyeCatcherRegister {
 
     @Bean
     @Primary
-    public CertificationSystemPredicate certificationSystemPredicate(List<CertificationSystemPredicate> certificationSystemPredicates) {
-        return new CompositeCertificationSystemPredicate(certificationSystemPredicates);
+    public HttpRequestPredicate certificationSystemPredicate(List<HttpRequestPredicate> httpRequestPredicates) {
+        return new CompositeHttpRequestPredicate(httpRequestPredicates);
     }
 
     @Bean
-    public CertificationSystemPredicate cookieCertificationSystemPredicate() {
-        return new CookieCertificationSystemPredicate();
+    public HttpRequestPredicate cookieCertificationSystemPredicate() {
+        return new CookieHttpRequestPredicate();
     }
 
     @Bean
-    public CertificationSystemPredicate headerCertificationSystemPredicate() {
-        return new HeaderCertificationSystemPredicate();
+    public HttpRequestPredicate headerCertificationSystemPredicate() {
+        return new HeaderHttpRequestPredicate();
     }
 
     @Bean
-    public CertificationSystemPredicate hostCertificationSystemPredicate() {
-        return new HostCertificationSystemPredicate();
+    public HttpRequestPredicate hostCertificationSystemPredicate() {
+        return new HostHttpRequestPredicate();
     }
 
     @Bean
-    public CertificationSystemPredicate methodCertificationSystemPredicate() {
-        return new MethodCertificationSystemPredicate();
+    public HttpRequestPredicate methodCertificationSystemPredicate() {
+        return new MethodHttpRequestPredicate();
     }
 
     @Bean
-    public CertificationSystemPredicate paramsCertificationSystemPredicate() {
-        return new ParamsCertificationSystemPredicate();
+    public HttpRequestPredicate paramsCertificationSystemPredicate() {
+        return new ParamsHttpRequestPredicate();
     }
 
     @Bean
-    public CertificationSystemPredicate pathCertificationSystemPredicate() {
-        return new PathCertificationSystemPredicate();
+    public HttpRequestPredicate pathCertificationSystemPredicate() {
+        return new PathHttpRequestPredicate();
     }
 }
