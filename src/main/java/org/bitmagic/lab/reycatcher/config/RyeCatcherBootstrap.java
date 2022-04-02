@@ -59,7 +59,7 @@ public interface RyeCatcherBootstrap {
         }
 
         private boolean mathCertificationSystemDefine(CertificationSystemDefine certificationSystemDefine, HttpRequestPredicate httpRequestPredicate, HttpServletRequest request) {
-            return certificationSystemDefine.getPredicates().stream().allMatch(specStr -> RcHttpRequestMatchHelper.match(request, specStr, httpRequestPredicate));
+            return RcHttpRequestMatchHelper.allMatch(httpRequestPredicate, request, certificationSystemDefine.getPredicates().toArray(new String[0]));
         }
     }
 }

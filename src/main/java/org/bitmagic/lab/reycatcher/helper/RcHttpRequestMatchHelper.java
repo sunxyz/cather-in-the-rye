@@ -15,12 +15,28 @@ public class RcHttpRequestMatchHelper {
 
     private static final HttpRequestPredicate PREDICATE = InstanceHolder.getInstance(HttpRequestPredicate.class);
 
-    public static boolean match(HttpServletRequest request, String... specs) {
-        return match(PREDICATE, request, specs);
+    public static boolean allMatch(HttpServletRequest request, String... specs) {
+        return allMatch(PREDICATE, request, specs);
     }
 
-    public static boolean match(HttpRequestPredicate predicate, HttpServletRequest request, String... specs) {
+    public static boolean anyMatch(HttpServletRequest request, String... specs) {
+        return anyMatch(PREDICATE, request, specs);
+    }
+
+    public static boolean noneMatch(HttpServletRequest request, String... specs) {
+        return noneMatch(PREDICATE, request, specs);
+    }
+
+    public static boolean allMatch(HttpRequestPredicate predicate, HttpServletRequest request, String... specs) {
+        return Arrays.stream(specs).allMatch(spec -> match(request, spec, predicate));
+    }
+
+    public static boolean anyMatch(HttpRequestPredicate predicate, HttpServletRequest request, String... specs) {
         return Arrays.stream(specs).anyMatch(spec -> match(request, spec, predicate));
+    }
+
+    public static boolean noneMatch(HttpRequestPredicate predicate, HttpServletRequest request, String... specs) {
+        return Arrays.stream(specs).noneMatch(spec -> match(request, spec, predicate));
     }
 
     /**
@@ -32,7 +48,7 @@ public class RcHttpRequestMatchHelper {
      * @param predicate
      * @return
      */
-    public static boolean match(HttpServletRequest request, String spec, HttpRequestPredicate predicate) {
+    static boolean match(HttpServletRequest request, String spec, HttpRequestPredicate predicate) {
         String[] split = spec.split("=");
         String name = split[0];
         String values = split[1];
