@@ -12,8 +12,8 @@ public class RcRequestContextHolder {
         return INSTANCE;
     }
 
-    public static void setContext(RcRequestContext rcRequestContext) {
-        INSTANCE = rcRequestContext;
+    public static void setContext(RcRequestContext context) {
+        INSTANCE = context;
     }
 
     public static void clear() {

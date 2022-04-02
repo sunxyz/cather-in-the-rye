@@ -5,7 +5,6 @@ import org.springframework.util.AntPathMatcher;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -22,13 +21,12 @@ public class InstanceHolder {
 
     public static Function<Class<?>, Object> delegate;
 
-    public static BiFunction<String, Class<?>, Object> delegate2;
 
     public static <T> T getInstance(Class<T> tClass) {
         return (T) delegate.apply(tClass);
     }
 
     public static <T> T getInstance(String beanName, Class<T> tClass) {
-        return (T) beans.getOrDefault(beanName, delegate2.apply(beanName, tClass));
+        return (T) beans.getOrDefault(beanName, null);
     }
 }

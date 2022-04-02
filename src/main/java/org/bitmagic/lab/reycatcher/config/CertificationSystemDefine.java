@@ -1,9 +1,6 @@
 package org.bitmagic.lab.reycatcher.config;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bitmagic.lab.reycatcher.SessionToken;
 
 import java.util.List;
@@ -15,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor(staticName = "of")
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
+@Builder
 public class CertificationSystemDefine {
 
     private String id;
