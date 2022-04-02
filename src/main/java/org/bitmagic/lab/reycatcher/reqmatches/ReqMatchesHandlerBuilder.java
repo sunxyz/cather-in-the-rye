@@ -97,7 +97,7 @@ public interface ReqMatchesHandlerBuilder {
         public ReqMatchesHandler setHandler(BiConsumer<HttpServletRequest, ReqMatchesFunc> handler) {
             return ReqMatchesHandler.SimpleReqMatchesHandler.of(matchPredicates, notMatchPredicates, (x, y) -> {
                 handler.accept(x, y);
-                return !RcRequestContextHolder.getContext().containsAttr(ReqMatchesHandler.RES_FLAG);
+                return !RcRequestContextHolder.getContext().containsAttribute(ReqMatchesHandler.RES_FLAG);
             }, children);
         }
 

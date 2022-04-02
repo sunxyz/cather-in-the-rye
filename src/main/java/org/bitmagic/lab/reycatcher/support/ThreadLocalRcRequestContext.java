@@ -44,27 +44,27 @@ public class ThreadLocalRcRequestContext implements RcRequestContext {
     }
 
     @Override
-    public void setAttr(String key, Object v) {
+    public void setAttribute(String key, Object v) {
         getThreadLocalMap().put(key,v);
     }
 
     @Override
-    public <T> T getAttr(String key, Class<T> tClass) {
-       return (T) getAttr(key);
+    public <T> T getAttribute(String key, Class<T> tClass) {
+       return (T) getAttribute(key);
     }
 
     @Override
-    public Object getAttr(String key) {
+    public Object getAttribute(String key) {
         return getThreadLocalMap().get(key);
     }
 
     @Override
-    public boolean containsAttr(String key) {
+    public boolean containsAttribute(String key) {
         return getThreadLocalMap().containsKey(key);
     }
 
     @Override
-    public void removeAttr(String key) {
+    public void removeAttribute(String key) {
         getThreadLocalMap().remove(key);
     }
 

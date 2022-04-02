@@ -12,15 +12,15 @@ public interface RcRequestContext {
 
     HttpServletResponse getResponse();
 
-    void setAttr(String key, Object v);
+    void setAttribute(String key, Object v);
 
-    <T> T getAttr(String key, Class<T> tClass);
+    <T> T getAttribute(String key, Class<T> tClass);
 
-    Object getAttr(String key);
+    Object getAttribute(String key);
 
-    boolean containsAttr(String key);
+    boolean containsAttribute(String key);
 
-    void removeAttr(String key);
+    void removeAttribute(String key);
 
     void clearAll();
 }

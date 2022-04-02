@@ -9,13 +9,13 @@ public class HashMapApplicationContext implements ApplicationContext{
     private final Map<String,Object> map = new HashMap<>();
 
     @Override
-    public void setAttr(String key, Object v) {
+    public void setAttirbute(String key, Object v) {
         map.put(key,v);
     }
 
     @Override
-    public <T> T getAttr(String key, Class<T> tClass) {
-        return (T)getAttr(key);
+    public <T> T getAttirbute(String key, Class<T> tClass) {
+        return (T) getAttirbute(key);
     }
 
     @Override
@@ -24,17 +24,17 @@ public class HashMapApplicationContext implements ApplicationContext{
     }
 
     @Override
-    public Object getAttr(String key) {
+    public Object getAttirbute(String key) {
         return map.get(key);
     }
 
     @Override
-    public boolean containsAttr(String key) {
+    public boolean containsAttirbute(String key) {
         return map.containsKey(key);
     }
 
     @Override
-    public void removeAttr(String key) {
+    public void removeAttirbute(String key) {
         map.remove(key);
     }
 

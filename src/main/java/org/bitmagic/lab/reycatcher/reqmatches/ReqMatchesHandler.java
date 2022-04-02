@@ -67,7 +67,7 @@ public interface ReqMatchesHandler extends ReqMatchesFunc {
         @lombok.SneakyThrows
         @Override
         public void returnRes(String o) {
-            RcRequestContextHolder.getContext().setAttr(RES_FLAG, true);
+            RcRequestContextHolder.getContext().setAttribute(RES_FLAG, true);
             RcRequestContextHolder.getContext().getResponse().getWriter().write(o);
         }
 

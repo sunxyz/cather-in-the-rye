@@ -9,17 +9,17 @@ public interface ApplicationContext {
 
     ApplicationContext INSTANT = new HashMapApplicationContext();
 
-    void setAttr(String key, Object v);
+    void setAttirbute(String key, Object v);
 
-    <T>T getAttr(String key, Class<T> tClass);
+    <T>T getAttirbute(String key, Class<T> tClass);
 
     <T> T computeIfAbsent(String key, Function<String,? extends T> gen);
 
-    Object getAttr(String key);
+    Object getAttirbute(String key);
 
-    boolean containsAttr(String key);
+    boolean containsAttirbute(String key);
 
-    void removeAttr(String key);
+    void removeAttirbute(String key);
 
     void clearAll();
 }
