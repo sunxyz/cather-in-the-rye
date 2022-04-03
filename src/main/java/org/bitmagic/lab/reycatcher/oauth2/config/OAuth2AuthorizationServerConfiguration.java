@@ -13,8 +13,9 @@ public class OAuth2AuthorizationServerConfiguration {
     @ConditionalOnMissingBean(OAuth2AuthorizationServer.class)
     @Bean
     public OAuth2AuthorizationServer oAuth2AuthorizationController(OAuth2AuthorizationServerConfigurer config) {
-        OAuth2AuthorizationServerConfigurer.OAuth2AuthorizationServerConfigInfo configInfo = config.configuration(config.configuration());
-        return new OAuth2AuthorizationServer(configInfo.getOAuth2ConfigurationInfo(), configInfo.getOAuth2TokenStore(), configInfo.getOAuth2ApprovalStore(), configInfo.getOAuth2UserInfoProvider(), configInfo.getLoginPath(), configInfo.getConfirmPath());
+        OAuth2AuthorizationServerConfigurer.OAuth2AuthorizationServerConfigInfo configInfo = new OAuth2AuthorizationServerConfigurer.OAuth2AuthorizationServerConfigInfo();
+        config.configurer(configInfo);
+        return new OAuth2AuthorizationServer(config.getOAuth2ConfigurationInfo(), configInfo.oAuth2TokenStore(), configInfo.oAuth2ApprovalStore(), configInfo.oAuth2UserInfoProvider(), configInfo.loginPath(), configInfo.confirmPath());
     }
 
     @Bean

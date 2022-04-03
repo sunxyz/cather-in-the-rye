@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MemoryOAuth2TokenStore implements OAuth2TokenStore {
 
+    public static final OAuth2TokenStore INSTANCE = new MemoryOAuth2TokenStore();
+
     private final Map<String, Oauth2Token> tokenMap = new ConcurrentHashMap<>(32);
     private final Map<String, String> refreshTokenMap = new ConcurrentHashMap<>(32);
     //todo  clear expired token

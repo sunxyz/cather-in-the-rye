@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
  */
 public class MemoryOAuth2ApprovalStore implements OAuth2ApprovalStore {
 
+
     private final Map<String, OAuth2Approval> approvals = new ConcurrentHashMap<>(32);
 
     @Override
