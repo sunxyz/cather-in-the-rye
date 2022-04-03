@@ -14,7 +14,7 @@ public class OAuth2AuthorizationServerConfiguration {
     @Bean
     public OAuth2AuthorizationServer oAuth2AuthorizationController(OAuth2AuthorizationServerConfigurer config) {
         OAuth2AuthorizationServerConfigurer.OAuth2AuthorizationServerConfigInfo configInfo = config.configuration(config.configuration());
-        return new OAuth2AuthorizationServer(configInfo.getOAuth2Configuration(), configInfo.getOAuth2TokenStore(), configInfo.getOAuth2ApprovalStore(), configInfo.getOAuth2UserInfoProvider(), configInfo.getLoginPath(), configInfo.getConfirmPath());
+        return new OAuth2AuthorizationServer(configInfo.getOAuth2ConfigurationInfo(), configInfo.getOAuth2TokenStore(), configInfo.getOAuth2ApprovalStore(), configInfo.getOAuth2UserInfoProvider(), configInfo.getLoginPath(), configInfo.getConfirmPath());
     }
 
     @Bean

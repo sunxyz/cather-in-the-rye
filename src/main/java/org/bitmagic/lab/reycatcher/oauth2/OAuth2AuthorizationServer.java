@@ -31,7 +31,7 @@ import static org.bitmagic.lab.reycatcher.oauth2.support.OAuth2ExceptionUtils.tr
 public class OAuth2AuthorizationServer {
 
     private static final Map<String, String> CODE2_USER_ID = new ConcurrentHashMap<>();
-    private final OAuth2Configuration oAuth2Configuration;
+    private final OAuth2ConfigurationInfo oAuth2ConfigurationInfo;
     private final OAuth2TokenStore tokenStore;
     private final OAuth2ApprovalStore approvalStore;
     private final OAuth2UserInfoProvider userInfoProvider;
@@ -53,14 +53,14 @@ public class OAuth2AuthorizationServer {
         if (!RyeCatcher.isLogin()) {
             response.sendRedirect(loginPath + String.format("?clientId=%s&redirectUri=%s&responseType=%s&scope=%s&state=%s", authorizeInfo.getClientId(), authorizeInfo.getRedirectUri(), authorizeInfo.getResponseType(), authorizeInfo.getScope(), authorizeInfo.getState()));
         } else {
-            OAuth2ClientInfo oauth2ClientInfo = oAuth2Configuration.getOauth2ClientInfo(authorizeInfo.getClientId());
+            OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(authorizeInfo.getClientId());
             authorize0(authorizeInfo, response, oauth2ClientInfo);
         }
     }
 
     public void confirmAccess(ConfirmAccessInfo confirmAccessInfo, HttpServletResponse response) throws IOException {
         AuthorizeInfo authorizeInfo = (AuthorizeInfo) getSession().getAttribute("authorizeInfo");
-        OAuth2ClientInfo oauth2ClientInfo = oAuth2Configuration.getOauth2ClientInfo(authorizeInfo.getClientId());
+        OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(authorizeInfo.getClientId());
         tryOauth2Exception(!confirmAccessInfo.isApproval(), "invalid_request", null, authorizeInfo.getState());
         OAuth2Approval auth2Approval = OAuth2Approval.of(RyeCatcher.getLoginId(), authorizeInfo.getClientId(), authorizeInfo.getScope(), null, LocalDateTime.now().plusYears(1), LocalDateTime.now(), LocalDateTime.now());
         approvalStore.addApproval(auth2Approval);
@@ -79,7 +79,7 @@ public class OAuth2AuthorizationServer {
         String code = requestTokenInfo.getCode();
         String userId = CODE2_USER_ID.get(code);
         tryOauth2Exception(Objects.isNull(userId), "invalid_code");
-        OAuth2ClientInfo oauth2ClientInfo = oAuth2Configuration.getOauth2ClientInfo(requestTokenInfo.getClientId());
+        OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(requestTokenInfo.getClientId());
         tryOauth2Exception(Objects.isNull(oauth2ClientInfo), "invalid_client");
         tryOauth2Exception(!oauth2ClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri()), "invalid_redirect_uri");
         tryOauth2Exception(oauth2ClientInfo.getClientSecret() != null && !oauth2ClientInfo.getClientSecret().equals(requestTokenInfo.getClientSecret()), "invalid_client_secret");

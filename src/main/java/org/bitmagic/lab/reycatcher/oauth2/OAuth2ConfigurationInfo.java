@@ -8,7 +8,7 @@ import java.util.List;
  * @author yangrd
  */
 @Builder
-public class OAuth2Configuration {
+public class OAuth2ConfigurationInfo {
 
     private List<OAuth2ClientInfo> clientInfos;
 
