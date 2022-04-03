@@ -11,7 +11,9 @@ import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.impl.DefaultRyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.predicate.CompositeHttpRequestPredicate;
 import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
+import org.bitmagic.lab.reycatcher.predicate.PathHttpRequestPredicate;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +38,7 @@ public class Environment {
     @Setter
     private Algorithm algorithm;
 
-    private Set<HttpRequestPredicate> httpRequestPredicates = new HashSet<>();
+    private Set<HttpRequestPredicate> httpRequestPredicates = new HashSet<>(Collections.singletonList(new PathHttpRequestPredicate()));
 
     public void addHttpRequestPredicate(HttpRequestPredicate predicate) {
         httpRequestPredicates.add(predicate);
