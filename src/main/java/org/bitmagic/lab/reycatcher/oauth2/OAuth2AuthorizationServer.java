@@ -30,6 +30,7 @@ import static org.bitmagic.lab.reycatcher.oauth2.support.OAuth2ExceptionUtils.tr
 @RequiredArgsConstructor
 public class OAuth2AuthorizationServer {
 
+    //TODO 时长
     private static final Map<String, String> CODE2_USER_ID = new ConcurrentHashMap<>();
     private final OAuth2ConfigurationInfo oAuth2ConfigurationInfo;
     private final OAuth2TokenStore tokenStore;

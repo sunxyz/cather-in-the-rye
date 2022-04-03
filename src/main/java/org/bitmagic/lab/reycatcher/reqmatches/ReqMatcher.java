@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 /**
  * @author yangrd
  */
-public class ReqMatchesCreate {
+public class ReqMatcher {
 
     static final PathMatcher PATH_MATCHER = InstanceHolder.getInstance("antPathMatcher", PathMatcher.class);
-    public static ReqMatchesCreate INSTANCE = new ReqMatchesCreate();
+    public static ReqMatcher INSTANCE = new ReqMatcher();
 
     public ReqMatchesHandlerBuilder matches(String... uris) {
         return matches(request -> Stream.of(uris).anyMatch(uriKey -> PATH_MATCHER.match(uriKey, request.getRequestURI())));

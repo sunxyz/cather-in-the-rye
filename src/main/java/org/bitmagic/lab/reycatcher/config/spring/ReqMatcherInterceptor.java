@@ -1,6 +1,6 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
-import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesCreate;
+import org.bitmagic.lab.reycatcher.reqmatches.ReqMatcher;
 import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesHandler;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,8 +16,8 @@ public class ReqMatcherInterceptor implements HandlerInterceptor {
 
     private final ReqMatchesHandler reqMatchesHandler;
 
-    public ReqMatcherInterceptor(Function<ReqMatchesCreate, ReqMatchesHandler> reqMatchesHandler) {
-        this.reqMatchesHandler = reqMatchesHandler.apply(ReqMatchesCreate.INSTANCE);
+    public ReqMatcherInterceptor(Function<ReqMatcher, ReqMatchesHandler> reqMatchesHandler) {
+        this.reqMatchesHandler = reqMatchesHandler.apply(ReqMatcher.INSTANCE);
     }
 
     @Override

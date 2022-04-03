@@ -5,7 +5,7 @@ import org.bitmagic.lab.reycatcher.ex.BasicException;
 import org.bitmagic.lab.reycatcher.ex.ForbiddenException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 import org.bitmagic.lab.reycatcher.reqmatches.BiConsumers;
-import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesCreate;
+import org.bitmagic.lab.reycatcher.reqmatches.ReqMatcher;
 import org.bitmagic.lab.reycatcher.reqmatches.ReqMatchesHandler;
 import org.bitmagic.lab.reycatcher.utils.Base64Utils;
 
@@ -32,8 +32,8 @@ public class RyeCatcherServletFilter extends HttpFilter {
 
     private BiConsumer<RuntimeException, HttpServletResponse> errCatcher;
 
-    public RyeCatcherServletFilter(Function<ReqMatchesCreate, ReqMatchesHandler> reqMatchesFactory) {
-        this.reqMatchesHandler = reqMatchesFactory.apply(ReqMatchesCreate.INSTANCE);
+    public RyeCatcherServletFilter(Function<ReqMatcher, ReqMatchesHandler> reqMatchesFactory) {
+        this.reqMatchesHandler = reqMatchesFactory.apply(ReqMatcher.INSTANCE);
     }
 
     @Override
