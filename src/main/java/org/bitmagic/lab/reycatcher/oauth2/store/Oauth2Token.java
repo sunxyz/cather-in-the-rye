@@ -1,4 +1,4 @@
-package org.bitmagic.lab.reycatcher.oauth2.model;
+package org.bitmagic.lab.reycatcher.oauth2.store;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @RequiredArgsConstructor(staticName = "of")
-public class Oauth2TokenInfo {
+public class Oauth2Token {
     final String accessToken;
     final  String refreshToken;
     final String tokenType;

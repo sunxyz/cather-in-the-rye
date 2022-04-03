@@ -2,7 +2,10 @@ package org.bitmagic.lab.reycatcher;
 
 import lombok.Value;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author yangrd
@@ -23,4 +26,6 @@ public interface Page<T> {
         List<T> content;
         Integer total;
     }
+
+
 }
