@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class OAuth2AuthorizationServerClientRegistry {
 
-    private Map<String, OAuth2AuthorizationServerClientInfo> clients = new HashMap<>(10);
+    private final Map<String, OAuth2AuthorizationServerClientInfo> clients = new HashMap<>(10);
 
     public void addClient(OAuth2AuthorizationServerClientInfo clientInfo) {
         clients.put(clientInfo.getClientId(), clientInfo);

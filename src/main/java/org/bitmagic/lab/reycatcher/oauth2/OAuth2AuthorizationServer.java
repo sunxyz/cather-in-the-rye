@@ -139,10 +139,18 @@ public class OAuth2AuthorizationServer {
     }
 
 
+    /**
+     * checkToken
+     * @param accessToken
+     */
     public void checkToken(String accessToken) {
         tryOauth2Exception(Objects.isNull(tokenStore.getTokenInfo(accessToken)), "invalid_access_token");
     }
 
+    /**
+     * revokeToken
+     * @param accessToken
+     */
     public void revokeToken(String accessToken) {
         tokenStore.removeToken(accessToken);
     }
