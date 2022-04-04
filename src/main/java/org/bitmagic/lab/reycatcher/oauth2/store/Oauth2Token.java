@@ -20,7 +20,7 @@ public class Oauth2Token {
     final String userId;
     final Set<String> resourceIds;
     final long refreshTokenExpiresIn;
-    LocalDateTime createTime = LocalDateTime.now();
+    LocalDateTime createdTime = LocalDateTime.now();
 
     public Oauth2Token clone(String accessToken) {
         return Oauth2Token.of(accessToken, refreshToken, tokenType, expiresIn, scope, userId, resourceIds, refreshTokenExpiresIn);

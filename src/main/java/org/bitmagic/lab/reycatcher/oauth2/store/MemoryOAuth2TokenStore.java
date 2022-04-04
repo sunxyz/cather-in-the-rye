@@ -23,7 +23,7 @@ public class MemoryOAuth2TokenStore implements OAuth2TokenStore {
         ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleAtFixedRate(() -> {
             LocalDateTime now = LocalDateTime.now();
-            tokenMap.values().stream().filter(token -> token.getCreateTime().plusSeconds(token.getExpiresIn()).isAfter(now)).forEach(token -> removeToken(token.getAccessToken()));
+            tokenMap.values().stream().filter(token -> token.getCreatedTime().plusSeconds(token.getExpiresIn()).isAfter(now)).forEach(token -> removeToken(token.getAccessToken()));
         }, 0, 1, TimeUnit.MINUTES);
     }
 
@@ -36,7 +36,7 @@ public class MemoryOAuth2TokenStore implements OAuth2TokenStore {
     @Override
     public Oauth2Token getTokenInfo(String token) {
         Oauth2Token oauth2Token = tokenMap.get(token);
-        tryOauth2Exception(oauth2Token.createTime.plusSeconds(oauth2Token.expiresIn).isAfter(LocalDateTime.now()), "token expired");
+        tryOauth2Exception(oauth2Token.getCreatedTime().plusSeconds(oauth2Token.expiresIn).isAfter(LocalDateTime.now()), "token expired");
         return oauth2Token;
     }
 
