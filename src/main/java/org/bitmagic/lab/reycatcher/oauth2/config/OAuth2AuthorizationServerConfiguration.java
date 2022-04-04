@@ -17,7 +17,7 @@ public class OAuth2AuthorizationServerConfiguration {
     @ConditionalOnBean(OAuth2AuthorizationServerConfigurer.class)
     @ConditionalOnMissingBean(OAuth2AuthorizationServer.class)
     @Bean
-    public OAuth2AuthorizationServer oAuth2AuthorizationController(List<OAuth2AuthorizationServerConfigurer> configurers) {
+    public OAuth2AuthorizationServer oAuth2AuthorizationServer(List<OAuth2AuthorizationServerConfigurer> configurers) {
         OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer configInfo = new OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer();
         OAuth2AuthorizationServerClientsConfigurer clientsConfigurer = new OAuth2AuthorizationServerClientsConfigurer();
         configurers.forEach(configurer -> configurer.configure(clientsConfigurer));
