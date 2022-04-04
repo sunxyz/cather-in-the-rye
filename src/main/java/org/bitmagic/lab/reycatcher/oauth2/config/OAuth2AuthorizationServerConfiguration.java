@@ -19,8 +19,10 @@ public class OAuth2AuthorizationServerConfiguration {
     @Bean
     public OAuth2AuthorizationServer oAuth2AuthorizationController(List<OAuth2AuthorizationServerConfigurer> configurers) {
         OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer configInfo = new OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer();
+        OAuth2AuthorizationServerClientsConfigurer clientsConfigurer = new OAuth2AuthorizationServerClientsConfigurer();
+        configurers.forEach(configurer -> configurer.configure(clientsConfigurer));
         configurers.forEach(configurer -> configurer.configure(configInfo));
-        return new OAuth2AuthorizationServer(configurers.iterator().next().getOAuth2ConfigurationInfo(), configInfo.oAuth2TokenStore(), configInfo.oAuth2ApprovalStore(), configInfo.loginPath(), configInfo.confirmPath());
+        return new OAuth2AuthorizationServer(clientsConfigurer, configInfo.oAuth2TokenStore(), configInfo.oAuth2ApprovalStore(), configInfo.loginPath(), configInfo.confirmPath());
     }
 
     @Bean

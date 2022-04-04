@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.RyeCatcher;
 import org.bitmagic.lab.reycatcher.Session;
+import org.bitmagic.lab.reycatcher.oauth2.config.OAuth2AuthorizationServerClientsConfigurer;
 import org.bitmagic.lab.reycatcher.oauth2.model.AuthorizeInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.ConfirmAccessInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
@@ -36,7 +37,7 @@ import static org.bitmagic.lab.reycatcher.oauth2.support.OAuth2ExceptionUtils.tr
 public class OAuth2AuthorizationServer {
 
     private static final Map<String, CodeInfo> CODE_INFO_REPO = new ConcurrentHashMap<>();
-    private final OAuth2ConfigurationInfo oAuth2ConfigurationInfo;
+    private final OAuth2AuthorizationServerClientsConfigurer oAuth2ServerClientsConfigurer;
     private final OAuth2TokenStore tokenStore;
     private final OAuth2ApprovalStore approvalStore;
     private final String loginPath;
@@ -75,9 +76,9 @@ public class OAuth2AuthorizationServer {
         if (!RyeCatcher.isLogin()) {
             response.sendRedirect(loginPath + String.format("?clientId=%s&redirectUri=%s&responseType=%s&scope=%s&state=%s", authorizeInfo.getClientId(), authorizeInfo.getRedirectUri(), authorizeInfo.getResponseType(), authorizeInfo.getScope(), authorizeInfo.getState()));
         } else {
-            OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(authorizeInfo.getClientId());
+            OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo = oAuth2ServerClientsConfigurer.getClientInfo(authorizeInfo.getClientId());
             try {
-                authorize0(authorizeInfo, response, oauth2ClientInfo);
+                authorize0(authorizeInfo, response, oauth2AuthorizationServerClientInfo);
             } catch (OAuth2Exception e) {
                 log.warn("authorize error", e);
                 response.sendRedirect(authorizeInfo.getRedirectUri() + "?error=" + e.getMessage() + "&state=" + authorizeInfo.getState());
@@ -87,12 +88,12 @@ public class OAuth2AuthorizationServer {
 
     public void confirmAccess(ConfirmAccessInfo confirmAccessInfo, HttpServletResponse response) throws IOException {
         AuthorizeInfo authorizeInfo = (AuthorizeInfo) getSession().getAttribute("authorizeInfo");
-        OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(authorizeInfo.getClientId());
+        OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo = oAuth2ServerClientsConfigurer.getClientInfo(authorizeInfo.getClientId());
         try {
             tryOauth2Exception(!confirmAccessInfo.isApproval(), "invalid_approval");
             OAuth2Approval auth2Approval = OAuth2Approval.of(RyeCatcher.getLoginId(), authorizeInfo.getClientId(), authorizeInfo.getScope(), null, LocalDateTime.now().plusYears(1), LocalDateTime.now(), LocalDateTime.now());
             approvalStore.addApproval(auth2Approval);
-            authorize0(authorizeInfo, response, oauth2ClientInfo);
+            authorize0(authorizeInfo, response, oauth2AuthorizationServerClientInfo);
         } catch (OAuth2Exception e) {
             log.warn("authorize error", e);
             response.sendRedirect(String.format("%s?error=%s&state=%s", authorizeInfo.getRedirectUri(), e.getMessage(), authorizeInfo.getState()));
@@ -112,12 +113,12 @@ public class OAuth2AuthorizationServer {
         String code = requestTokenInfo.getCode();
         CodeInfo codeInfo = CODE_INFO_REPO.get(code);
         tryOauth2Exception(Objects.isNull(codeInfo), "invalid_code");
-        OAuth2ClientInfo oauth2ClientInfo = oAuth2ConfigurationInfo.getOauth2ClientInfo(requestTokenInfo.getClientId());
-        tryOauth2Exception(Objects.isNull(oauth2ClientInfo), "invalid_client");
-        tryOauth2Exception(!(oauth2ClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri()) || codeInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri())), "invalid_redirect_uri");
-        tryOauth2Exception(oauth2ClientInfo.getClientSecret() != null && !oauth2ClientInfo.getClientSecret().equals(requestTokenInfo.getClientSecret()), "invalid_client_secret");
-        tryOauth2Exception(!oauth2ClientInfo.getGrantTypes().contains(requestTokenInfo.getGrantType()), "invalid_grant_type");
-        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2ClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId());
+        OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo = oAuth2ServerClientsConfigurer.getClientInfo(requestTokenInfo.getClientId());
+        tryOauth2Exception(Objects.isNull(oauth2AuthorizationServerClientInfo), "invalid_client");
+        tryOauth2Exception(!(oauth2AuthorizationServerClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri()) || codeInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri())), "invalid_redirect_uri");
+        tryOauth2Exception(oauth2AuthorizationServerClientInfo.getClientSecret() != null && !oauth2AuthorizationServerClientInfo.getClientSecret().equals(requestTokenInfo.getClientSecret()), "invalid_client_secret");
+        tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains(requestTokenInfo.getGrantType()), "invalid_grant_type");
+        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2AuthorizationServerClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId());
         tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
         return tokenInfo;
     }
@@ -146,17 +147,17 @@ public class OAuth2AuthorizationServer {
         tokenStore.removeToken(accessToken);
     }
 
-    private void authorize0(AuthorizeInfo authorizeInfo, HttpServletResponse response, OAuth2ClientInfo oauth2ClientInfo) throws IOException {
+    private void authorize0(AuthorizeInfo authorizeInfo, HttpServletResponse response, OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo) throws IOException {
         // check client_id,  redirect_uri, response_type, scope
-        tryOauth2Exception(Objects.isNull(oauth2ClientInfo), "invalid_client");
+        tryOauth2Exception(Objects.isNull(oauth2AuthorizationServerClientInfo), "invalid_client");
         if (approvalStore.containsApproval(authorizeInfo.getClientId(), RyeCatcher.getLoginId(), authorizeInfo.getScope())) {
-            tryOauth2Exception(!oauth2ClientInfo.getScopes().contains(authorizeInfo.getScope()), "invalid_scope");
-            tryOauth2Exception(!oauth2ClientInfo.getRedirectUri().equals(authorizeInfo.getRedirectUri()), "invalid_redirect_uri");
+            tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getScopes().contains(authorizeInfo.getScope()), "invalid_scope");
+            tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getRedirectUri().equals(authorizeInfo.getRedirectUri()), "invalid_redirect_uri");
             tryOauth2Exception(!"code".equals(authorizeInfo.getResponseType()), "invalid_scope");
-            tryOauth2Exception(!oauth2ClientInfo.getGrantTypes().contains("authorization_code"), "unsupported_grant_type");
+            tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains("authorization_code"), "unsupported_grant_type");
             String userId = RyeCatcher.getLoginId();
             String code = IdGenerator.genUuid();
-            CODE_INFO_REPO.put(code, CodeInfo.of(code, userId, oauth2ClientInfo.getClientId(), oauth2ClientInfo.getRedirectUri(), authorizeInfo.getScope()));
+            CODE_INFO_REPO.put(code, CodeInfo.of(code, userId, oauth2AuthorizationServerClientInfo.getClientId(), oauth2AuthorizationServerClientInfo.getRedirectUri(), authorizeInfo.getScope()));
             response.sendRedirect(authorizeInfo.getRedirectUri() + "?code=" + code + "&state=" + authorizeInfo.getState());
         } else {
             getSession().setAttribute("authorizeInfo", authorizeInfo);

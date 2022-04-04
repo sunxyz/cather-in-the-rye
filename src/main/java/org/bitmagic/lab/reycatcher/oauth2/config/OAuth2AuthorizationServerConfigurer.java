@@ -2,7 +2,6 @@ package org.bitmagic.lab.reycatcher.oauth2.config;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.bitmagic.lab.reycatcher.oauth2.OAuth2ConfigurationInfo;
 import org.bitmagic.lab.reycatcher.oauth2.store.MemoryOAuth2ApprovalStore;
 import org.bitmagic.lab.reycatcher.oauth2.store.MemoryOAuth2TokenStore;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2ApprovalStore;
@@ -14,9 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 public interface OAuth2AuthorizationServerConfigurer extends WebMvcConfigurer {
 
-    OAuth2ConfigurationInfo getOAuth2ConfigurationInfo();
+    void configure(OAuth2AuthorizationServerClientsConfigurer clientsConfigurer);
 
-    void configure(AuthorizationServerConfigurer authorizationServerConfigurer);
+    void configure(AuthorizationServerConfigurer serverConfigurer);
 
     @Accessors(fluent = true, chain = true)
     @Getter

@@ -10,14 +10,11 @@ import java.util.Set;
  */
 @Data
 @Builder
-public class OAuth2ClientInfo {
+public class OAuth2AuthorizationServerClientInfo {
     private String clientId;
     private String clientSecret;
     private String redirectUri;
     private Set<String> scopes;
     private Set<String> grantTypes;
     private long accessTokenExpireTime;
-    private String accessTokenUrl;
-    private String authorizationUrl;
-    private String userInfoUrl;
 }
