@@ -132,7 +132,7 @@ public class OAuth2AuthorizationServer {
         Oauth2Token oldTokenInfo = tokenStore.getTokenInfoByRefreshToken(refreshToken);
         tryOauth2Exception(Objects.isNull(oldTokenInfo), "invalid_refresh_token");
         tokenStore.removeToken(oldTokenInfo.getAccessToken());
-        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), refreshToken, "bearer", oldTokenInfo.getExpiresIn(), null, oldTokenInfo.getUserId());
+        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), refreshToken, "bearer", oldTokenInfo.getExpiresIn(), oldTokenInfo.getScope(), oldTokenInfo.getUserId());
         tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
         return tokenInfo;
     }
