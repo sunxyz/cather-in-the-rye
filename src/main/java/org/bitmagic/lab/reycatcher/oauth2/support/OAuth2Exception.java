@@ -9,8 +9,12 @@ import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 public class OAuth2Exception extends RyeCatcherException {
 
     private static final long serialVersionUID = 1L;
-    String error;
-    String errorDescription;
-    String errorUri;
-    String state;
+
+    public OAuth2Exception(String message) {
+        super(message);
+    }
+
+    public OAuth2Exception(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
