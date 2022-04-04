@@ -20,7 +20,7 @@ public class OAuth2AuthorizationServerConfiguration {
     public OAuth2AuthorizationServer oAuth2AuthorizationController(List<OAuth2AuthorizationServerConfigurer> configurers) {
         OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer configInfo = new OAuth2AuthorizationServerConfigurer.AuthorizationServerConfigurer();
         configurers.forEach(configurer -> configurer.configure(configInfo));
-        return new OAuth2AuthorizationServer(configurers.iterator().next().getOAuth2ConfigurationInfo(), configInfo.oAuth2TokenStore(), configInfo.oAuth2ApprovalStore(), configInfo.oAuth2UserInfoProvider(), configInfo.loginPath(), configInfo.confirmPath());
+        return new OAuth2AuthorizationServer(configurers.iterator().next().getOAuth2ConfigurationInfo(), configInfo.oAuth2TokenStore(), configInfo.oAuth2ApprovalStore(), configInfo.loginPath(), configInfo.confirmPath());
     }
 
     @Bean

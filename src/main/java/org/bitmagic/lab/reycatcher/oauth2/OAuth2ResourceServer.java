@@ -22,6 +22,12 @@ public class OAuth2ResourceServer {
         tryOauth2Exception(!tokenInfo.getScope().contains(scope), "scope not match");
     }
 
+    public String getUserId(String accessToken) {
+        Oauth2Token tokenInfo = tokenStore.getTokenInfo(accessToken);
+        tryOauth2Exception(Objects.isNull(tokenInfo), "accessToken not found");
+        return tokenInfo.getUserId();
+    }
+
     public void checkResourceId(String accessToken, String resourceId) {
         Oauth2Token tokenInfo = tokenStore.getTokenInfo(accessToken);
         tryOauth2Exception(Objects.isNull(tokenInfo), "accessToken not found");

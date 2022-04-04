@@ -2,12 +2,14 @@ package org.bitmagic.lab.reycatcher.oauth2.config;
 
 import lombok.RequiredArgsConstructor;
 import org.bitmagic.lab.reycatcher.oauth2.OAuth2AuthorizationServer;
-import org.bitmagic.lab.reycatcher.oauth2.model.*;
+import org.bitmagic.lab.reycatcher.oauth2.model.AuthorizeInfo;
+import org.bitmagic.lab.reycatcher.oauth2.model.ConfirmAccessInfo;
+import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
+import org.bitmagic.lab.reycatcher.oauth2.model.ResponseErrorInfo;
 import org.bitmagic.lab.reycatcher.oauth2.store.Oauth2Token;
 import org.bitmagic.lab.reycatcher.oauth2.support.HttpRequestParserUtils;
 import org.bitmagic.lab.reycatcher.oauth2.support.OAuth2Exception;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +23,7 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/oauth2")
+@RequestMapping("/oauth")
 public class OAuth2AuthorizationController {
 
     private final OAuth2AuthorizationServer server;
@@ -62,14 +64,4 @@ public class OAuth2AuthorizationController {
         server.revokeToken(accessToken);
     }
 
-    /**
-     * access token->userInfo
-     *
-     * @param accessToken
-     * @return
-     */
-    @GetMapping("/user-info")
-    public UserInfo getUserInfo(String accessToken) {
-       return server.getUserInfo(accessToken);
-    }
 }

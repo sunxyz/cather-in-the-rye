@@ -6,7 +6,6 @@ import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.oauth2.model.AuthorizeInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.ConfirmAccessInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
-import org.bitmagic.lab.reycatcher.oauth2.model.UserInfo;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2Approval;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2ApprovalStore;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2TokenStore;
@@ -35,7 +34,6 @@ public class OAuth2AuthorizationServer {
     private final OAuth2ConfigurationInfo oAuth2ConfigurationInfo;
     private final OAuth2TokenStore tokenStore;
     private final OAuth2ApprovalStore approvalStore;
-    private final OAuth2UserInfoProvider userInfoProvider;
     private final String loginPath;
     private final String confirmPath;
 
@@ -105,16 +103,6 @@ public class OAuth2AuthorizationServer {
         return tokenInfo;
     }
 
-    /**
-     * getUserInfo
-     * @param accessToken
-     * @return
-     */
-    public UserInfo getUserInfo(String accessToken) {
-        Oauth2Token tokenInfo = tokenStore.getTokenInfo(accessToken);
-        tryOauth2Exception(Objects.isNull(tokenInfo), "accessToken not found");
-        return userInfoProvider.loadUserInfo(tokenInfo.getUserId()).orElseThrow(() -> new OAuth2Exception("user info not found", null, null, null));
-    }
 
     public void checkToken(String accessToken) {
         tryOauth2Exception(Objects.isNull(tokenStore.getTokenInfo(accessToken)), "invalid_access_token");
