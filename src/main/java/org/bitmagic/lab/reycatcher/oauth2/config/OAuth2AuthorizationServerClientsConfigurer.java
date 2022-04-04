@@ -10,7 +10,7 @@ import java.util.function.Function;
  */
 public class OAuth2AuthorizationServerClientsConfigurer {
 
-    private OAuth2AuthorizationServerClientRegistry clientRegistry = new OAuth2AuthorizationServerClientRegistry();
+    private final OAuth2AuthorizationServerClientRegistry clientRegistry = new OAuth2AuthorizationServerClientRegistry();
 
     private Function<String, OAuth2AuthorizationServerClientInfo> clientMapper = clientRegistry::getClient;
 

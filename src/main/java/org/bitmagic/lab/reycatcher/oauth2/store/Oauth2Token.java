@@ -17,5 +17,6 @@ public class Oauth2Token {
     final long expiresIn;
     final String scope;
     final String userId;
+    final long refreshTokenExpiresIn;
     LocalDateTime createTime = LocalDateTime.now();
 }
