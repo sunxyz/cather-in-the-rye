@@ -45,7 +45,7 @@ public class OAuth2AuthorizationController {
             RequestTokenInfo requestTokenInfo = HttpRequestParserUtils.parseRequestTokenRequest(request);
             return ResponseEntity.ok(server.getAccessToken(requestTokenInfo));
         } catch (OAuth2Exception e) {
-            return ResponseEntity.badRequest().body(ResponseErrorInfo.builder().errorUri(e.getErrorUri()).error(e.getError()).errorDescription(e.getErrorDescription()).build());
+            return ResponseEntity.badRequest().body(ResponseErrorInfo.builder().error(e.getMessage()).build());
         }
     }
 
