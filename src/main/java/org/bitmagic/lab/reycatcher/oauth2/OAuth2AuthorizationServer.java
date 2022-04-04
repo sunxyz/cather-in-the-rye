@@ -118,7 +118,7 @@ public class OAuth2AuthorizationServer {
         tryOauth2Exception(!(oauth2AuthorizationServerClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri()) || codeInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri())), "invalid_redirect_uri");
         tryOauth2Exception(oauth2AuthorizationServerClientInfo.getClientSecret() != null && !oauth2AuthorizationServerClientInfo.getClientSecret().equals(requestTokenInfo.getClientSecret()), "invalid_client_secret");
         tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains(requestTokenInfo.getGrantType()), "invalid_grant_type");
-        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2AuthorizationServerClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId(), oauth2AuthorizationServerClientInfo.getRefreshTokenExpireTime());
+        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2AuthorizationServerClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId(), oauth2AuthorizationServerClientInfo.getResourceIds(), oauth2AuthorizationServerClientInfo.getRefreshTokenExpireTime());
         tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
         return tokenInfo;
     }
@@ -133,7 +133,7 @@ public class OAuth2AuthorizationServer {
         Oauth2Token oldTokenInfo = tokenStore.getTokenInfoByRefreshToken(refreshToken);
         tryOauth2Exception(Objects.isNull(oldTokenInfo), "invalid_refresh_token");
         tokenStore.removeToken(oldTokenInfo.getAccessToken());
-        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), refreshToken, "bearer", oldTokenInfo.getExpiresIn(), oldTokenInfo.getScope(), oldTokenInfo.getUserId(), oldTokenInfo.getRefreshTokenExpiresIn());
+        Oauth2Token tokenInfo = oldTokenInfo.clone(IdGenerator.genUuid());
         tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
         return tokenInfo;
     }

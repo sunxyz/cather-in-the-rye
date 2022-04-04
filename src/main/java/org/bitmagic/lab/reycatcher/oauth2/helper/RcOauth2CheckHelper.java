@@ -13,4 +13,8 @@ public class RcOauth2CheckHelper {
     public static void checkScope(String scope) {
         oauth2ResourceServer.checkScope(RcOAuth2Helper.getCurrentAccessTokenStr(), scope);
     }
+
+    public static void checkResourceId(String resourceId) {
+        oauth2ResourceServer.checkResourceId(RcOAuth2Helper.getCurrentAccessTokenStr(), resourceId);
+    }
 }

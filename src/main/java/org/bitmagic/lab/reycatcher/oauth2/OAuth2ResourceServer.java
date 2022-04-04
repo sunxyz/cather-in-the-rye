@@ -31,6 +31,6 @@ public class OAuth2ResourceServer {
     public void checkResourceId(String accessToken, String resourceId) {
         Oauth2Token tokenInfo = tokenStore.getTokenInfo(accessToken);
         tryOauth2Exception(Objects.isNull(tokenInfo), "accessToken not found");
-//        tryOauth2Exception(!tokenInfo.getResourceId().equals(resourceId), "resourceId not match");
+        tryOauth2Exception(!tokenInfo.getResourceIds().contains(resourceId), "resourceId not match");
     }
 }
