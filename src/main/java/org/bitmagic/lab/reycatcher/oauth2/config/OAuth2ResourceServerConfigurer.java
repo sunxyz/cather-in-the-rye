@@ -16,7 +16,7 @@ public interface OAuth2ResourceServerConfigurer extends WebMvcConfigurer {
     @Accessors(fluent = true)
     @Getter
     class ResourceServerConfigurer {
-        private String resourceId = "reycatcher";
+        private String resourceId = "rey-catcher";
         private OAuth2TokenStore oAuth2TokenStore = MemoryOAuth2TokenStore.INSTANCE;
     }
 }
