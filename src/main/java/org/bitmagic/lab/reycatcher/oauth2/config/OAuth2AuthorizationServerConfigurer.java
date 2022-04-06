@@ -22,8 +22,8 @@ public interface OAuth2AuthorizationServerConfigurer extends WebMvcConfigurer {
     class AuthorizationServerConfigurer {
         private OAuth2TokenStore oAuth2TokenStore = MemoryOAuth2TokenStore.INSTANCE;;
         private OAuth2ApprovalStore oAuth2ApprovalStore = new MemoryOAuth2ApprovalStore();
-        private String loginPath = "/oauth2/login";
-        private String confirmPath = "/oauth2/confirm";
+        private String loginPath = "/oauth/login";
+        private String confirmPath = "/oauth/confirm";
     }
 
 
