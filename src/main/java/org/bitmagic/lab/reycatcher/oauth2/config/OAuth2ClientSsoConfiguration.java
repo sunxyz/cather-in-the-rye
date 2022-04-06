@@ -11,6 +11,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.*;
@@ -45,7 +48,7 @@ public class OAuth2ClientSsoConfiguration {
         @Override
         public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
             // 获取code
-            if(((HttpServletRequest) servletRequest).getRequestURI().indexOf(oAuth2ClientInfo.getRedirectUrl())==0){
+            if(((HttpServletRequest) servletRequest).getRequestURI().indexOf(oAuth2ClientInfo.getRedirectUri())==0){
                 String code = servletRequest.getParameter("code");
                 if(code!=null){
                     // 获取token
@@ -54,12 +57,15 @@ public class OAuth2ClientSsoConfiguration {
                             .setClientId(oAuth2ClientInfo.getClientId())
                             .setClientSecret(oAuth2ClientInfo.getClientSecret())
                             .setGrantType("authorization_code")
-                            .setRedirectUri(oAuth2ClientInfo.getRedirectUrl());
+                            .setRedirectUri(oAuth2ClientInfo.getRedirectUri());
                     // 异常直接抛出
-                    Oauth2Token oauth2Token = restTemplate.postForObject(oAuth2ClientInfo.getTokenUrl()+Oauth2Support.getTokenUrlParams(requestTokenInfo), null, Oauth2Token.class);
+                    Oauth2Token oauth2Token = restTemplate.postForObject(oAuth2ClientInfo.getTokenUri()+Oauth2Support.getTokenUrlParams(requestTokenInfo), null, Oauth2Token.class);
                     if(oauth2Token!=null){
                         // 获取用户信息
-                        Map userInfo = restTemplate.getForObject(oAuth2ClientInfo.getUserInfoUrl() + "?access_token" + oauth2Token.getAccessToken(), Map.class);
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.add("Authorization",oauth2Token.getTokenType()+" "+oauth2Token.getAccessToken());
+                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+                        Map userInfo = restTemplate.exchange(oAuth2ClientInfo.getUserInfoUri() , HttpMethod.GET, requestEntity, Map.class).getBody();
                         if(userInfo!=null){
                             Object userId = userInfo.get(oAuth2ClientInfo.getUserIdAttributeName());
                             if(userId!=null){

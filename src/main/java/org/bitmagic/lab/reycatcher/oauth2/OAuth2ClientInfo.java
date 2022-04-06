@@ -18,13 +18,13 @@ import java.util.Set;
 public class OAuth2ClientInfo {
     private String clientId;
     private String clientSecret;
-    private String redirectUrl;
+    private String redirectUri;
     private Set<String> scope;
     private Set<String> authorizedGrantTypes;
 
-    private String authorizationUrl;
-    private String tokenUrl;
-    private String userInfoUrl;
+    private String authorizationUri;
+    private String tokenUri;
+    private String userInfoUri;
     private String userNameAttributeName;
     private String userIdAttributeName;
 
@@ -36,10 +36,10 @@ public class OAuth2ClientInfo {
     public OAuth2ClientInfo() {
         this.scope = new HashSet<>(Arrays.asList("read", "write"));
         this.authorizedGrantTypes = new HashSet<>(Arrays.asList("authorization_code", "refresh_token"));
-        this.redirectUrl = "http://localhost:8080/oauth/callback";
-        this.authorizationUrl = "http://localhost:8080/oauth/authorize";
-        this.tokenUrl = "http://localhost:8080/oauth/token";
-        this.userInfoUrl = "http://localhost:8080/oauth/userinfo";
+        this.redirectUri = "http://localhost:8080/oauth/callback";
+        this.authorizationUri = "http://localhost:8080/oauth/authorize";
+        this.tokenUri = "http://localhost:8080/oauth/token";
+        this.userInfoUri = "http://localhost:8080/oauth/userinfo";
         this.userNameAttributeName = "name";
     }
 
