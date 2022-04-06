@@ -9,19 +9,24 @@ import java.util.Set;
 
 /**
  * @author yangrd
+ * // 有无登录 去认证
+ * // 获取token
+ * // 获取用户信息
  */
 @Data
 @Accessors(chain  = true)
 public class OAuth2ClientInfo {
     private String clientId;
     private String clientSecret;
-    private String redirectUri;
+    private String redirectUrl;
     private Set<String> scope;
     private Set<String> authorizedGrantTypes;
 
-    private String authorizationUri;
-    private String tokenUri;
-    private String userInfoUri;
+    private String authorizationUrl;
+    private String tokenUrl;
+    private String userInfoUrl;
+    private String userNameAttributeName;
+    private String userIdAttributeName;
 
 //    private Integer accessTokenValiditySeconds;
 //    private Integer refreshTokenValiditySeconds;
@@ -31,10 +36,11 @@ public class OAuth2ClientInfo {
     public OAuth2ClientInfo() {
         this.scope = new HashSet<>(Arrays.asList("read", "write"));
         this.authorizedGrantTypes = new HashSet<>(Arrays.asList("authorization_code", "refresh_token"));
-        this.redirectUri = "http://localhost:8080/oauth/callback";
-        this.authorizationUri = "http://localhost:8080/oauth/authorize";
-        this.tokenUri = "http://localhost:8080/oauth/token";
-        this.userInfoUri = "http://localhost:8080/oauth/userinfo";
+        this.redirectUrl = "http://localhost:8080/oauth/callback";
+        this.authorizationUrl = "http://localhost:8080/oauth/authorize";
+        this.tokenUrl = "http://localhost:8080/oauth/token";
+        this.userInfoUrl = "http://localhost:8080/oauth/userinfo";
+        this.userNameAttributeName = "name";
     }
 
 }

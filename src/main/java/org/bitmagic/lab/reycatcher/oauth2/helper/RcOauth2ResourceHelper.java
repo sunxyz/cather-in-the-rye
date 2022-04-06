@@ -7,16 +7,19 @@ import org.bitmagic.lab.reycatcher.oauth2.OAuth2ResourceServer;
 import org.bitmagic.lab.reycatcher.support.RcRequestContextHolder;
 import org.bitmagic.lab.reycatcher.support.TokenParseUtils;
 
-public class RcOAuth2Helper {
+/**
+ * @author yangrd
+ */
+public class RcOauth2ResourceHelper {
 
-    private final static OAuth2ResourceServer oauth2ResourceServer = InstanceHolder.getInstance(OAuth2ResourceServer.class);
+    private final static OAuth2ResourceServer OAUTH2_RESOURCE_SERVER = InstanceHolder.getInstance(OAuth2ResourceServer.class);
 
     public static String getUserId() {
         return getUserId(getCurrentAccessTokenStr());
     }
 
     public static String getUserId(String accessToken) {
-        return oauth2ResourceServer.getUserId(accessToken);
+        return OAUTH2_RESOURCE_SERVER.getUserId(accessToken);
     }
 
     public static String getCurrentAccessTokenStr() {

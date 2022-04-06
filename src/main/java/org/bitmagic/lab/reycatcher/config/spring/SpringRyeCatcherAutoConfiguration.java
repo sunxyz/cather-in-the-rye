@@ -46,7 +46,7 @@ public class SpringRyeCatcherAutoConfiguration {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
         bean.setName("rcSessionFilter");
-        bean.setOrder(-200);
+        bean.setOrder(Integer.MIN_VALUE);
         return bean;
     }
 

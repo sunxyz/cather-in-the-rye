@@ -116,9 +116,9 @@ public class MemorySessionRepository implements SessionRepository {
         return session ->
                 Objects.isNull(filterInfo) ||
                         ((Objects.isNull(filterInfo.getLoginUserId()) || session.getLoginInfo().getUserId().equals(filterInfo.getLoginUserId()))
-                                && (StringUtils.isEmpty(filterInfo.getTokenType()) || session.getSessionToken().getGenType().contains(filterInfo.getTokenType()))
-                                && (StringUtils.isEmpty(filterInfo.getTokenValue()) || session.getSessionToken().getToken().contains(filterInfo.getTokenValue()))
-                                && (StringUtils.isEmpty(filterInfo.getLoginDeviceType()) || session.getLoginInfo().getDeviceType().contains(filterInfo.getLoginDeviceType()))
+                                && (StringUtils.isBlank(filterInfo.getTokenType()) || session.getSessionToken().getGenType().contains(filterInfo.getTokenType()))
+                                && (StringUtils.isBlank(filterInfo.getTokenValue()) || session.getSessionToken().getToken().contains(filterInfo.getTokenValue()))
+                                && (StringUtils.isBlank(filterInfo.getLoginDeviceType()) || session.getLoginInfo().getDeviceType().contains(filterInfo.getLoginDeviceType()))
                                 && (Objects.isNull(filterInfo.getBeginCreationTime()) || session.getCreationTime() > filterInfo.getBeginCreationTime())
                                 && (Objects.isNull(filterInfo.getEndCreationTime()) || session.getCreationTime() < filterInfo.getEndCreationTime())
                                 && (Objects.isNull(filterInfo.getBeginLastAccessedTime()) || session.getLastAccessedTime() > filterInfo.getBeginLastAccessedTime())

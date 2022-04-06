@@ -13,7 +13,7 @@ public class TokenParseUtils {
     public static Optional<ReqTokenInfo> parseReqTokenInfo(String token) {
         String type = null;
         String value = token;
-        if(StringUtils.isNotEmpty(token)){
+        if(StringUtils.isNotBlank(token)){
             token = token.replaceAll("%20"," ");
             String splitKey = " ";
             if (token.contains(splitKey)) {
@@ -22,6 +22,6 @@ public class TokenParseUtils {
                 value = strArray[1];
             }
         }
-        return StringUtils.isNotEmpty(token) ? Optional.of(ReqTokenInfo.of(type, value)) : Optional.empty();
+        return StringUtils.isNotBlank(token) ? Optional.of(ReqTokenInfo.of(type, value)) : Optional.empty();
     }
 }

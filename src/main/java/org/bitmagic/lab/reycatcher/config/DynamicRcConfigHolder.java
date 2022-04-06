@@ -53,6 +53,10 @@ public class DynamicRcConfigHolder {
         return getConfigInfo().isEnableJwtAuthMatchInfoPayload();
     }
 
+    public static String getLoginPage() {
+        return getConfigInfo().getLoginPage();
+    }
+
     public static Algorithm getAlgorithm() {
         return SYS_ID_2_ALGORITHM_CACHE.computeIfAbsent(getCertificationSystemId(), k -> {
             Algorithm instance = InstanceHolder.getInstance(Algorithm.class);

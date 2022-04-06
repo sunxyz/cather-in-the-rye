@@ -58,4 +58,22 @@ public class OAuth2AuthorizationController {
         server.revokeToken(accessToken);
     }
 
+
+    // login demo
+//    @PostMapping("/login")
+//    public void login(HttpServletRequest request, HttpServletResponse response, String username, String password) throws IOException {
+//        // check username and password
+//        if (username.equals("admin") && password.equals("admin")) {
+//            RyeCatcher.login("admin");
+//
+////            AuthorizeInfo authorizeInfo = HttpRequestParserUtils.parseAuthorizeRequest(request);
+//            // step1: get authorize request
+////            server.authorize(authorizeInfo, response);
+//            // step2: redirect authorize request to client
+////            response.sendRedirect(Oauth2Support.getAuthorizationUrl(request));
+//            RcOauth2Helper.redirectAuthorize(request, response);
+//        }else {
+//            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+//        }
+//    }
 }

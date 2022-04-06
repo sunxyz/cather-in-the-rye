@@ -37,4 +37,6 @@ public class CertificationSystemDefine {
     private boolean tokenNeedOutClient;
 
     private boolean sameDriveMutex;
+
+    private String loginPage;
 }

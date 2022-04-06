@@ -6,19 +6,19 @@ package org.bitmagic.lab.reycatcher.utils;
  */
 public class StringUtils {
 
-    public static boolean isEmpty(String str){
+    public static boolean isBlank(String str){
         return str==null||str.trim().length()==0;
     }
 
-    public static boolean isNotEmpty(String str){
-        return !isEmpty(str);
+    public static boolean isNotBlank(String str){
+        return !isBlank(str);
     }
 
     /**
      * 驼峰转 下划线
      */
     public static String toUnderlineCase(String camelCaseStr) {
-        if (isEmpty(camelCaseStr)) {
+        if (isBlank(camelCaseStr)) {
             return null;
         }
         char[] charArray = camelCaseStr.toCharArray();

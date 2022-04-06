@@ -51,7 +51,7 @@ public class OAuth2ResourceServerConfiguration {
     public FilterRegistrationBean<Filter> registrationSessionFilter() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new OAuth2ResourceServerCheckerFilter("rye-catcher"));
         bean.addUrlPatterns("/*");
-        bean.setName("OAuth2ResourceServerCheckerFilter");
+        bean.setName("oAuth2ResourceServerCheckerFilter");
         bean.setOrder(-100);
         return bean;
     }
