@@ -12,4 +12,5 @@ public class RequestTokenInfo {
     private String redirectUri;
     private String clientId;
     private String clientSecret;
+    private String refreshToken;
 }

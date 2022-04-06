@@ -23,7 +23,22 @@ public class OAuth2AuthorizationServerClientInfo {
     private long refreshTokenExpireTime;
 
     public OAuth2AuthorizationServerClientInfo() {
-        super();
+        this.scopes = new HashSet<>();
+        this.grantTypes = new HashSet<>();
+        this.resourceIds = new HashSet<>();
+        this.accessTokenExpireTime = 3600;
+        this.refreshTokenExpireTime = 2592000;
+    }
+
+    public OAuth2AuthorizationServerClientInfo(String clientId, String clientSecret, String redirectUri, String[] scopes, String[] grantTypes, String[] resourceIds, long accessTokenExpireTime, long refreshTokenExpireTime) {
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.redirectUri = redirectUri;
+        this.scopes = new HashSet<>(Arrays.asList(scopes));
+        this.grantTypes = new HashSet<>(Arrays.asList(grantTypes));
+        this.resourceIds = new HashSet<>(Arrays.asList(resourceIds));
+        this.accessTokenExpireTime = accessTokenExpireTime;
+        this.refreshTokenExpireTime = refreshTokenExpireTime;
     }
 
     public OAuth2AuthorizationServerClientInfo scopes(String... scopes) {

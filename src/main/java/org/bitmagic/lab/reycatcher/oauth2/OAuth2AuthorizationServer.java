@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.RyeCatcher;
 import org.bitmagic.lab.reycatcher.Session;
 import org.bitmagic.lab.reycatcher.oauth2.config.OAuth2AuthorizationServerClientsConfigurer;
-import org.bitmagic.lab.reycatcher.oauth2.model.AuthorizeInfo;
-import org.bitmagic.lab.reycatcher.oauth2.model.ConfirmAccessInfo;
-import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
+import org.bitmagic.lab.reycatcher.oauth2.model.*;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2Approval;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2ApprovalStore;
 import org.bitmagic.lab.reycatcher.oauth2.store.OAuth2TokenStore;
@@ -43,17 +41,6 @@ public class OAuth2AuthorizationServer {
     private final String loginPath;
     private final String confirmPath;
 
-    @RequiredArgsConstructor(staticName = "of")
-    @Getter
-    static class CodeInfo {
-        private final String code;
-        private final String userId;
-        private final String clientId;
-        private final String redirectUri;
-        private final String scope;
-        private final LocalDateTime expireTime = LocalDateTime.now().plusMinutes(10);
-    }
-
     {
         ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleAtFixedRate(() -> {
@@ -61,9 +48,6 @@ public class OAuth2AuthorizationServer {
             CODE_INFO_REPO.entrySet().removeIf(entry -> entry.getValue().expireTime.isBefore(now));
         }, 0, 30, TimeUnit.SECONDS);
     }
-
-
-    // 登录 不做
 
     /**
      * 授权码模式 授权 访问 -> code
@@ -86,6 +70,9 @@ public class OAuth2AuthorizationServer {
         }
     }
 
+
+    // 登录 不做
+
     public void confirmAccess(ConfirmAccessInfo confirmAccessInfo, HttpServletResponse response) throws IOException {
         AuthorizeInfo authorizeInfo = (AuthorizeInfo) getSession().getAttribute("authorizeInfo");
         OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo = oAuth2ServerClientsConfigurer.getClientInfo(authorizeInfo.getClientId());
@@ -101,24 +88,43 @@ public class OAuth2AuthorizationServer {
 
     }
 
-
     /**
      * code -> 换取 access_token
      *
      * @param requestTokenInfo
      * @return
      */
-    public Oauth2Token getAccessToken(RequestTokenInfo requestTokenInfo) {
+    public Oauth2Token getOauth2Token(RequestTokenInfo requestTokenInfo) {
         // check client_id,  redirect_uri, code, redirectUri
-        String code = requestTokenInfo.getCode();
-        CodeInfo codeInfo = CODE_INFO_REPO.get(code);
-        tryOauth2Exception(Objects.isNull(codeInfo), "invalid_code");
+
         OAuth2AuthorizationServerClientInfo oauth2AuthorizationServerClientInfo = oAuth2ServerClientsConfigurer.getClientInfo(requestTokenInfo.getClientId());
         tryOauth2Exception(Objects.isNull(oauth2AuthorizationServerClientInfo), "invalid_client");
-        tryOauth2Exception(!(oauth2AuthorizationServerClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri()) || codeInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri())), "invalid_redirect_uri");
         tryOauth2Exception(oauth2AuthorizationServerClientInfo.getClientSecret() != null && !oauth2AuthorizationServerClientInfo.getClientSecret().equals(requestTokenInfo.getClientSecret()), "invalid_client_secret");
         tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains(requestTokenInfo.getGrantType()), "invalid_grant_type");
-        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2AuthorizationServerClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId(), oauth2AuthorizationServerClientInfo.getResourceIds(), oauth2AuthorizationServerClientInfo.getRefreshTokenExpireTime());
+        tryOauth2Exception(Objects.nonNull(oauth2AuthorizationServerClientInfo.getRedirectUri()) && !(oauth2AuthorizationServerClientInfo.getRedirectUri().equals(requestTokenInfo.getRedirectUri())), "invalid_redirect_uri");
+        if (requestTokenInfo.getGrantType().equals(GrantType.AUTHORIZATION_CODE)) {
+            return authorizationCode(requestTokenInfo.getCode(), oauth2AuthorizationServerClientInfo);
+        } else if (requestTokenInfo.getGrantType().equals(GrantType.REFRESH_TOKEN)) {
+            return refreshAccessToken(requestTokenInfo.getRefreshToken());
+        } else if (requestTokenInfo.getGrantType().equals(GrantType.PASSWORD)) {
+            throw new OAuth2Exception("not support password grant type");
+        } else if (requestTokenInfo.getGrantType().equals(GrantType.CLIENT_CREDENTIALS)) {
+            return clientCredentials(oauth2AuthorizationServerClientInfo);
+        } else {
+            throw new OAuth2Exception("invalid_grant_type");
+        }
+    }
+
+    private Oauth2Token clientCredentials(OAuth2AuthorizationServerClientInfo serverClientInfo) {
+        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", serverClientInfo.getAccessTokenExpireTime(), String.join(",", serverClientInfo.getScopes()), serverClientInfo.getClientId(), serverClientInfo.getResourceIds(), serverClientInfo.getRefreshTokenExpireTime());
+        tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
+        return tokenInfo;
+    }
+
+    private Oauth2Token authorizationCode(String code, OAuth2AuthorizationServerClientInfo serverClientInfo) {
+        CodeInfo codeInfo = CODE_INFO_REPO.get(code);
+        tryOauth2Exception(Objects.isNull(codeInfo), "invalid_code");
+        Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", serverClientInfo.getAccessTokenExpireTime(), codeInfo.getScope(), codeInfo.getUserId(), serverClientInfo.getResourceIds(), serverClientInfo.getRefreshTokenExpireTime());
         tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
         return tokenInfo;
     }
@@ -129,7 +135,7 @@ public class OAuth2AuthorizationServer {
      * @param refreshToken
      * @return
      */
-    public Oauth2Token refreshAccessToken(String refreshToken) {
+    private Oauth2Token refreshAccessToken(String refreshToken) {
         Oauth2Token oldTokenInfo = tokenStore.getTokenInfoByRefreshToken(refreshToken);
         tryOauth2Exception(Objects.isNull(oldTokenInfo), "invalid_refresh_token");
         tokenStore.removeToken(oldTokenInfo.getAccessToken());
@@ -138,9 +144,9 @@ public class OAuth2AuthorizationServer {
         return tokenInfo;
     }
 
-
     /**
      * checkToken
+     *
      * @param accessToken
      */
     public void checkToken(String accessToken) {
@@ -149,6 +155,7 @@ public class OAuth2AuthorizationServer {
 
     /**
      * revokeToken
+     *
      * @param accessToken
      */
     public void revokeToken(String accessToken) {
@@ -160,22 +167,40 @@ public class OAuth2AuthorizationServer {
         tryOauth2Exception(Objects.isNull(oauth2AuthorizationServerClientInfo), "invalid_client");
         if (approvalStore.containsApproval(authorizeInfo.getClientId(), RyeCatcher.getLoginId(), authorizeInfo.getScope())) {
             tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getScopes().contains(authorizeInfo.getScope()), "invalid_scope");
-            tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getRedirectUri().equals(authorizeInfo.getRedirectUri()), "invalid_redirect_uri");
-            tryOauth2Exception(!"code".equals(authorizeInfo.getResponseType()), "invalid_scope");
-            tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains("authorization_code"), "unsupported_grant_type");
-            String userId = RyeCatcher.getLoginId();
-            String code = IdGenerator.genUuid();
-            CODE_INFO_REPO.put(code, CodeInfo.of(code, userId, oauth2AuthorizationServerClientInfo.getClientId(), oauth2AuthorizationServerClientInfo.getRedirectUri(), authorizeInfo.getScope()));
-            response.sendRedirect(authorizeInfo.getRedirectUri() + "?code=" + code + "&state=" + authorizeInfo.getState());
+            tryOauth2Exception(Objects.nonNull(oauth2AuthorizationServerClientInfo.getRedirectUri()) && !oauth2AuthorizationServerClientInfo.getRedirectUri().equals(authorizeInfo.getRedirectUri()), "invalid_redirect_uri");
+            if (authorizeInfo.getResponseType().contains(ResponseType.CODE)) {
+                tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains(GrantType.AUTHORIZATION_CODE), "unsupported_grant_type");
+                String userId = RyeCatcher.getLoginId();
+                String code = IdGenerator.genUuid();
+                CODE_INFO_REPO.put(code, CodeInfo.of(code, userId, oauth2AuthorizationServerClientInfo.getClientId(), oauth2AuthorizationServerClientInfo.getRedirectUri(), authorizeInfo.getScope()));
+                response.sendRedirect(authorizeInfo.getRedirectUri() + "?code=" + code + "&state=" + authorizeInfo.getState());
+            } else if (authorizeInfo.getResponseType().contains(ResponseType.TOKEN)) {
+                tryOauth2Exception(!oauth2AuthorizationServerClientInfo.getGrantTypes().contains(GrantType.IMPLICIT), "unsupported_grant_type");
+                Oauth2Token tokenInfo = Oauth2Token.of(IdGenerator.genUuid(), IdGenerator.genUuid(), "bearer", oauth2AuthorizationServerClientInfo.getAccessTokenExpireTime(), authorizeInfo.getScope(), RyeCatcher.getLoginId(), oauth2AuthorizationServerClientInfo.getResourceIds(), oauth2AuthorizationServerClientInfo.getRefreshTokenExpireTime());
+                tokenStore.storeToken(tokenInfo.getAccessToken(), tokenInfo);
+                response.sendRedirect(authorizeInfo.getRedirectUri() + "?token=" + tokenInfo.getAccessToken() + "&state=" + authorizeInfo.getState());
+            } else {
+                throw new OAuth2Exception("invalid_response_type");
+            }
         } else {
             getSession().setAttribute("authorizeInfo", authorizeInfo);
             response.sendRedirect(confirmPath);
         }
-
     }
 
     private Session getSession() {
         return SessionContextHolder.getContext().findSession().orElseThrow(() -> new OAuth2Exception("session not found"));
+    }
+
+    @RequiredArgsConstructor(staticName = "of")
+    @Getter
+    static class CodeInfo {
+        private final String code;
+        private final String userId;
+        private final String clientId;
+        private final String redirectUri;
+        private final String scope;
+        private final LocalDateTime expireTime = LocalDateTime.now().plusMinutes(10);
     }
 
 
