@@ -31,10 +31,10 @@ public class OAuth2ClientInfo {
     public OAuth2ClientInfo() {
         this.scope = new HashSet<>(Arrays.asList("read", "write"));
         this.authorizedGrantTypes = new HashSet<>(Arrays.asList("authorization_code", "refresh_token"));
-        this.redirectUri = "http://localhost:8080/oauth2/callback";
-        this.authorizationUri = "http://localhost:8080/oauth2/authorize";
-        this.tokenUri = "http://localhost:8080/oauth2/token";
-        this.userInfoUri = "http://localhost:8080/oauth2/userinfo";
+        this.redirectUri = "http://localhost:8080/oauth/callback";
+        this.authorizationUri = "http://localhost:8080/oauth/authorize";
+        this.tokenUri = "http://localhost:8080/oauth/token";
+        this.userInfoUri = "http://localhost:8080/oauth/userinfo";
     }
 
 }

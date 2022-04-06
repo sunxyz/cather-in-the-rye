@@ -6,7 +6,6 @@ import org.bitmagic.lab.reycatcher.oauth2.model.AuthorizeInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.ConfirmAccessInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.ResponseErrorInfo;
-import org.bitmagic.lab.reycatcher.oauth2.store.Oauth2Token;
 import org.bitmagic.lab.reycatcher.oauth2.support.HttpRequestParserUtils;
 import org.bitmagic.lab.reycatcher.oauth2.support.OAuth2Exception;
 import org.springframework.http.ResponseEntity;
@@ -47,11 +46,6 @@ public class OAuth2AuthorizationController {
         } catch (OAuth2Exception e) {
             return ResponseEntity.badRequest().body(ResponseErrorInfo.builder().error(e.getMessage()).build());
         }
-    }
-
-    @RequestMapping("/refresh-token")
-    public Oauth2Token refreshAccessToken(String refreshToken) {
-        return server.refreshAccessToken(refreshToken);
     }
 
     @RequestMapping("/check-token")
