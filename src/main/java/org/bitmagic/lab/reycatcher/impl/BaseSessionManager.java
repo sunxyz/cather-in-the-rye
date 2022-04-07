@@ -3,7 +3,6 @@ package org.bitmagic.lab.reycatcher.impl;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.config.DynamicRcConfigHolder;
-import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.ex.ReplacedException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 import org.bitmagic.lab.reycatcher.utils.IdGenerator;
@@ -12,8 +11,8 @@ import org.bitmagic.lab.reycatcher.utils.ValidateUtils;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author yangrd
@@ -38,8 +37,10 @@ public class BaseSessionManager extends AbstractSessionManager {
         Optional<Session> currentSession = findReqTokenInfoFromClient(tokenName).map(reqTokenInfo -> {
             SessionToken sessionToken = SessionToken.of(DynamicRcConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
             if (DynamicRcConfigHolder.isNeedSave()) {
-                Session session = findByToken(sessionToken).orElseThrow(NotFoundSessionException::new);
-                if (session.isReplaced()) {
+                Session session = findByToken(sessionToken).orElse(null);
+                if(Objects.isNull(session)){
+                    return null;
+                }else if (session.isReplaced()) {
                     remove(session);
                     throw new ReplacedException(String.format("token:%s, loginId:%s,loginType:%s", reqTokenInfo.getValue(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType()));
                 }

@@ -150,15 +150,23 @@ public final class RyeCatcher {
     }
 
     public static void logout() {
-        Session session = getSession();
-        if (DynamicRcConfigHolder.isNeedSave()) {
-            SESSION_MANAGER.remove(session);
-        }
-        if (DynamicRcConfigHolder.isNeedOutClient()) {
+        Optional<Session> optionalSession = findSession();
+        optionalSession.ifPresent(session -> {
+            if (DynamicRcConfigHolder.isNeedSave()) {
+                SESSION_MANAGER.remove(session);
+            }
+            if (DynamicRcConfigHolder.isNeedOutClient()) {
+                session.setMaxInactiveInterval(0);
+                SESSION_MANAGER.outSession2Client(DynamicRcConfigHolder.getOutClientTokenName(), session);
+            }
+            ACTION_LISTENER.doLogout(DynamicRcConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        });
+        if (!optionalSession.isPresent()) {
+            Session session = SESSION_MANAGER.genSession("id", "deviceType", DynamicRcConfigHolder.getGenTokenType(), null, null);
             session.setMaxInactiveInterval(0);
             SESSION_MANAGER.outSession2Client(DynamicRcConfigHolder.getOutClientTokenName(), session);
         }
-        ACTION_LISTENER.doLogout(DynamicRcConfigHolder.getCertificationSystemId(), session.getLoginInfo().getUserId(), session.getLoginInfo().getDeviceType(), session.getSessionToken());
+        SessionContextHolder.clear();
     }
 
     public static void kickOut(Object id) {

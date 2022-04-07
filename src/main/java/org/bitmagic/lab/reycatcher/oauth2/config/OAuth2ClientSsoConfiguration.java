@@ -25,6 +25,7 @@ import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -62,9 +63,11 @@ public class OAuth2ClientSsoConfiguration {
                 String headerName = headerNames.nextElement();
                 log.debug("header: {}", headerName + ":" + servletRequest.getHeader(headerName));
             }
+            URI uri = URI.create(oAuth2ClientInfo.getRedirectUri());
+
             if (RyeCatcher.isLogin()) {
                 filterChain.doFilter(servletRequest, servletResponse);
-            } else if (this.oAuth2ClientInfo.getRedirectUri().contains(servletRequest.getRequestURI())) {
+            } else if ( uri.getPath().equals(servletRequest.getRequestURI())) {
                 String code = servletRequest.getParameter("code");
                 if (code != null) {
                     Oauth2Token oauth2Token = getOauth2Token(code);

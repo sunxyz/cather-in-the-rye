@@ -1,9 +1,6 @@
 package org.bitmagic.lab.reycatcher.config.spring;
 
-import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
-import org.bitmagic.lab.reycatcher.SessionManager;
-import org.bitmagic.lab.reycatcher.SessionRepository;
-import org.bitmagic.lab.reycatcher.SessionTokenGenFactory;
+import org.bitmagic.lab.reycatcher.*;
 import org.bitmagic.lab.reycatcher.impl.*;
 import org.bitmagic.lab.reycatcher.predicate.*;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -11,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,6 +31,12 @@ public class SpringRyeCatcherRegister {
     @Bean
     public SessionTokenGenFactory cookieTokenGenService() {
         return new SessionIdSessionTokenGenFactory();
+    }
+
+    @ConditionalOnMissingBean(AuthMatchInfoProvider.class)
+    @Bean
+    public AuthMatchInfoProvider authMatchInfoProvider() {
+        return (certificationSystemId, userId, deviceType) -> Collections.emptyMap();
     }
 
     @Bean

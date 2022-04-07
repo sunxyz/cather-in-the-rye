@@ -1,8 +1,10 @@
 package org.bitmagic.lab.reycatcher.filter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bitmagic.lab.reycatcher.RyeCatcher;
 import org.bitmagic.lab.reycatcher.ex.BasicException;
 import org.bitmagic.lab.reycatcher.ex.ForbiddenException;
+import org.bitmagic.lab.reycatcher.ex.NotFoundSessionException;
 import org.bitmagic.lab.reycatcher.ex.RyeCatcherException;
 import org.bitmagic.lab.reycatcher.reqmatches.BiConsumers;
 import org.bitmagic.lab.reycatcher.utils.Base64Utils;
@@ -49,7 +51,12 @@ public  class RyeCatcherErrHandlerServletFilter<T extends RyeCatcherErrHandlerSe
                         response1.setStatus(SC_UNAUTHORIZED);
                         response1.setHeader("WWW-Authenticate", "Basic realm=" + Base64Utils.encode(((BasicException)e).getRealm()));
                     }else {
-                        response1.sendError(e instanceof ForbiddenException ? 403 : 401, e.getMessage());
+                        if(e instanceof NotFoundSessionException){
+                            RyeCatcher.logout();
+                        }else {
+                            response1.sendError(e instanceof ForbiddenException ? 403 : 401, e.getMessage());
+                        }
+
                     }
                 }
             }
