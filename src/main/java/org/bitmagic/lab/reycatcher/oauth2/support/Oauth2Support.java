@@ -14,8 +14,8 @@ import java.io.IOException;
  */
 public class Oauth2Support {
 
-    public static void redirectToLogin(HttpServletResponse response, OAuth2ClientInfo oAuth2ClientInfo) throws IOException {
-        String redirectUrl = oAuth2ClientInfo.getAuthorizationUri() + "?client_id=" + oAuth2ClientInfo.getClientId() + "&response_type=code&redirect_uri=" + oAuth2ClientInfo.getRedirectUri();
+    public static void redirectToLogin(HttpServletResponse response, OAuth2ClientInfo oAuth2ClientInfo, String state) throws IOException {
+        String redirectUrl = oAuth2ClientInfo.getAuthorizationUri() + "?client_id=" + oAuth2ClientInfo.getClientId() + "&response_type=code&redirect_uri=" + oAuth2ClientInfo.getRedirectUri()+"&scope=" + String.join(",",oAuth2ClientInfo.getScope()) + "&state=" + state;
         response.sendRedirect(redirectUrl);
     }
 

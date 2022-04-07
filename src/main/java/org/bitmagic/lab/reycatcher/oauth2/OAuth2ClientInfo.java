@@ -27,6 +27,7 @@ public class OAuth2ClientInfo {
     private String userInfoUri;
     private String userNameAttributeName;
     private String userIdAttributeName;
+    private String authorizationSuccessRedirectUri;
 
 //    private Integer accessTokenValiditySeconds;
 //    private Integer refreshTokenValiditySeconds;
@@ -41,6 +42,8 @@ public class OAuth2ClientInfo {
         this.tokenUri = "http://localhost:8080/oauth/token";
         this.userInfoUri = "http://localhost:8080/oauth/userinfo";
         this.userNameAttributeName = "name";
+        this.userIdAttributeName = "id";
+        this.authorizationSuccessRedirectUri = "/";
     }
 
 }

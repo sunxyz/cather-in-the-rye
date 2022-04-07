@@ -29,7 +29,7 @@ public interface RyeCatcherBootstrap {
     @Slf4j
     class DefaultRyeCatcherBootstrap implements RyeCatcherBootstrap {
 
-        private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Collections.emptyList(), SessionToken.GenTypeCons.SESSION_ID, null, false, "JSESSIONID", 30 * 60 * 1000, true, true, true);
+        private static final CertificationSystemDefine DEFAULT_CERTIFICATION_SYSTEM_INFO = CertificationSystemDefine.of("default-id", Collections.emptyList(), SessionToken.GenTypeCons.SESSION_ID, null, false, "JSESSIONID", 30 * 60 * 1000, true, true, true, null);
         static RyeCatcherBootstrap INSTANCE = new DefaultRyeCatcherBootstrap();
 
         @Override

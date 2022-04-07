@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @author yangrd
  */
-@ConfigurationProperties("rey-catcher.oauth2.sso")
+@ConfigurationProperties("rye-catcher.oauth2.sso")
 @Data
 public class OAuth2ClientSsoConfigurationProperties {
 

@@ -6,6 +6,7 @@ import org.bitmagic.lab.reycatcher.RyeCatcherActionListener;
 import org.bitmagic.lab.reycatcher.SessionManager;
 import org.bitmagic.lab.reycatcher.config.Environment;
 import org.bitmagic.lab.reycatcher.config.RyeCatcherBootstrap;
+import org.bitmagic.lab.reycatcher.filter.RyeCatcherErrHandlerServletFilter;
 import org.bitmagic.lab.reycatcher.predicate.HttpRequestPredicate;
 import org.bitmagic.lab.reycatcher.support.RyeCatcherServletFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +57,19 @@ public class SpringRyeCatcherAutoConfiguration {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(ryeCatcherServletFilter);
         bean.addUrlPatterns("/*");
         bean.setName("ryeCatcherServletFilter");
-        bean.setOrder(-100);
+        bean.setOrder(-500);
         return bean;
     }
+
+    @Bean
+    public FilterRegistrationBean<Filter> registrationRcErrHandlerServletFilter() {
+        FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new RyeCatcherErrHandlerServletFilter<>());
+        bean.addUrlPatterns("/*");
+        bean.setName("rcErrHandlerServletFilter");
+        bean.setOrder(-10000);
+        return bean;
+    }
+
 
     @Bean
     public RcErrorAttributes rcErrorAttributes() {

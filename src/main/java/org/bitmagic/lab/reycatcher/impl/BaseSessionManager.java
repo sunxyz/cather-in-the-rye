@@ -34,7 +34,7 @@ public class BaseSessionManager extends AbstractSessionManager {
     }
 
     @Override
-    public Optional<Session> getCurrentSession(String tokenName) {
+    public Optional<Session> findCurrentSession(String tokenName) {
         Optional<Session> currentSession = findReqTokenInfoFromClient(tokenName).map(reqTokenInfo -> {
             SessionToken sessionToken = SessionToken.of(DynamicRcConfigHolder.getGenTokenType(), reqTokenInfo.getValue());
             if (DynamicRcConfigHolder.isNeedSave()) {

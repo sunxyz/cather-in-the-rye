@@ -1,12 +1,14 @@
 package org.bitmagic.lab.reycatcher.oauth2.config;
 
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.bitmagic.lab.reycatcher.RyeCatcher;
+import org.bitmagic.lab.reycatcher.config.spring.ServletSessionManager;
 import org.bitmagic.lab.reycatcher.oauth2.OAuth2ClientInfo;
-import org.bitmagic.lab.reycatcher.oauth2.helper.RcOauth2Helper;
 import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
 import org.bitmagic.lab.reycatcher.oauth2.store.Oauth2Token;
 import org.bitmagic.lab.reycatcher.oauth2.support.Oauth2Support;
+import org.bitmagic.lab.reycatcher.utils.Base64Utils;
+import org.bitmagic.lab.reycatcher.utils.IdGenerator;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +18,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.Map;
 
 /**
@@ -27,6 +33,8 @@ import java.util.Map;
  */
 @Configuration
 @EnableConfigurationProperties(OAuth2ClientSsoConfigurationProperties.class)
+
+@Slf4j
 public class OAuth2ClientSsoConfiguration {
 
     @Bean
@@ -34,53 +42,70 @@ public class OAuth2ClientSsoConfiguration {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new RcOauth2SsoLoginFilter(properties.getClient()));
         bean.addUrlPatterns("/*");
         bean.setName("oauth2SsoLoginFilterBean");
-        bean.setOrder(-100);
+        bean.setOrder(-600);
         return bean;
     }
 
-    @RequiredArgsConstructor
-    static class RcOauth2SsoLoginFilter extends GenericFilter {
-
+    static class RcOauth2SsoLoginFilter extends HttpFilter {
         private final OAuth2ClientInfo oAuth2ClientInfo;
-
         private final RestTemplate restTemplate = new RestTemplate();
 
+        public RcOauth2SsoLoginFilter(OAuth2ClientInfo oAuth2ClientInfo) {
+            this.oAuth2ClientInfo = oAuth2ClientInfo;
+        }
+
         @Override
-        public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-            // 获取code
-            if(((HttpServletRequest) servletRequest).getRequestURI().indexOf(oAuth2ClientInfo.getRedirectUri())==0){
+        public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+            log.debug("uri: {}", servletRequest.getRequestURI());
+            Enumeration<String> headerNames = servletRequest.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                log.debug("header: {}", headerName + ":" + servletRequest.getHeader(headerName));
+            }
+            if (RyeCatcher.isLogin()) {
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else if (this.oAuth2ClientInfo.getRedirectUri().contains(servletRequest.getRequestURI())) {
                 String code = servletRequest.getParameter("code");
-                if(code!=null){
-                    // 获取token
-                    RequestTokenInfo requestTokenInfo = new RequestTokenInfo()
-                            .setCode(code)
-                            .setClientId(oAuth2ClientInfo.getClientId())
-                            .setClientSecret(oAuth2ClientInfo.getClientSecret())
-                            .setGrantType("authorization_code")
-                            .setRedirectUri(oAuth2ClientInfo.getRedirectUri());
-                    // 异常直接抛出
-                    Oauth2Token oauth2Token = restTemplate.postForObject(oAuth2ClientInfo.getTokenUri()+Oauth2Support.getTokenUrlParams(requestTokenInfo), null, Oauth2Token.class);
-                    if(oauth2Token!=null){
-                        // 获取用户信息
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.add("Authorization",oauth2Token.getTokenType()+" "+oauth2Token.getAccessToken());
-                        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-                        Map userInfo = restTemplate.exchange(oAuth2ClientInfo.getUserInfoUri() , HttpMethod.GET, requestEntity, Map.class).getBody();
-                        if(userInfo!=null){
-                            Object userId = userInfo.get(oAuth2ClientInfo.getUserIdAttributeName());
-                            if(userId!=null){
+                if (code != null) {
+                    Oauth2Token oauth2Token = getOauth2Token(code);
+                    if (oauth2Token != null) {
+                        Map<String, Object> userInfo = getUserInfo(oauth2Token);
+                        if (userInfo != null) {
+                            Object userId = userInfo.get(this.oAuth2ClientInfo.getUserIdAttributeName());
+                            Object userName = userInfo.get(this.oAuth2ClientInfo.getUserNameAttributeName());
+                            servletRequest.setAttribute(ServletSessionManager.COOKIE_PATH, "/");
+                            if (userId != null) {
                                 RyeCatcher.login(userId);
+                            } else {
+                                RyeCatcher.login(userName);
                             }
                             RyeCatcher.getSession().setAttribute("oauth2UserInfo", userInfo);
-                            RyeCatcher.getSession().setAttribute("username", userInfo.get(oAuth2ClientInfo.getUserNameAttributeName()));
+                            RyeCatcher.getSession().setAttribute("username", userName);
+                            RyeCatcher.getSession().setAttribute("userId", userId);
+                            RyeCatcher.getSession().setAttribute("oauth2Token", oauth2Token);
+                            servletResponse.sendRedirect(this.oAuth2ClientInfo.getAuthorizationSuccessRedirectUri());
                         }
                     }
                 }
-            }else if(RyeCatcher.isLogin()) {
-               filterChain.doFilter(servletRequest, servletResponse);
-           }else {
-               RcOauth2Helper.redirectToLogin((HttpServletResponse) servletResponse, oAuth2ClientInfo);
-           }
+            } else {
+                String state = IdGenerator.genUuid();
+                Oauth2Support.redirectToLogin(servletResponse, this.oAuth2ClientInfo, state);
+            }
+        }
+
+        private Map<String, Object> getUserInfo(Oauth2Token oauth2Token) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", oauth2Token.getTokenType() + " " + oauth2Token.getAccessToken());
+            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            return restTemplate.exchange(this.oAuth2ClientInfo.getUserInfoUri(), HttpMethod.GET, requestEntity, Map.class).getBody();
+        }
+
+        private Oauth2Token getOauth2Token(String code) {
+            RequestTokenInfo requestTokenInfo = (new RequestTokenInfo()).setCode(code).setClientId(this.oAuth2ClientInfo.getClientId()).setClientSecret(this.oAuth2ClientInfo.getClientSecret()).setGrantType("authorization_code").setRedirectUri(this.oAuth2ClientInfo.getRedirectUri());
+            HttpHeaders headers0 = new HttpHeaders();
+            headers0.add("Authorization", "Basic " + Base64Utils.encode(this.oAuth2ClientInfo.getClientId() + ":" + this.oAuth2ClientInfo.getClientSecret()));
+            HttpEntity<String> requestEntity0 = new HttpEntity<>(headers0);
+            return restTemplate.exchange(this.oAuth2ClientInfo.getTokenUri() + Oauth2Support.getTokenUrlParams(requestTokenInfo), HttpMethod.POST, requestEntity0, Oauth2Token.class).getBody();
         }
 
         @Override
