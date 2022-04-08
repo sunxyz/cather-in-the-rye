@@ -6,6 +6,7 @@ import org.bitmagic.lab.reycatcher.config.spring.ServletSessionManager;
 import org.bitmagic.lab.reycatcher.oauth2.OAuth2ClientInfo;
 import org.bitmagic.lab.reycatcher.oauth2.model.RequestTokenInfo;
 import org.bitmagic.lab.reycatcher.oauth2.store.Oauth2Token;
+import org.bitmagic.lab.reycatcher.oauth2.support.OAuth2ExceptionUtils;
 import org.bitmagic.lab.reycatcher.oauth2.support.Oauth2Support;
 import org.bitmagic.lab.reycatcher.utils.Base64Utils;
 import org.bitmagic.lab.reycatcher.utils.IdGenerator;
@@ -91,6 +92,7 @@ public class OAuth2ClientSsoConfiguration {
                     }
                 }
             } else {
+                OAuth2ExceptionUtils.tryOauth2Exception(!oAuth2ClientInfo.getAuthorizedGrantTypes().contains("authorization_code"),"only support authorization_code");
                 String state = IdGenerator.genUuid();
                 Oauth2Support.redirectToLogin(servletResponse, this.oAuth2ClientInfo, state);
             }
