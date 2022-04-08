@@ -12,6 +12,7 @@ import org.bitmagic.lab.reycatcher.support.RyeCatcherServletFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -43,6 +44,7 @@ public class SpringRyeCatcherAutoConfiguration {
 
 
     @Bean
+    @ConditionalOnExpression("${rye-catcher.session-filter.enabled:true}")
     public FilterRegistrationBean<Filter> registrationSessionFilter(SessionManager sessionManager) {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new ContextHolderInitFilter(sessionManager));
         bean.addUrlPatterns("/*");
@@ -61,6 +63,7 @@ public class SpringRyeCatcherAutoConfiguration {
         return bean;
     }
 
+    @ConditionalOnExpression("${rye-catcher.err-handler-filter.enabled:true}")
     @Bean
     public FilterRegistrationBean<Filter> registrationRcErrHandlerServletFilter() {
         FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<>(new RyeCatcherErrHandlerServletFilter<>());
