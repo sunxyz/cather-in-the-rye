@@ -71,13 +71,13 @@ public final class RyeCatcher {
     }
 
     public static TokenInfo getTokenInfo() {
-        return SESSION_MANAGER.findReqTokenInfoFromClient(DynamicRcConfigHolder.getOutClientTokenName()).map(reqTokenInfo -> {
-            return TokenInfo.of(reqTokenInfo.getValue(), DynamicRcConfigHolder.getSessionTimeoutMillisecond(), DynamicRcConfigHolder.listCertificationSystemPredicate(), reqTokenInfo.getType(), DynamicRcConfigHolder.getOutClientTokenName());
-        }).orElseGet(() -> {
-            Session session = getSession();
-            SessionToken sessionToken = session.getSessionToken();
-            return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), DynamicRcConfigHolder.listCertificationSystemPredicate(), SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null, DynamicRcConfigHolder.getOutClientTokenName());
-        });
+//        return SESSION_MANAGER.findReqTokenInfoFromClient(DynamicRcConfigHolder.getOutClientTokenName()).map(reqTokenInfo -> {
+//            return TokenInfo.of(reqTokenInfo.getValue(), DynamicRcConfigHolder.getSessionTimeoutMillisecond(), DynamicRcConfigHolder.listCertificationSystemPredicate(), reqTokenInfo.getType(), DynamicRcConfigHolder.getOutClientTokenName());
+//        }).orElseGet(() -> {
+//                  });
+        Session session = getSession();
+        SessionToken sessionToken = session.getSessionToken();
+        return TokenInfo.of(sessionToken.getToken(), session.getMaxInactiveInterval(), DynamicRcConfigHolder.listCertificationSystemPredicate(), SessionToken.GenTypeCons.JWT.equals(sessionToken.getGenType()) ? "Bearer" : null, DynamicRcConfigHolder.getOutClientTokenName());
     }
 
     public static Session getSession() {
